@@ -61,6 +61,11 @@ Start the server by running
 ```
 iex -S mix phx.server
 ```
+Unless you set `EVENT_DATE` environment variable, the program will read the
+same day's results by default.
+
+Note: Currently, if program is left running after the previous event, it needs
+to be restarted on the day of the next event to start reading new data.
 
 ## Building a release
 
