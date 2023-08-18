@@ -1,0 +1,55 @@
+Class,PAX,Description,Group,Display Order
+CAM-C,0.827,Classic American Muscle Contemporary,Street 3,1
+CAM-T,0.819,Classic American Muscle Traditional,Street 3,2
+CAM-S,0.845,Classic American Muscle Sports,Street 3,3
+XB,0.848,Xtreme Street B,Street 3,4
+XA,0.842,Xtreme Street A,Street 3,5
+XS,0.851,Xtreme Street S,Street 3,6
+SS,0.833,Super Street,Street 3,7
+AS,0.823,A Street,Street 2,8
+BS,0.818,B Street,Street 2,9
+CS,0.811,C Street,Street 1,10
+DS,0.808,D Street,Street 1,11
+ES,0.792,E Street,Street 1,12
+FS,0.813,F Street,Street 2,13
+GS,0.794,G Street,Street 1,14
+HS,0.786,H Street,Street 1,15
+HCS,0.793,Historic Classic Street,Street 1,16
+HCR,0.815,Historic Classic Race,Race,17
+SSR,0.846,Super Stock Race,Race,18
+SSC,0.807,Solo Spec Coupe,Street 1,19
+STH,0.812,Street Touring FWD,Touring 1,20
+STS,0.814,Street Touring S,Touring 1,21
+STX,0.817,Street Touring X,Touring 1,22
+STR,0.831,Street Touring R,Touring 2,23
+STU,0.83,Street Touring U,Touring 2,24
+SST,0.837,Super Street Touring,Touring 2,25
+SM,0.868,Street Modified,Race,26
+SMF,0.847,Street Modified F,Race,27
+SSM,0.879,Super Street Modified,Race,28
+SSP,0.855,Super Street Prepared,Race,29
+CSP,0.86,C Street Prepared,Race,30
+DSP,0.844,D Street Prepared,Race,31
+ESP,0.84,E Street Prepared,Race,32
+FSP,0.828,F Street Prepared,Race,33
+XP,0.884,X Prepared,Race,34
+CP,0.858,C Prepared,Race,35
+DP,0.865,D Prepared,Race,36
+EP,0.856,E Prepared,Race,37
+FP,0.877,F Prepared,Race,38
+AM,1,A Modified,Race,39
+BM,0.98,B Modified,Race,40
+CM,0.896,C Modified,Race,41
+DM,0.898,D Modified,Race,42
+EM,0.911,E Modified,Race,43
+FM,0.914,F Modified,Race,44
+KM,0.933,Kart Modified,Race,45
+FSAE,0.981,Formula SAE,Race,46
+Street 1,1,Street 1 group,Street 1,47
+Street 2,1,Street 2 group,Street 2,48
+Street 3,1,Street 3 group,Street 3,49
+Touring 1,1,Street Touring 1 group,Street Touring 1,50
+Touring 2,1,Street Touring 2 group,Street Touring 2,51
+Race,1,Race group,Race,52
+Ladies,1,Ladies group,Ladies,53
+Novice,1,Novice group,Novice,54

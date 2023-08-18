@@ -1,0 +1,38 @@
+<div class="tv grid grid-cols-3 gap-2 h-screen bg-neutral-900 text-white pt-2 pb-2">
+  <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
+    <.paged_scores
+      scores={@raw_scores}
+      view_title="RAW"
+      time_column_title="Raw Best"
+      time_column_field={:raw_time}
+    />
+  </div>
+  <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
+    <.paged_scores
+      scores={@pax_scores}
+      view_title="PAX"
+      time_column_title="PAX Best"
+      time_column_field={:pax_time}
+    />
+  </div>
+  <div class="flex flex-col gap-2 overflow-hidden">
+    <div class="flex-auto bg-neutral-800 p-2 pt-1">
+      <%= if @groups.current do %>
+        <.paged_scores
+          scores={@group_scores}
+          view_title={@groups.current <> " Group"}
+          time_column_title="PAX Best"
+          time_column_field={:pax_time}
+        />
+      <% end %>
+    </div>
+    <div class="bg-neutral-800 p-2 pt-1">
+      <div class="text-2xl text-center mb-2 font-bold">
+        Most Recent Runs
+      </div>
+      <div style="padding-bottom: 0.15rem">
+        <.recent_runs runs={@recent_runs} />
+      </div>
+    </div>
+  </div>
+</div>

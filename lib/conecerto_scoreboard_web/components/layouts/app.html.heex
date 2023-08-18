@@ -1,0 +1,11 @@
+<.top_nav active_tab={@active_tab} />
+<main>
+  <.flash_group flash={@flash} />
+  <div class="flex">
+    <div class="flex-1" />
+    <div class="basis-md">
+      <%= @inner_content %>
+    </div>
+    <div class="flex-1" />
+  </div>
+</main>

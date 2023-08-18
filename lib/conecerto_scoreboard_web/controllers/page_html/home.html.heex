@@ -1,0 +1,13 @@
+<!-- .flash_group flash={@flash} / -->
+<div class="bg-neutral-900 text-white p-1">
+  <div class="text-xl text-center font-semibold pb-2 mt-3">Local Commentary Radio</div>
+  <div class="text-4xl text-center font-semibold">102.3 FM</div>
+</div>
+<div class="bg-neutral-900 text-white p-1 mt-2">
+  <div class="text-xl text-center font-semibold pb-2 mt-4">Most Recent Runs</div>
+  <Conecerto.ScoreboardWeb.Tv.recent_runs runs={@recent_runs} />
+</div>
+<div class="bg-neutral-900 text-white p-1 mt-2">
+  <div class="text-xl text-center font-semibold pb-2 mt-4">Last Updated</div>
+  <div class="text-center"><%= @last_updated_at %></div>
+</div>

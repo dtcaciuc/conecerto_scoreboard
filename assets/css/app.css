@@ -1,0 +1,24 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@font-face {
+	font-family: 'RobotoCondensed';
+	src: url(/fonts/RobotoCondensed-Regular.ttf);
+}
+
+html {
+        line-height: 1.25rem;
+}
+
+body {
+	font-family: RobotoCondensed;
+}
+
+.mw-36 {
+        max-width: 9rem;
+}
+
+table.striped tr:nth-child(2n) td {
+        background-color: #383838;
+}

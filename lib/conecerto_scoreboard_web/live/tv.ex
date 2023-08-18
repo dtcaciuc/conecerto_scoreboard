@@ -1,0 +1,230 @@
+defmodule Conecerto.ScoreboardWeb.Tv do
+  use Phoenix.LiveView
+
+  import Conecerto.ScoreboardWeb.Format
+
+  alias Conecerto.Scoreboard
+
+  @impl true
+  def mount(_params, _session, socket) do
+    if connected?(socket) do
+      :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("mj")
+
+      Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
+
+      groups = Scoreboard.paginate_groups(Scoreboard.list_groups())
+      group_scores = load_group(groups)
+
+      {:ok,
+       assign(socket,
+         root_font_size: Scoreboard.config(:tv_font_size),
+         raw_scores: Scoreboard.paginate(Scoreboard.list_raw_scores()),
+         pax_scores: Scoreboard.paginate(Scoreboard.list_pax_scores()),
+         groups: groups,
+         group_scores: group_scores,
+         recent_runs: Scoreboard.list_recent_runs()
+       ), layout: false}
+    else
+      {:ok,
+       assign(socket,
+         root_font_size: Scoreboard.config(:tv_font_size),
+         raw_scores: Scoreboard.paginate([]),
+         pax_scores: Scoreboard.paginate([]),
+         groups: Scoreboard.paginate_groups([]),
+         group_scores: Scoreboard.paginate([]),
+         recent_runs: []
+       ), layout: false}
+    end
+  end
+
+  defp load_group(%{current: nil}), do: Scoreboard.paginate([])
+
+  defp load_group(%{current: name}) do
+    Scoreboard.paginate(Scoreboard.list_group_scores(name), 15)
+  end
+
+  @impl true
+  def handle_info(:mj_update, socket) do
+    # Immediately refresh recent runs;
+    # Let paging views reload data on their own pace.
+    {:noreply, assign(socket, recent_runs: Scoreboard.list_recent_runs())}
+  end
+
+  @impl true
+  def handle_info(:refresh, %{assigns: assigns} = socket) do
+    raw_scores =
+      if assigns.raw_scores.rest == [] do
+        Scoreboard.paginate(Scoreboard.list_raw_scores())
+      else
+        Scoreboard.next_page(assigns.raw_scores)
+      end
+
+    pax_scores =
+      if assigns.pax_scores.rest == [] do
+        Scoreboard.paginate(Scoreboard.list_pax_scores())
+      else
+        Scoreboard.next_page(assigns.pax_scores)
+      end
+
+    {groups, group_scores} =
+      if assigns.group_scores.rest == [] do
+        groups =
+          if assigns.groups.rest == [] do
+            Scoreboard.paginate_groups(Scoreboard.list_groups())
+          else
+            Scoreboard.next_page(assigns.groups)
+          end
+
+        {groups, load_group(groups)}
+      else
+        {assigns.groups, Scoreboard.next_page(assigns.group_scores)}
+      end
+
+    Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
+
+    {:noreply,
+     assign(socket,
+       raw_scores: raw_scores,
+       pax_scores: pax_scores,
+       groups: groups,
+       group_scores: group_scores
+     )}
+  end
+
+  def recent_runs(assigns) do
+    ~H"""
+    <div>
+      <table class="border-collapse striped w-full">
+        <thead>
+          <th class="font-bold text-left pl-2">Driver</th>
+          <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
+          <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
+          <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
+          <th class="font-bold text-right">Run</th>
+          <th class="font-bold text-right pl-2">Elapsed</th>
+          <th class="font-bold text-left pl-2">Pen.</th>
+        </thead>
+        <tbody>
+          <%= for row <- @runs do %>
+            <tr>
+              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
+                <%= row.driver_name %>
+              </td>
+              <td class="text-right pl-2 max-sm:hidden">
+                <%= row.car_no %>
+              </td>
+              <td class="text-left pl-2 max-sm:hidden">
+                <%= row.car_class %>
+              </td>
+              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 max-sm:hidden">
+                <%= row.car_model %>
+              </td>
+              <td class="text-right pl-2">
+                <%= row.counted_run_no %>
+              </td>
+              <td class="text-right pl-2 whitespace-nowrap">
+                <div><%= row.run_time |> format_score() %></div>
+              </td>
+              <td class="text-left pl-2 whitespace-nowrap">
+                <div><%= row.penalty |> format_penalty() %></div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  def paged_scores(assigns) do
+    ~H"""
+    <div>
+      <.paged_scores_title title={@view_title} scores={@scores} />
+      <table class="border-collapse striped w-full">
+        <thead>
+          <th class="font-bold text-right">P</th>
+          <th class="font-bold text-left pl-2">Driver</th>
+          <th class="font-bold text-right pl-2">#</th>
+          <th class="font-bold text-left pl-2">Class</th>
+          <th class="font-bold text-left pl-2">Model</th>
+          <th class="font-bold whitespace-nowrap text-right relative">
+            <div class="absolute top-0 right-0">
+              <%= @time_column_title %>
+            </div>
+          </th>
+          <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">Raw Interval</th>
+        </thead>
+        <.paged_scores_page rows={@scores.top10} time_column_field={@time_column_field} />
+        <%= if @scores.current do %>
+          <.paged_scores_hr />
+          <.paged_scores_page rows={@scores.current.entries} time_column_field={@time_column_field} />
+        <% end %>
+      </table>
+    </div>
+    """
+  end
+
+  def paged_scores_page(assigns) do
+    ~H"""
+    <tbody>
+      <%= for row <- @rows do %>
+        <tr>
+          <td class="text-right">
+            <%= row.pos %>
+          </td>
+          <td class="text-left mw-36 truncate pl-2">
+            <%= row.driver_name %>
+          </td>
+          <td class="text-right pl-2">
+            <%= row.car_no %>
+          </td>
+          <td class="text-left pl-2">
+            <%= row.car_class %>
+          </td>
+          <td class="text-left mw-36 truncate pl-2">
+            <%= row.car_model %>
+          </td>
+          <td class="text-right pl-2">
+            <%= row |> get_in([Access.key!(@time_column_field)]) |> format_score() %>
+          </td>
+
+          <%= if row.pos == 1 do %>
+            <td class="font-bold text-right">Top</td>
+            <td class="font-bold text-right pl-2">Next</td>
+          <% else %>
+            <td class="text-right pl-2">
+              <%= row.raw_time_to_top |> format_score() %>
+            </td>
+            <td class="text-right pl-2">
+              <%= row.raw_time_to_next |> format_score() %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+    """
+  end
+
+  def paged_scores_title(assigns) do
+    ~H"""
+    <div class="text-2xl text-center mb-2 font-bold">
+      <%= @title %>
+      <%= if @scores.current != nil and @scores.num_pages > 1 do %>
+        (<%= @scores.current.num %>/<%= @scores.num_pages %>)
+      <% end %>
+    </div>
+    """
+  end
+
+  def paged_scores_hr(assigns) do
+    ~H"""
+    <tbody>
+      <tr>
+        <td class="text-center" colspan="8">
+          —
+        </td>
+      </tr>
+    </tbody>
+    """
+  end
+end

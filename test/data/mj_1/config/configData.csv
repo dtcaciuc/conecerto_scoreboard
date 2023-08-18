@@ -1,0 +1,4 @@
+Parameter,Value,Description
+driverDataFile,C:\mjtiming\config\_driverData.csv,Path of driver data csv file
+classDataFile,C:\mjtiming\config\_classData.csv,Path of class data csv file
+eventDataFolder,c:\mjtiming\eventdata,Folder where event data is stored

@@ -1,0 +1,40 @@
+<div class="bg-neutral-900 text-white p-1">
+  <table class="border-collapse striped w-full">
+    <thead>
+      <th class="font-bold text-left pl-2">Driver</th>
+      <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
+      <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
+      <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
+      <th class="font-bold text-right pl-2">Elapsed</th>
+      <th class="font-bold text-left pl-2">Pen.</th>
+    </thead>
+    <tbody>
+      <%= for d <- @drivers do %>
+        <tr>
+          <td class="text-left pl-2 align-top">
+            <%= d.driver_name %>
+          </td>
+          <td class="text-right pl-2 align-top max-sm:hidden">
+            <%= d.car_no %>
+          </td>
+          <td class="text-left pl-2 align-top max-sm:hidden">
+            <%= d.car_class %>
+          </td>
+          <td class="text-left pl-2 whitespace align-top max-sm:hidden">
+            <%= d.car_model %>
+          </td>
+          <td class="text-right pl-2 whitespace-nowrap">
+            <%= for r <- d.runs do %>
+              <div><%= r.run_time |> format_score() %></div>
+            <% end %>
+          </td>
+          <td class="text-left pl-2 whitespace-nowrap">
+            <%= for r <- d.runs do %>
+              <div><%= r.penalty |> format_penalty() %></div>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

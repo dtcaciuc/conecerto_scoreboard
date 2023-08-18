@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="theme-color" content="#262626" media="(prefers-color-scheme: dark)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Conecerto Scoreboard">
+      <%= assigns[:page_title] || assigns[:active_tab] || "Home" %>
+    </.live_title>
+    <style>
+      <%= if assigns[:root_font_size] do %>
+        html { font-size: <%= @root_font_size %>px; }
+      <% end %>
+    </style>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+  <body class="antialiased bg-neutral-900 overflow-y-scroll">
+    <%= @inner_content %>
+  </body>
+</html>

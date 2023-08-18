@@ -1,0 +1,6 @@
+<%= for group <- @groups do %>
+  <div class="bg-neutral-900 text-white p-1">
+    <div class="text-xl text-center font-semibold pb-2 pt-1"><%= group.name %></div>
+    <.scores scores={group.scores} time_column_title="PAX Best" time_column_field={:pax_time} />
+  </div>
+<% end %>
