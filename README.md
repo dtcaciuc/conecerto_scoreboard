@@ -84,6 +84,7 @@ Server understands the following environment variables:
   This is required for LiveViews to work and cannot just be `localhost`.
 * `ANNOUNCE_FONT_SIZE` (optional) - Controls /announce endpoint font size.
 * `EVENT_DATE` (optional) - Forces specified event date. Use this to read past event's data.
+* `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the `/` home page.
 
 To continuously upload scores to an external server, configure the following additional variables:
 * `LIVE_FTP_HOST`

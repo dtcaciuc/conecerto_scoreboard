@@ -77,6 +77,5 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
              raw_time_to_top: 3.1567929292929295,
              raw_time_to_next: 3.095097222222226
            } = s3
-
   end
 end

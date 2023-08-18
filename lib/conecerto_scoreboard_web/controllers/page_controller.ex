@@ -13,6 +13,7 @@ defmodule Conecerto.ScoreboardWeb.PageController do
     render(conn, :home,
       root_font_size: @root_font_size,
       active_tab: "Event",
+      radio_frequency: Scoreboard.config(:radio_frequency),
       recent_runs: Scoreboard.list_recent_runs(10),
       last_updated_at: Scoreboard.last_updated_at()
     )
