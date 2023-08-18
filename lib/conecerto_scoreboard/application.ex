@@ -23,8 +23,6 @@ defmodule Conecerto.Scoreboard.Application do
       Conecerto.Scoreboard.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub},
-      # Start Finch
-      # {Finch, name: Conecerto.Scoreboard.Finch},
       # Start the Endpoint (http/https)
       Conecerto.ScoreboardWeb.Endpoint
     ]
