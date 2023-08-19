@@ -86,9 +86,10 @@ to be restarted on the day of the next event to start reading new data.
 
 Server understands the following environment variables:
 
-* `DATABASE_PATH` - Path to working SQLite3 database file.
-* `SECRET_KEY_BASE` - Secret key base required for Phoenix to operate. See
-  documentation on how to generate one.
+* `DATABASE_PATH` - Path to SQLite3 database file where Scoreboard stores data
+  while its running (for example "scoreboard.db").
+* `SECRET_KEY_BASE` - Secret key base required for Phoenix to operate. This can
+  be an abritrary string (minimum length is 32 characters).
 * `PHX_HOST` - IP/hostname of the machine that will be running the scoreboard.
   This is required for LiveViews to work and cannot just be `localhost`.
 * `ANNOUNCE_FONT_SIZE` (optional) - Controls /announce endpoint font size.
@@ -104,3 +105,19 @@ Note: On Windows, if your password contains `^`, make sure to escape it with ano
 
 Note: The web server needs to be configured to serve pre-compressed pages. See
 `misc/htaccess` for the base configuration.
+
+## License
+
+Copyright (C) 2023 Dimitri Tcaciuc.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
