@@ -42,6 +42,6 @@ defmodule Conecerto.Scoreboard.Watcher do
   end
 
   defp schedule_load() do
-    Process.send_after(self(), :load, Scoreboard.config(:mj_debounce_ms))
+    Process.send_after(self(), :load, Scoreboard.config(:mj_debounce_interval))
   end
 end
