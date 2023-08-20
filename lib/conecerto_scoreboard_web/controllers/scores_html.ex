@@ -1,9 +1,9 @@
-defmodule Conecerto.ScoreboardWeb.PageHTML do
+defmodule Conecerto.ScoreboardWeb.ScoresHTML do
   use Conecerto.ScoreboardWeb, :html
 
   import Conecerto.ScoreboardWeb.Format
 
-  embed_templates "page_html/*"
+  embed_templates "scores_html/*"
 
   def scores(assigns) do
     ~H"""

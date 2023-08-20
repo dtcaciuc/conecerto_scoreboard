@@ -1,5 +1,5 @@
 defmodule Conecerto.ScoreboardWeb.Announce do
-  use Phoenix.LiveView
+  use Conecerto.ScoreboardWeb, :live_view
 
   import Conecerto.ScoreboardWeb.Format
 

@@ -1,7 +1,9 @@
-defmodule Conecerto.ScoreboardWeb.PageController do
+defmodule Conecerto.ScoreboardWeb.ScoresController do
   use Conecerto.ScoreboardWeb, :controller
 
   alias Conecerto.Scoreboard
+
+  plug :put_layout, html: :scores
 
   @root_font_size 16.0
 
