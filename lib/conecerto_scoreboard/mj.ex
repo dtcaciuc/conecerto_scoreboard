@@ -43,6 +43,8 @@ defmodule Conecerto.Scoreboard.MJ.Config do
 end
 
 defmodule Conecerto.Scoreboard.MJ.Classes do
+  require Logger
+
   def read(path) do
     try do
       File.stream!(path)
@@ -58,8 +60,22 @@ defmodule Conecerto.Scoreboard.MJ.Classes do
          {:ok, %{"Class" => name, "PAX" => pax, "Description" => descr}},
          classes
        ) do
-    {pax_f, ""} = Float.parse(pax)
-    [%{name: name, pax: pax_f, description: descr} | classes]
+    # Handle numbers without leading zero (e.g. 0.811)
+    pax =
+      if String.first(pax) == "." do
+        "0" <> pax
+      else
+        pax
+      end
+
+    case Float.parse(pax) do
+      {pax_f, ""} ->
+        [%{name: name, pax: pax_f, description: descr} | classes]
+
+      _ ->
+        Logger.warning("Could not parse PAX multiplier '#{pax}' for class '#{name}'")
+        classes
+    end
   end
 end
 
