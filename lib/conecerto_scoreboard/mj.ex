@@ -77,6 +77,25 @@ defmodule Conecerto.Scoreboard.MJ.Classes do
         classes
     end
   end
+
+  defp parse_row({:ok, fields}, classes) do
+    keys =
+      fields
+      |> Map.keys()
+      |> Enum.filter(&(String.length(&1) > 0))
+      |> Enum.join(", ")
+
+    Logger.warning(
+      "Could not parse a class definition; one or more required fields are missing (found only #{keys})"
+    )
+
+    classes
+  end
+
+  defp parse_row({:error, type, opts}, classes) do
+    Logger.warning("Could not parse a class definition; " <> type.exception(opts).message)
+    classes
+  end
 end
 
 defmodule Conecerto.Scoreboard.MJ.Drivers do

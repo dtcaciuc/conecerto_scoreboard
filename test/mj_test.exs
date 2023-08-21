@@ -19,6 +19,8 @@ end
 defmodule Conecerto.Scoreboard.MJClassTest do
   use ExUnit.Case
 
+  import ExUnit.CaptureLog
+
   alias Conecerto.Scoreboard.MJ
 
   test "read MJ class definitions" do
@@ -43,8 +45,28 @@ defmodule Conecerto.Scoreboard.MJClassTest do
            } = c3
   end
 
-  test "return empty list if class file fails to read" do
+  test "return empty list if class file does not exist" do
     assert [] = MJ.Classes.read("doesnotexist")
+  end
+
+  test "return empty list if class file is missing columns" do
+    assert capture_log(fn ->
+             assert [] =
+                      MJ.Classes.read(Path.join([__DIR__, "data", "classes_missing_columns.csv"]))
+           end) =~ "one or more required fields are missing \(found only Class\)"
+  end
+
+  test "handle malformed csv format" do
+    assert capture_log(fn ->
+             assert [c2] =
+                      MJ.Classes.read(Path.join([__DIR__, "data", "classes_broken_quotes.csv"]))
+
+             assert %{
+                      name: "SMF",
+                      pax: 0.847,
+                      description: "Street Modified F"
+                    } = c2
+           end) =~ "Stray escape character on line 2"
   end
 end
 
