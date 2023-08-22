@@ -1,3 +1,48 @@
+defmodule Conecerto.Scoreboard.MJ.CSVParser do
+  @moduledoc """
+  CSVParser parses relaxed CSV format used by MJTiming.
+
+  In it:
+
+  * Fields are delimited by a comma
+  * Unpaired quotations can occur freely inside field values
+  * Columns have headers
+
+  """
+  require Logger
+
+  defmodule Data do
+    defstruct fields: %{}, rows: []
+  end
+
+  @doc """
+  Parse CSV stream and output a list of row maps in reverse order.
+  """
+  def parse_stream_reversed(stream) do
+    data =
+      stream
+      |> Enum.map(&String.trim/1)
+      |> Enum.map(&String.split(&1, ","))
+      |> Enum.reduce_while(%Data{}, &parse_row/2)
+
+    data.rows
+  end
+
+  defp parse_row(fields, %Data{fields: %{}, rows: []} = data) do
+    {:cont, %{data | fields: fields}}
+  end
+
+  defp parse_row(values, %Data{fields: fields, rows: rows} = data) do
+    if Enum.count(fields) == Enum.count(values) do
+      row = Enum.zip(fields, values) |> Map.new()
+      {:cont, %{data | rows: [row | rows]}}
+    else
+      Logger.warning("Could not parse row with mismatched number of fields: #{inspect(values)}")
+      {:cont, data}
+    end
+  end
+end
+
 defmodule Conecerto.Scoreboard.MJ.Config do
   use TypedStruct
 
@@ -15,18 +60,18 @@ defmodule Conecerto.Scoreboard.MJ.Config do
     config =
       Path.join([mj_dir, "config", "configData.csv"])
       |> File.stream!()
-      |> CSV.Decoding.Decoder.decode()
+      |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
       |> Enum.reduce(%Config{root_path: mj_dir}, &parse_row(date, &1, &2))
 
     {:ok, config}
   end
 
-  defp parse_row(_date, {:ok, ["classDataFile", val, _descr]}, config) do
+  defp parse_row(_date, %{"Parameter" => "classDataFile", "Value" => val}, config) do
     val = val |> String.replace("\\", "/")
     %{config | class_data_path: val}
   end
 
-  defp parse_row(date, {:ok, ["eventDataFolder", val, _descr]}, config) do
+  defp parse_row(date, %{"Parameter" => "eventDataFolder", "Value" => val}, config) do
     val = val |> String.replace("\\", "/")
 
     %{
@@ -48,16 +93,15 @@ defmodule Conecerto.Scoreboard.MJ.Classes do
   def read(path) do
     try do
       File.stream!(path)
-      |> CSV.Decoding.Decoder.decode(headers: true)
+      |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
       |> Enum.reduce([], &parse_row/2)
-      |> Enum.reverse()
     rescue
       _ in File.Error -> []
     end
   end
 
   defp parse_row(
-         {:ok, %{"Class" => name, "PAX" => pax, "Description" => descr}},
+         %{"Class" => name, "PAX" => pax, "Description" => descr},
          classes
        ) do
     # Handle numbers without leading zero (e.g. 0.811)
@@ -78,51 +122,39 @@ defmodule Conecerto.Scoreboard.MJ.Classes do
     end
   end
 
-  defp parse_row({:ok, fields}, classes) do
-    keys =
-      fields
-      |> Map.keys()
-      |> Enum.filter(&(String.length(&1) > 0))
-      |> Enum.join(", ")
-
-    Logger.warning(
-      "Could not parse a class definition; one or more required fields are missing (found only #{keys})"
-    )
-
-    classes
-  end
-
-  defp parse_row({:error, type, opts}, classes) do
-    Logger.warning("Could not parse a class definition; " <> type.exception(opts).message)
+  defp parse_row(row, classes) do
+    Logger.warning("Could not read an incomplete class definition: #{inspect(row)}")
     classes
   end
 end
 
 defmodule Conecerto.Scoreboard.MJ.Drivers do
+  require Logger
+
   def read(path) do
     try do
-      File.stream!(path)
-      |> CSV.Decoding.Decoder.decode(headers: true)
+      path
+      |> File.stream!()
+      |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
       |> Enum.reduce([], &parse_row/2)
-      |> Enum.reverse()
     rescue
       _ in File.Error -> []
     end
   end
 
   defp parse_row(
-         {:ok,
-          %{
-            "Number" => car_no,
-            "First Name" => first_name,
-            "Last Name" => last_name,
-            "Car Model" => car_model,
-            "Class" => car_class,
-            "Group" => group,
-            "XGroup" => x_groups
-          }},
+         %{
+           "Number" => car_no,
+           "First Name" => first_name,
+           "Last Name" => last_name,
+           "Car Model" => car_model,
+           "Class" => car_class,
+           "Group" => group,
+           "XGroup" => x_groups
+         },
          drivers
        ) do
+    # TODO car number into string; we need to be able to preserve leading zeros
     {car_no_i, ""} = Integer.parse(car_no)
     groups = [group | split_xgroups(x_groups)]
 
@@ -147,18 +179,24 @@ defmodule Conecerto.Scoreboard.MJ.Drivers do
     ]
   end
 
+  defp parse_row(row, drivers) do
+    Logger.warning("Could not read an incomplete driver definition: #{inspect(row)}")
+    drivers
+  end
+
   defp split_xgroups(""), do: []
   defp split_xgroups(x_groups), do: String.split(x_groups, ";")
 end
 
 defmodule Conecerto.Scoreboard.MJ.Runs do
+  require Logger
+
   def read_last_day(path) do
     rows =
       try do
         File.stream!(path)
-        |> CSV.Decoding.Decoder.decode(headers: true)
+        |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
         |> Enum.reduce([], &parse_row/2)
-        |> Enum.reverse()
       rescue
         _ in File.Error -> []
       end
@@ -178,8 +216,7 @@ defmodule Conecerto.Scoreboard.MJ.Runs do
   end
 
   defp parse_row(
-         {:ok,
-          %{"car_number" => car_no, "day" => day, "penalty" => penalty, "run_time" => run_time}},
+         %{"car_number" => car_no, "day" => day, "penalty" => penalty, "run_time" => run_time},
          runs
        ) do
     with {parsed_day, ""} <- Integer.parse(day),
@@ -198,5 +235,10 @@ defmodule Conecerto.Scoreboard.MJ.Runs do
       _ ->
         runs
     end
+  end
+
+  defp parse_row(row, runs) do
+    Logger.warning("Could not read an incomplete run definition: #{inspect(row)}")
+    runs
   end
 end

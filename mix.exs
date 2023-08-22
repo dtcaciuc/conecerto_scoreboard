@@ -51,7 +51,6 @@ defmodule Conecerto.Scoreboard.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:typed_struct, "~> 0.3.0"},
-      {:csv, "~> 3.0"},
       {:file_system, "~> 0.2"}
     ]
   end

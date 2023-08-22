@@ -39,7 +39,7 @@ defmodule Conecerto.Scoreboard.MJClassTest do
            } = c2
 
     assert %{
-             name: "Novice",
+             name: "No\"vice",
              pax: 1.0,
              description: "Novice group"
            } = c3
@@ -53,20 +53,7 @@ defmodule Conecerto.Scoreboard.MJClassTest do
     assert capture_log(fn ->
              assert [] =
                       MJ.Classes.read(Path.join([__DIR__, "data", "classes_missing_columns.csv"]))
-           end) =~ "one or more required fields are missing \(found only Class\)"
-  end
-
-  test "handle malformed csv format" do
-    assert capture_log(fn ->
-             assert [c2] =
-                      MJ.Classes.read(Path.join([__DIR__, "data", "classes_broken_quotes.csv"]))
-
-             assert %{
-                      name: "SMF",
-                      pax: 0.847,
-                      description: "Street Modified F"
-                    } = c2
-           end) =~ "Stray escape character on line 2"
+           end) =~ "Could not read an incomplete class definition"
   end
 end
 
@@ -76,7 +63,7 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
   alias Conecerto.Scoreboard.MJ
 
   test "read MJ driver definitions" do
-    assert [d1, d2] = MJ.Drivers.read(Path.join([__DIR__, "data", "drivers_1.csv"]))
+    assert [d1, d2, d3] = MJ.Drivers.read(Path.join([__DIR__, "data", "drivers_1.csv"]))
 
     assert %{
              id: 49,
@@ -97,6 +84,17 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
              car_class: "GS",
              groups: ["Street 1", "Ladies", "Novice"]
            } = d2
+
+    assert %{
+             id: 300,
+             first_name: "Joe \"Quads\"",
+             last_name: "Driver",
+             car_no: 300,
+             car_model: "Unknown",
+             car_class: "",
+             # FIXME Should not have an empty group name.
+             groups: [""]
+           } = d3
   end
 
   test "return empty list if class file fails to read" do
