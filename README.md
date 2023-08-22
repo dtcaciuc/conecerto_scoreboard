@@ -92,14 +92,15 @@ Server understands the following environment variables:
   be an abritrary string (minimum length is 32 characters).
 * `PHX_HOST` - IP/hostname of the machine that will be running the scoreboard.
   This is required for LiveViews to work and cannot just be `localhost`.
-* `ANNOUNCE_FONT_SIZE` (optional) - Controls /announce endpoint font size.
-* `TV_FONT_SIZE` (optional) - Controls /tv endpoint font size.
-* `TV_REFRESH_INTERVAL` (optional) - Sets how long /tv displays each set of pages (in seconds).
+* `ANNOUNCE_FONT_SIZE` (optional) - /announce endpoint font size.
+* `TV_FONT_SIZE` (optional) - /tv endpoint font size.
+* `TV_REFRESH_INTERVAL` (optional) - Sets how long /tv displays a page of
+  scores (in seconds) in each panel before moving onto next one.
 * `EVENT_DATE` (optional) - Forces specified event date. Use this to read past event's data.
 * `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the `/` home page.
 * `MJ_DIR` (optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).
-* `MJ_DEBOUNCE_MS` (optional) - Sets the interval (in ms) between when MJTiming .csv
-  files are updates and when Scoreboard tries reading them. For larger events
+* `MJ_DEBOUNCE_INTERVAL` (optional) - Interval (in ms) between when MJTiming .csv
+  files are updated and when Scoreboard tries reading them. For larger events
   with more people and runs in them, MJTiming might require more time to flush
   all data to disk. If you see CSV reading errors in the console, try
   increasing this value (defaults to 1000).
