@@ -92,8 +92,7 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
              car_no: 300,
              car_model: "Unknown",
              car_class: "",
-             # FIXME Should not have an empty group name.
-             groups: [""]
+             groups: []
            } = d3
   end
 
