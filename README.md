@@ -71,10 +71,10 @@ directory.
 Set up environment variables listed below, and run `bin/server.bat` in the
 release directory.
 
-Rather than modifying `server.bat`, it's recommended to write a wrapper `.bat`
-file and place all of the configuration there. This way, when it's time to
-upgrade to a new version, you can simply replace the entire release directory
-with the new content.
+Rather than modifying `server.bat`, it's recommended to create a wrapper `.bat`
+file outside of the release directory and place all of the configuration there.
+This way, when it's time to upgrade to a new version, you can simply replace
+the entire release directory with the new content.
 
 Unless you set `EVENT_DATE` environment variable, the program will read the
 same day's results by default.
