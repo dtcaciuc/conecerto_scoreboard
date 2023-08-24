@@ -106,9 +106,10 @@ Server understands the following environment variables:
   increasing this value (defaults to 1000).
 
 To continuously upload scores to an external server, configure the following additional variables:
-* `LIVE_FTP_HOST`
-* `LIVE_FTP_USER`
-* `LIVE_FTP_PASS`
+* `LIVE_FTP_HOST` - FTP hostname
+* `LIVE_FTP_USER` - FTP username
+* `LIVE_FTP_PASS` - FTP password
+* `LIVE_FTP_PATH` (optional) - Website root path relative to FTP account home directory (defaults to home directory).
 
 Note: On Windows, if your password contains `^`, make sure to escape it with another `^`.
 

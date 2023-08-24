@@ -27,11 +27,12 @@ defmodule Conecerto.Scoreboard.Uploader do
   def handle_continue(:upload_assets, state) do
     with {:ok, pid} <- connect(),
          :ok = :ftp.type(pid, :binary),
+         :ok <- mkdir(pid, "/"),
          :ok <- send_static(pid, "/favicon.ico", true),
-         :ftp.mkdir(pid, "assets" |> String.to_charlist()),
+         :ok <- mkdir(pid, "assets"),
          :ok <- send_static(pid, "/assets/app.css"),
          :ok <- send_static(pid, "/assets/app.js"),
-         :ftp.mkdir(pid, "fonts" |> String.to_charlist()),
+         :ok <- mkdir(pid, "fonts"),
          :ok <- send_static(pid, "/fonts/RobotoCondensed-Regular.ttf"),
          :ftp.close(pid) do
       Logger.info("results assets uploaded")
@@ -95,8 +96,8 @@ defmodule Conecerto.Scoreboard.Uploader do
   end
 
   defp send_page(ftp_pid, url, filename \\ nil) do
-    filename = filename || url
-    Logger.debug("Uploading #{url} -> #{filename}")
+    filename = Path.join(Scoreboard.config(:live_ftp_path), filename || url)
+    Logger.debug("Uploading #{url} -> #{filename}.gz")
 
     with conn <- Phoenix.ConnTest.build_conn(),
          %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, "/#{url}"),
@@ -116,9 +117,19 @@ defmodule Conecerto.Scoreboard.Uploader do
         String.split(@endpoint.static_path(path), "?") |> hd()
       end
 
-    abs_path = Path.join(static_dir(), static_path)
-    Logger.debug("Uploading #{abs_path} > #{static_path}")
-    :ftp.send(ftp_pid, abs_path |> String.to_charlist(), static_path |> String.to_charlist())
+    dest_path = Path.join(Scoreboard.config(:live_ftp_path), static_path)
+    src_path = Path.join(static_dir(), static_path)
+
+    Logger.debug("Uploading #{src_path} > #{dest_path}")
+    :ftp.send(ftp_pid, src_path |> String.to_charlist(), dest_path |> String.to_charlist())
+  end
+
+  defp mkdir(pid, path) do
+    path = Path.join(Scoreboard.config(:live_ftp_path), path)
+    Logger.debug("Creating #{path}")
+    # Ignore mkdir result; if directory already exists it returns an error
+    :ftp.mkdir(pid, path |> String.to_charlist())
+    :ok
   end
 
   defp static_dir() do

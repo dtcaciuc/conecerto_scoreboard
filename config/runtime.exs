@@ -29,6 +29,7 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
   live_ftp_host: System.get_env("LIVE_FTP_HOST"),
   live_ftp_user: System.get_env("LIVE_FTP_USER"),
   live_ftp_pass: System.get_env("LIVE_FTP_PASS"),
+  live_ftp_path: System.get_env("LIVE_FTP_PATH", "/"),
   mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
   mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000"))
 
