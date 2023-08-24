@@ -89,7 +89,7 @@ Server understands the following environment variables:
 * `DATABASE_PATH` - Path to SQLite3 database file where Scoreboard stores data
   while its running (for example "scoreboard.db").
 * `SECRET_KEY_BASE` - Secret key base required for Phoenix to operate. This can
-  be an abritrary string (minimum length is 32 characters).
+  be an abritrary string (64 characters).
 * `PHX_HOST` - IP/hostname of the machine that will be running the scoreboard.
   This is required for LiveViews to work and cannot just be `localhost`.
 * `ANNOUNCE_FONT_SIZE` (optional) - /announce endpoint font size.
