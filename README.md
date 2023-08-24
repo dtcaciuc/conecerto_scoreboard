@@ -31,7 +31,7 @@ It provides the following endpoints:
 
 The suggested way to drive the live dashboard TV is with a Raspberry Pi 4 or a
 similar single board PC running Chromium browser which connects to the timing
-computer via WiFi or an Ethernet cable. Copy the `scripts/kiosk.sh` template
+computer via WiFi or an Ethernet cable. Copy the `misc/kiosk.sh` template
 script, change the IP to the one of the timing computer in your specific
 network setup, and make the script run on the startup. The script will wait
 until the scoreboard server is reachable and then attempt to start Chromium in
