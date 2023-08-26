@@ -263,6 +263,7 @@ defmodule Conecerto.Scoreboard do
            runs: Enum.reverse(acc)
          }, []}
     end)
+    |> Enum.map(&select_best_runs/1)
   end
 
   defp chunk_runs_by_driver(run, [] = _acc) do
@@ -282,5 +283,29 @@ defmodule Conecerto.Scoreboard do
     else
       {:cont, [run | acc]}
     end
+  end
+
+  defp select_best_runs(%{runs: runs} = driver) do
+    fastest_run = Enum.min_by(runs, &effective_run_time/1)
+    %{driver | runs: select_counted_run(runs, fastest_run.counted_run_no)}
+  end
+
+  # Don't count reruns
+  defp effective_run_time(%{counted_run_no: -1}), do: 9999.9
+
+  defp effective_run_time(%{run_time: run_time, penalty: ""}), do: run_time
+
+  defp effective_run_time(%{run_time: run_time, penalty: penalty}) do
+    case Integer.parse(penalty) do
+      {num_cones, ""} ->
+        run_time + num_cones * 2.0
+
+      _ ->
+        9999.9
+    end
+  end
+
+  defp select_counted_run(runs, run_no) do
+    Enum.map(runs, fn run -> %{run | selected: run.counted_run_no == run_no} end)
   end
 end

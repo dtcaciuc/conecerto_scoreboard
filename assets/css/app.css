@@ -22,3 +22,15 @@ body {
 table.striped tr:nth-child(2n) td {
         background-color: #383838;
 }
+
+.best-run {
+}
+
+.best-run::before {
+    content: "(";
+}
+
+.best-run::after {
+    content: ")";
+    position: absolute;
+}
