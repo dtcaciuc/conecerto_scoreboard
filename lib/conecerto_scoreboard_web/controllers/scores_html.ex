@@ -10,17 +10,18 @@ defmodule Conecerto.ScoreboardWeb.ScoresHTML do
     <div>
       <table class="border-collapse striped w-full">
         <thead>
-          <th class="font-bold text-right min-w-4">P</th>
-          <th class="font-bold text-left pl-2">Driver</th>
-          <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
-          <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
-          <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
-          <th class="font-bold whitespace-nowrap text-right relative">
-            <div class="absolute top-0 right-0">
+          <th class="font-bold text-right min-w-4 pt-1">P</th>
+          <th class="font-bold text-left pl-2 pt-1">Driver</th>
+          <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
+          <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Class</th>
+          <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Model</th>
+          <th class="font-bold whitespace-nowrap text-right relative pt-1">
+            <div class="absolute top-0 right-0 pt-1">
               <%= @time_column_title %>
             </div>
+            &nbsp;
           </th>
-          <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">Raw Interval</th>
+          <th class="font-bold whitespace-nowrap text-right pl-2 pt-1" colspan="2">Raw Interval</th>
         </thead>
         <tbody>
           <%= for row <- @scores do %>
