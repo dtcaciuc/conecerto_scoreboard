@@ -47,29 +47,12 @@ the local event WiFi range.
 
 See Configuration below for more details.
 
-## Notable dependencies
-
-Scoreboard requires a C++ compiler to build SQLite3 library. On Windows, install
-Visual Studio Community edition and work with project from cmd.exe / PowerShell
-session for VS 64-bit (here, we're assuming you're using 64-bit Erlang; for
-32-bit on, VS 32-bit terminal session accordingly.)
-
-## Running in development mode
-
-Start the server by running
-
-```
-iex -S mix phx.server
-```
-## Building a release
-
-Run `release.bat`. Release files should now be available in `_build/prod/rel`
-directory.
-
 ## Running a release
 
 Set up environment variables listed below, and run `bin/server.bat` in the
 release directory.
+
+The program is configured through [environment variables](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1).
 
 Rather than modifying `server.bat`, it's recommended to create a wrapper `.bat`
 file outside of the release directory and place all of the configuration there.
@@ -84,14 +67,13 @@ to be restarted on the day of the next event to start reading new data.
 
 ## Configuration
 
-Server understands the following environment variables:
+The following environment variables need to be manually set:
 
-* `DATABASE_PATH` - Path to SQLite3 database file where Scoreboard stores data
-  while its running (for example "scoreboard.db").
-* `SECRET_KEY_BASE` - Secret key base required for Phoenix to operate. This can
-  be an abritrary string (64 characters).
 * `PHX_HOST` - IP/hostname of the machine that will be running the scoreboard.
   This is required for LiveViews to work and cannot just be `localhost`.
+
+Additionally, you can optionally set the following:
+
 * `ANNOUNCE_FONT_SIZE` (optional) - /announce endpoint font size.
 * `TV_FONT_SIZE` (optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (optional) - Sets how long /tv displays a page of
@@ -104,8 +86,13 @@ Server understands the following environment variables:
   with more people and runs in them, MJTiming might require more time to flush
   all data to disk. If you see CSV reading errors in the console, try
   increasing this value (defaults to 1000).
+* `DATABASE_PATH` (optional) - Path to SQLite3 database file where Scoreboard stores data
+  while its running (defaults to `conecerto_scoreboard.db` in user's temporary directory).
+* `SECRET_KEY_BASE` (optional) - Secret key base required for Phoenix to operate (64
+  characters; auto-generated on every launch if not specified)
 
-To continuously upload scores to an external server, configure the following additional variables:
+To continuously upload scores to an external server, set the following:
+
 * `LIVE_FTP_HOST` - FTP hostname
 * `LIVE_FTP_USER` - FTP username
 * `LIVE_FTP_PASS` - FTP password
@@ -115,6 +102,27 @@ Note: On Windows, if your password contains `^`, make sure to escape it with ano
 
 Note: The web server needs to be configured to serve pre-compressed pages. See
 `misc/htaccess` for the base configuration.
+
+## Developing
+
+### Notable dependencies
+
+Scoreboard requires a C++ compiler to build SQLite3 library. On Windows, install
+Visual Studio Community edition and work with project from cmd.exe / PowerShell
+session for VS 64-bit (here, we're assuming you're using 64-bit Erlang; for
+32-bit on, VS 32-bit terminal session accordingly.)
+
+### Running in development mode
+
+Start the server by running
+
+```
+iex -S mix phx.server
+```
+## Building a release
+
+Run `release.bat`. Release files should now be available in `_build/prod/rel`
+directory.
 
 ## License
 

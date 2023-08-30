@@ -36,10 +36,7 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
 if config_env() == :prod do
   database_path =
     System.get_env("DATABASE_PATH") ||
-      raise """
-      environment variable DATABASE_PATH is missing.
-      For example: /etc/conecerto_scoreboard/conecerto_scoreboard.db
-      """
+      Path.join(System.tmp_dir(), "conecerto_scoreboard.db")
 
   config :conecerto_scoreboard, Conecerto.Scoreboard.Repo,
     database: database_path,
@@ -50,12 +47,12 @@ if config_env() == :prod do
   # want to use a different value for prod and you most likely don't want
   # to check this value into version control, so we use an environment
   # variable instead.
+  #
+  # Live endpoints will be unsecured and used on a local network so there's
+  # no harm generating a random key base if it's not specified.
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
-      raise """
-      environment variable SECRET_KEY_BASE is missing.
-      You can generate one by calling: mix phx.gen.secret
-      """
+      for _ <- 1..64, into: "", do: <<Enum.random(~c"0123456789abcdef")>>
 
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "80")
