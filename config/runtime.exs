@@ -16,6 +16,13 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+to_float = fn s ->
+  case Float.parse(s) do
+    {f, ""} -> f
+    _ -> raise "#{s} is not a valid floating point number"
+  end
+end
+
 if System.get_env("PHX_SERVER") do
   config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint, server: true
 end
@@ -23,8 +30,8 @@ end
 config :conecerto_scoreboard, Conecerto.Scoreboard,
   event_date: System.get_env("EVENT_DATE"),
   tv_refresh_interval: String.to_integer(System.get_env("TV_REFRESH_INTERVAL", "10")) * 1_000,
-  tv_font_size: String.to_float(System.get_env("TV_FONT_SIZE", "17.5")),
-  announce_font_size: String.to_float(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
+  tv_font_size: to_float.(System.get_env("TV_FONT_SIZE", "17.5")),
+  announce_font_size: to_float.(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
   radio_frequency: System.get_env("RADIO_FREQUENCY"),
   live_ftp_host: System.get_env("LIVE_FTP_HOST"),
   live_ftp_user: System.get_env("LIVE_FTP_USER"),
