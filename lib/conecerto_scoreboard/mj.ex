@@ -67,12 +67,11 @@ defmodule Conecerto.Scoreboard.MJ.Config do
   end
 
   defp parse_row(_date, %{"Parameter" => "classDataFile", "Value" => val}, config) do
-    val = val |> String.replace("\\", "/")
-    %{config | class_data_path: val}
+    %{config | class_data_path: Path.absname(val)}
   end
 
   defp parse_row(date, %{"Parameter" => "eventDataFolder", "Value" => val}, config) do
-    val = val |> String.replace("\\", "/")
+    val = Path.absname(val)
 
     %{
       config

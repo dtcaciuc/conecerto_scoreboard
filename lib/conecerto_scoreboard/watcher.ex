@@ -9,7 +9,10 @@ defmodule Conecerto.Scoreboard.Watcher do
 
   def init([mj_dir, event_date]) do
     {:ok, mj_config} = Conecerto.Scoreboard.MJ.Config.read(mj_dir, event_date)
-    {:ok, watcher_pid} = FileSystem.start_link(dirs: [mj_config.root_path])
+    {:ok, watcher_pid} = FileSystem.start_link(dirs: [
+      mj_config.class_data_path,
+      mj_config.event_data_path
+    ])
     FileSystem.subscribe(watcher_pid)
 
     {:ok, %{mj_config: mj_config, timer: schedule_load()}}
