@@ -74,21 +74,21 @@ The following environment variables need to be manually set:
 
 Additionally, you can optionally set the following:
 
-* `ANNOUNCE_FONT_SIZE` (optional) - /announce endpoint font size.
-* `TV_FONT_SIZE` (optional) - /tv endpoint font size.
-* `TV_REFRESH_INTERVAL` (optional) - Sets how long /tv displays a page of
+* `ANNOUNCE_FONT_SIZE` (float, optional) - /announce endpoint font size.
+* `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
+* `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of
   scores (in seconds) in each panel before moving onto next one.
-* `EVENT_DATE` (optional) - Forces specified event date. Use this to read past event's data.
+* `EVENT_DATE` (`yyyy_mm_dd`, optional) - Forces specified event date. Use this to read past event's data.
 * `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the `/` home page.
-* `MJ_DIR` (optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).
-* `MJ_DEBOUNCE_INTERVAL` (optional) - Interval (in ms) between when MJTiming .csv
+* `MJ_DIR` (path, optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).
+* `MJ_DEBOUNCE_INTERVAL` (integer, optional) - Interval (in ms) between when MJTiming .csv
   files are updated and when Scoreboard tries reading them. For larger events
   with more people and runs in them, MJTiming might require more time to flush
   all data to disk. If you see CSV reading errors in the console, try
   increasing this value (defaults to 1000).
-* `DATABASE_PATH` (optional) - Path to SQLite3 database file where Scoreboard stores data
+* `DATABASE_PATH` (path, optional) - Path to SQLite3 database file where Scoreboard stores data
   while its running (defaults to `conecerto_scoreboard.db` in user's temporary directory).
-* `SECRET_KEY_BASE` (optional) - Secret key base required for Phoenix to operate (64
+* `SECRET_KEY_BASE` (string, optional) - Secret key base required for Phoenix to operate (64
   characters; auto-generated on every launch if not specified)
 
 To continuously upload scores to an external server, set the following:
