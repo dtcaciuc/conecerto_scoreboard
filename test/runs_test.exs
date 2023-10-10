@@ -8,13 +8,19 @@ defmodule Conecerto.Scoreboard.RunsTest do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Scoreboard.Repo)
     mj_root = Path.join([__DIR__, "data", "mj_2"])
 
-    {:ok, _} =
-      Scoreboard.load_data(%MJ.Config{
-        root_path: mj_root,
-        class_data_path: Path.join([mj_root, "config", "_classData.csv"]),
-        event_run_data_path: Path.join([mj_root, "eventdata", "2023_07_16_timingData.csv"]),
-        event_driver_data_path: Path.join([mj_root, "eventdata", "2023_07_16_driverData.csv"])
-      })
+    classes =
+      Path.join([mj_root, "config", "_classData.csv"])
+      |> MJ.Classes.read()
+
+    drivers =
+      Path.join([mj_root, "eventdata", "2023_07_16_driverData.csv"])
+      |> MJ.Drivers.read()
+
+    runs =
+      Path.join([mj_root, "eventdata", "2023_07_16_timingData.csv"])
+      |> MJ.Runs.read_last_day()
+
+    Scoreboard.load_data(classes, drivers, runs)
 
     :ok
   end

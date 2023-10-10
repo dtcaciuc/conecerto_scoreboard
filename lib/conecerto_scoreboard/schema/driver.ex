@@ -11,6 +11,8 @@ defmodule Conecerto.Scoreboard.Schema.Driver do
     field :car_class, :string
     # Omit groups association
 
+    field :group_names, {:array, :string}, virtual: true
+
     has_many :runs, Conecerto.Scoreboard.Schema.Run, foreign_key: :car_no, references: :car_no
   end
 

@@ -72,7 +72,7 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
              car_no: 49,
              car_model: "'97 Acura Integra",
              car_class: "SMF",
-             groups: ["Race", "Novice"]
+             group_names: ["Race", "Novice"]
            } = d1
 
     assert %{
@@ -82,7 +82,7 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
              car_no: 102,
              car_model: "'05 Subaru Impreza",
              car_class: "GS",
-             groups: ["Street 1", "Ladies", "Novice"]
+             group_names: ["Street 1", "Ladies", "Novice"]
            } = d2
 
     assert %{
@@ -92,7 +92,7 @@ defmodule Conecerto.Scoreboard.MJDriversTest do
              car_no: 300,
              car_model: "Unknown",
              car_class: "",
-             groups: []
+             group_names: []
            } = d3
   end
 

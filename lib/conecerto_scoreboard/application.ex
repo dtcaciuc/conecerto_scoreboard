@@ -5,17 +5,8 @@ defmodule Conecerto.Scoreboard.Application do
 
   use Application
 
-  defp today_str() do
-    now = NaiveDateTime.local_now()
-    pad_zero = fn d -> d |> Integer.to_string() |> String.pad_leading(2, "0") end
-    "#{now.year}_#{pad_zero.(now.month)}_#{pad_zero.(now.day)}"
-  end
-
   @impl true
   def start(_type, _args) do
-    event_date = Conecerto.Scoreboard.config(:event_date) || today_str()
-    mj_dir = Conecerto.Scoreboard.config(:mj_dir)
-
     children = [
       # Start the Telemetry supervisor
       Conecerto.ScoreboardWeb.Telemetry,
@@ -28,30 +19,18 @@ defmodule Conecerto.Scoreboard.Application do
     ]
 
     children =
-      if System.get_env("DISABLE_WATCHER") == nil do
-        children ++
-          [
-            {Conecerto.Scoreboard.Watcher, [mj_dir, event_date]}
-          ]
-      else
-        children
-      end
-
-    children =
-      if System.get_env("DISABLE_UPLOADER") == nil do
-        children ++
-          [
-            Conecerto.Scoreboard.Uploader
-          ]
-      else
-        children
-      end
+      children
+      |> add_child_if_set(Conecerto.Scoreboard.config(:watcher))
+      |> add_child_if_set(Conecerto.Scoreboard.config(:uploader))
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Conecerto.Scoreboard.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  defp add_child_if_set(children, nil), do: children
+  defp add_child_if_set(children, child), do: children ++ [child]
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.

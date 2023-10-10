@@ -1,11 +1,8 @@
 defmodule Conecerto.Scoreboard do
   import Ecto.Query
 
-  alias Conecerto.Scoreboard.MJ
   alias Conecerto.Scoreboard.Repo
-
   alias Conecerto.Scoreboard.Schema
-
   alias Conecerto.Scoreboard.Schema.Class
   alias Conecerto.Scoreboard.Schema.Driver
   alias Conecerto.Scoreboard.Schema.Group
@@ -31,14 +28,8 @@ defmodule Conecerto.Scoreboard do
     end
   end
 
-  def load_data(mj_config) do
-    classes = MJ.Classes.read(mj_config.class_data_path)
-    runs = MJ.Runs.read_last_day(mj_config.event_run_data_path)
-
-    {drivers, groups} =
-      mj_config.event_driver_data_path
-      |> MJ.Drivers.read()
-      |> split_driver_groups()
+  def load_data(classes, drivers, runs) do
+    {drivers, groups} = groups_from_drivers(drivers)
 
     Ecto.Multi.new()
     |> Ecto.Multi.delete_all(:delete_classes, Class)
@@ -57,17 +48,17 @@ defmodule Conecerto.Scoreboard do
     |> Repo.transaction()
   end
 
-  defp split_driver_groups(drivers) do
+  defp groups_from_drivers(drivers) do
     groups =
       drivers
       |> Enum.flat_map(fn driver ->
-        Enum.map(driver.groups, fn name ->
+        Enum.map(driver.group_names, fn name ->
           %{name: name, driver_id: driver.id}
         end)
       end)
       |> Enum.reverse()
 
-    {Enum.map(drivers, &Map.delete(&1, :groups)), groups}
+    {Enum.map(drivers, &Map.delete(&1, :group_names)), groups}
   end
 
   def list_raw_scores() do

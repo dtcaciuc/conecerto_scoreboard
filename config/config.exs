@@ -31,6 +31,10 @@ config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :conecerto_scoreboard, Conecerto.Scoreboard.Mailer, adapter: Swoosh.Adapters.Local
 
+config :conecerto_scoreboard, Conecerto.Scoreboard,
+  watcher: Conecerto.Scoreboard.MJ.Watcher,
+  uploader: Conecerto.Scoreboard.Uploader
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

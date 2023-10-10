@@ -20,6 +20,8 @@ config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
 # In test we don't send emails.
 config :conecerto_scoreboard, Conecerto.Scoreboard.Mailer, adapter: Swoosh.Adapters.Test
 
+config :conecerto_scoreboard, Conecerto.Scoreboard, watcher: nil, uploader: nil
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
