@@ -117,3 +117,101 @@ defmodule Conecerto.Scoreboard.MJRunsTest do
     assert [] = MJ.Runs.read_last_day("doesnotexist")
   end
 end
+
+defmodule Conecerto.Scoreboard.MJWatcherTest do
+  use Conecerto.Scoreboard.DataCase
+
+  alias Conecerto.Scoreboard
+  alias Conecerto.Scoreboard.MJ
+
+  @tag :tmp_dir
+  test "wait for data change event", %{tmp_dir: tmp_dir} do
+    mj_config = make_mj_config(tmp_dir)
+
+    GenServer.start_link(MJ.Watcher, [mj_config, 100, false, 100])
+
+    :timer.sleep(200)
+    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    assert %{
+             driver_name: "Jackson, Miguel",
+             car_class: "STU",
+             run_time: 47.164,
+             counted_run_no: 6
+           } = run
+
+    # Add new run
+    assert :ok =
+             File.write(
+               mj_config.event_run_data_path,
+               "526,16-03:53:15,16-03:54:03,1,32,665844,,713008,57.164,,6",
+               [:append]
+             )
+
+    # Wait for change to be picked up
+    :timer.sleep(1000)
+    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    assert %{
+             driver_name: "Jackson, Miguel",
+             car_class: "STU",
+             run_time: 57.164,
+             counted_run_no: 7
+           } = run
+  end
+
+  @tag :tmp_dir
+  test "poll for data changes", %{tmp_dir: tmp_dir} do
+    mj_config = make_mj_config(tmp_dir)
+
+    GenServer.start_link(MJ.Watcher, [mj_config, 100, true, 100])
+
+    :timer.sleep(200)
+    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    assert %{
+             driver_name: "Jackson, Miguel",
+             car_class: "STU",
+             run_time: 47.164,
+             counted_run_no: 6
+           } = run
+
+    # Mod time stamps are checked w/ second precision; wait for more than
+    # a second for change to register.
+    :timer.sleep(1050)
+
+    # Add new run
+    assert :ok =
+             File.write(
+               mj_config.event_run_data_path,
+               "526,16-03:53:15,16-03:54:03,1,32,665844,,713008,57.164,,6",
+               [:append]
+             )
+
+    # Wait for change to be picked up
+    :timer.sleep(200)
+    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    assert %{
+             driver_name: "Jackson, Miguel",
+             car_class: "STU",
+             run_time: 57.164,
+             counted_run_no: 7
+           } = run
+  end
+
+  defp make_mj_config(tmp_dir) do
+    File.cp_r!(Path.join([__DIR__, "data", "mj_2"]), Path.join([tmp_dir, "mj_2"]))
+
+    run_data_path = Path.join([tmp_dir, "mj_2", "eventdata", "2023_07_16_timingData.csv"])
+    driver_data_path = Path.join([tmp_dir, "mj_2", "eventdata", "2023_07_16_driverData.csv"])
+
+    %MJ.Config{
+      root_path: Path.join([tmp_dir, "mj_2"]),
+      class_data_path: Path.join([tmp_dir, "mj_2", "config", "_classData.csv"]),
+      event_data_path: Path.join([tmp_dir, "mj_2", "eventdata"]),
+      event_run_data_path: run_data_path,
+      event_driver_data_path: driver_data_path
+    }
+  end
+end

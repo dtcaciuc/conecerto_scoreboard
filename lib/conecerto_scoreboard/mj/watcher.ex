@@ -13,24 +13,18 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
     poll_changes? = Scoreboard.config(:mj_poll_changes?)
     poll_interval = Scoreboard.config(:mj_poll_interval)
 
+    {:ok, mj_config} = MJ.Config.read(mj_dir, event_date)
+
     GenServer.start_link(__MODULE__, [
-      mj_dir,
-      event_date,
+      mj_config,
       load_delay,
       poll_changes?,
       poll_interval
     ])
   end
 
-  def init([mj_dir, event_date, load_delay, poll_changes?, poll_interval]) do
-    {:ok, mj_config} = MJ.Config.read(mj_dir, event_date)
-
-    dir_args = [
-      dirs: [
-        mj_config.class_data_path,
-        mj_config.event_data_path
-      ]
-    ]
+  def init([mj_config, load_delay, poll_changes?, poll_interval]) do
+    dir_args = [dirs: [Path.dirname(mj_config.class_data_path), mj_config.event_data_path]]
 
     backend_args =
       if poll_changes? do
