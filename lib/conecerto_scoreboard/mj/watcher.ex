@@ -4,32 +4,51 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
   alias Conecerto.Scoreboard
   alias Conecerto.Scoreboard.MJ
 
+  require Logger
+
   def start_link(_args) do
     event_date = Scoreboard.config(:event_date) || today_str()
     mj_dir = Scoreboard.config(:mj_dir)
+    load_delay = Scoreboard.config(:mj_debounce_interval)
+    poll_changes? = Scoreboard.config(:mj_poll_changes?)
+    poll_interval = Scoreboard.config(:mj_poll_interval)
 
-    GenServer.start_link(__MODULE__, [mj_dir, event_date])
+    GenServer.start_link(__MODULE__, [
+      mj_dir,
+      event_date,
+      load_delay,
+      poll_changes?,
+      poll_interval
+    ])
   end
 
-  def init([mj_dir, event_date]) do
+  def init([mj_dir, event_date, load_delay, poll_changes?, poll_interval]) do
     {:ok, mj_config} = MJ.Config.read(mj_dir, event_date)
 
-    {:ok, watcher_pid} =
-      FileSystem.start_link(
-        dirs: [
-          mj_config.class_data_path,
-          mj_config.event_data_path
-        ]
-      )
+    dir_args = [
+      dirs: [
+        mj_config.class_data_path,
+        mj_config.event_data_path
+      ]
+    ]
 
+    backend_args =
+      if poll_changes? do
+        Logger.info("Watcher will poll files for changes every #{poll_interval}ms")
+        [backend: :fs_poll, interval: poll_interval]
+      else
+        []
+      end
+
+    {:ok, watcher_pid} = FileSystem.start_link(dir_args ++ backend_args)
     FileSystem.subscribe(watcher_pid)
 
-    {:ok, %{mj_config: mj_config, timer: schedule_load()}}
+    {:ok, %{mj_config: mj_config, load_delay: load_delay, timer: schedule_load(load_delay)}}
   end
 
   def handle_info(
         {:file_event, _watcher_pid, {path, _events}},
-        %{mj_config: mj_config, timer: timer} = state
+        %{mj_config: mj_config, load_delay: load_delay, timer: timer} = state
       ) do
     timer =
       if path == mj_config.class_data_path or
@@ -39,7 +58,7 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
           Process.cancel_timer(timer)
         end
 
-        schedule_load()
+        schedule_load(load_delay)
       else
         timer
       end
@@ -59,9 +78,8 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
     {:noreply, %{state | timer: nil}}
   end
 
-  defp schedule_load() do
-    # TODO pass config through init
-    Process.send_after(self(), :load, Scoreboard.config(:mj_debounce_interval))
+  defp schedule_load(delay) do
+    Process.send_after(self(), :load, delay)
   end
 
   defp today_str() do
