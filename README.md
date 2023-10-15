@@ -86,6 +86,12 @@ Additionally, you can optionally set the following:
   with more people and runs in them, MJTiming might require more time to flush
   all data to disk. If you see CSV reading errors in the console, try
   increasing this value (defaults to 1000).
+* `MJ_POLL_CHANGES` (boolean, optional) - Poll for MJ data changes rather than
+  listening for file system alerts. This can be used when MJ data is located somewhere that
+  does not reliably notify of changes (such as a mounted Google Drive folder).
+  Enable by setting to any non-empty value (e.g. `1`, `true`).
+* `MJ_POLL_INTERVAL` (integer, optional) - Change poll interval (in ms,
+  defaults to 1000). Used only if `MJ_POLL_CHANGES` is set.
 * `DATABASE_PATH` (path, optional) - Path to SQLite3 database file where Scoreboard stores data
   while its running (defaults to `conecerto_scoreboard.db` in user's temporary directory).
 * `SECRET_KEY_BASE` (string, optional) - Secret key base required for Phoenix to operate (64

@@ -38,7 +38,9 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
   live_ftp_pass: System.get_env("LIVE_FTP_PASS"),
   live_ftp_path: System.get_env("LIVE_FTP_PATH", "/"),
   mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
-  mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000"))
+  mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
+  mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
+  mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000"))
 
 if config_env() == :prod do
   database_path =
