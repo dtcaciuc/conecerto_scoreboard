@@ -5,6 +5,7 @@ defmodule Conecerto.Scoreboard.Uploader do
   require Logger
 
   alias Conecerto.Scoreboard
+  alias Conecerto.ScoreboardWeb.Brands
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
 
@@ -28,12 +29,14 @@ defmodule Conecerto.Scoreboard.Uploader do
     with {:ok, pid} <- connect(),
          :ok = :ftp.type(pid, :binary),
          :ok <- mkdir(pid, "/"),
-         :ok <- send_static(pid, "/favicon.ico", true),
+         :ok <- send_static(pid, "/favicon.ico"),
          :ok <- mkdir(pid, "assets"),
          :ok <- send_static(pid, "/assets/app.css"),
          :ok <- send_static(pid, "/assets/app.js"),
          :ok <- mkdir(pid, "fonts"),
          :ok <- send_static(pid, "/fonts/RobotoCondensed-Regular.ttf"),
+         :ok <- mkdir(pid, "brands"),
+         :ok <- send_brands(pid),
          :ftp.close(pid) do
       Logger.info("results assets uploaded")
     else
@@ -109,19 +112,32 @@ defmodule Conecerto.Scoreboard.Uploader do
     end
   end
 
-  defp send_static(ftp_pid, path, raw \\ false) do
-    static_path =
-      if raw do
-        path
-      else
-        String.split(@endpoint.static_path(path), "?") |> hd()
-      end
+  defp send_static(ftp_pid, path, src_path \\ nil) do
+    [static_path | _] = String.split(@endpoint.static_path(path), "?")
 
     dest_path = Path.join(Scoreboard.config(:live_ftp_path), static_path)
-    src_path = Path.join(static_dir(), static_path)
+
+    src_path =
+      if src_path == nil do
+        Path.join(static_dir(), static_path)
+      else
+        src_path
+      end
 
     Logger.debug("Uploading #{src_path} > #{dest_path}")
     :ftp.send(ftp_pid, src_path |> String.to_charlist(), dest_path |> String.to_charlist())
+  end
+
+  defp send_brands(ftp_pid) do
+    brands = [Brands.get_organizer() | Brands.get_sponsors()]
+
+    for b <- brands, b != nil, reduce: :ok do
+      :ok ->
+        send_static(ftp_pid, b.url, b.path)
+
+      other ->
+        other
+    end
   end
 
   defp mkdir(pid, path) do

@@ -47,6 +47,26 @@ the local event WiFi range.
 
 See Configuration below for more details.
 
+## Organizer and sponsor advertisements
+
+Scoreboard can display organizer and event sponsors logos on the dashboard TV
+in a special footer area and on the "Event" page in score listings.
+
+To enable, create a separate brands directory and set `BRANDS_DIR`
+configuration variable (see below). Place organizer and sponsor logos in either
+.jpg or .png format into it. Organizer logo must be named either
+`organizer.jpg/png` while sponsor logos can have any file name.
+
+Logos should:
+
+* Target white background
+* Be wider than taller for most visibility
+* Be 100px in height (if not, they will autoscale, but might look
+  blurry or take up more bandwidth than necessary).
+
+Note: With footer present, try readjusting `TV_FONT_SIZE` to make the most out
+of the screen real estate. Recommended value for 1080p displays is `18.0`.
+
 ## Running a release
 
 Set up environment variables listed below, and run `bin/server.bat` in the
@@ -80,6 +100,7 @@ Additionally, you can optionally set the following:
   scores (in seconds) in each panel before moving onto next one.
 * `EVENT_DATE` (`yyyy_mm_dd`, optional) - Forces specified event date. Use this to read past event's data.
 * `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the `/` home page.
+* `BRANDS_DIR` (optional) - Directory with organizer and sponsor brand logos.
 * `MJ_DIR` (path, optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).
 * `MJ_DEBOUNCE_INTERVAL` (integer, optional) - Interval (in ms) between when MJTiming .csv
   files are updated and when Scoreboard tries reading them. For larger events
