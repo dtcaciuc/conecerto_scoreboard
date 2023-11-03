@@ -13,6 +13,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
       Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
 
+      # Currently, 100px of footer with ads takes away 5 rows of scores.
       {page_size, group_page_size} =
         if Brands.any?() do
           {25, 10}
@@ -250,7 +251,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   end
 
   defp grid_style(true = _brands?), do: "grid-template-rows: auto fit-content(100px)"
-
   defp grid_style(false = _brands?), do: ""
 
   defp justify_sponsors(nil = _organizer), do: "justify-center"

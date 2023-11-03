@@ -1,16 +1,23 @@
 defmodule Conecerto.ScoreboardWeb.Brands do
   use GenServer
 
-  def start_link(args), do: GenServer.start_link(__MODULE__, args, name: __MODULE__)
+  def start_link(args) do
+    {name, args} = Keyword.pop(args, :name, __MODULE__)
+    GenServer.start_link(__MODULE__, args, name: name)
+  end
 
-  def get_organizer(), do: GenServer.call(__MODULE__, :get_organizer)
+  def get_organizer(),
+    do: GenServer.call(__MODULE__, :get_organizer)
 
-  def get_sponsors(), do: GenServer.call(__MODULE__, :get_sponsors)
+  def get_sponsors(),
+    do: GenServer.call(__MODULE__, :get_sponsors)
 
-  def any?(), do: GenServer.call(__MODULE__, :any?)
+  def any?(),
+    do: GenServer.call(__MODULE__, :any?)
 
   @impl true
-  def init(asset_dir: nil), do: {:ok, %{organizer: nil, sponsors: []}}
+  def init(asset_dir: nil),
+    do: {:ok, %{organizer: nil, sponsors: []}}
 
   def init(asset_dir: asset_dir) do
     {timestamp, _usecs} = NaiveDateTime.utc_now() |> NaiveDateTime.to_gregorian_seconds()
@@ -18,8 +25,8 @@ defmodule Conecerto.ScoreboardWeb.Brands do
     {organizer, sponsors} =
       case File.ls(asset_dir) do
         {:ok, names} ->
-          {find_organizer(asset_dir, timestamp, names),
-           find_sponsors(asset_dir, timestamp, names)}
+          {find_organizer(names, asset_dir, timestamp),
+           find_sponsors(names, asset_dir, timestamp)}
 
         {:error, :enoent} ->
           raise File.Error, "Branding asset directory #{asset_dir} does not exist"
@@ -29,39 +36,41 @@ defmodule Conecerto.ScoreboardWeb.Brands do
   end
 
   @impl true
-  def handle_call(:get_organizer, _from, state), do: {:reply, state.organizer, state}
+  def handle_call(:get_organizer, _from, state),
+    do: {:reply, state.organizer, state}
 
   @impl true
-  def handle_call(:get_sponsors, _from, state), do: {:reply, state.sponsors, state}
+  def handle_call(:get_sponsors, _from, state),
+    do: {:reply, state.sponsors, state}
 
   @impl true
   def handle_call(:any?, _from, state),
     do: {:reply, state.organizer != nil || Enum.count(state.sponsors) > 0, state}
 
-  defp find_organizer(asset_dir, timestamp, names) do
-    case Enum.find(names, &(image?(&1) and organizer?(&1))) do
-      nil ->
-        nil
-
-      name ->
-        make_entry(asset_dir, timestamp, name)
-    end
+  defp find_organizer(names, asset_dir, timestamp) do
+    names
+    |> Enum.find(&(image?(&1) and organizer?(&1)))
+    |> make_entry(asset_dir, timestamp)
   end
 
-  defp find_sponsors(asset_dir, timestamp, names) do
+  defp find_sponsors(names, asset_dir, timestamp) do
     names
     |> Enum.filter(&(image?(&1) and not organizer?(&1)))
-    |> Enum.map(&make_entry(asset_dir, timestamp, &1))
+    |> Enum.sort()
+    |> Enum.map(&make_entry(&1, asset_dir, timestamp))
   end
 
-  defp make_entry(asset_dir, timestamp, logo_filename) do
-    %{
+  defp make_entry(nil = _logo_filename, _asset_dir, _timestamp),
+    do: nil
+
+  defp make_entry(logo_filename, asset_dir, timestamp),
+    do: %{
       url: "/brands/#{logo_filename}?v=#{timestamp}",
       path: Path.join(asset_dir, logo_filename)
     }
-  end
 
-  defp organizer?(path), do: Path.rootname(path) == "organizer"
+  defp organizer?(path),
+    do: Path.rootname(path) == "organizer"
 
   defp image?(path) do
     ext = Path.extname(path)
