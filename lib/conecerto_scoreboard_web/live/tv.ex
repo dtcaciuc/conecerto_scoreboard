@@ -4,6 +4,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   import Conecerto.ScoreboardWeb.Format
 
   alias Conecerto.Scoreboard
+  alias Conecerto.ScoreboardWeb.Brands
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,14 +13,27 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
       Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
 
+      # Currently, 100px of footer with ads takes away 5 rows of scores.
+      {page_size, group_page_size} =
+        if Brands.any?() do
+          {25, 10}
+        else
+          {30, 15}
+        end
+
       groups = Scoreboard.paginate_groups(Scoreboard.list_groups())
-      group_scores = load_group(groups)
+      group_scores = load_group(groups, group_page_size)
+
+      socket =
+        socket
+        |> assign(page_size: page_size)
+        |> assign(group_page_size: group_page_size)
 
       {:ok,
        assign(socket,
          root_font_size: Scoreboard.config(:tv_font_size),
-         raw_scores: Scoreboard.paginate(Scoreboard.list_raw_scores()),
-         pax_scores: Scoreboard.paginate(Scoreboard.list_pax_scores()),
+         raw_scores: Scoreboard.paginate(Scoreboard.list_raw_scores(), page_size),
+         pax_scores: Scoreboard.paginate(Scoreboard.list_pax_scores(), page_size),
          groups: groups,
          group_scores: group_scores,
          recent_runs: Scoreboard.list_recent_runs()
@@ -28,19 +42,19 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       {:ok,
        assign(socket,
          root_font_size: Scoreboard.config(:tv_font_size),
-         raw_scores: Scoreboard.paginate([]),
-         pax_scores: Scoreboard.paginate([]),
-         groups: Scoreboard.paginate_groups([]),
-         group_scores: Scoreboard.paginate([]),
+         raw_scores: Scoreboard.empty_page(),
+         pax_scores: Scoreboard.empty_page(),
+         groups: Scoreboard.empty_page(),
+         group_scores: Scoreboard.empty_page(),
          recent_runs: []
        ), layout: false}
     end
   end
 
-  defp load_group(%{current: nil}), do: Scoreboard.paginate([])
+  defp load_group(%{current: nil}, _page_size), do: Scoreboard.empty_page()
 
-  defp load_group(%{current: name}) do
-    Scoreboard.paginate(Scoreboard.list_group_scores(name), 15)
+  defp load_group(%{current: name}, page_size) do
+    Scoreboard.paginate(Scoreboard.list_group_scores(name), page_size)
   end
 
   @impl true
@@ -54,14 +68,14 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   def handle_info(:refresh, %{assigns: assigns} = socket) do
     raw_scores =
       if assigns.raw_scores.rest == [] do
-        Scoreboard.paginate(Scoreboard.list_raw_scores())
+        Scoreboard.paginate(Scoreboard.list_raw_scores(), assigns.page_size)
       else
         Scoreboard.next_page(assigns.raw_scores)
       end
 
     pax_scores =
       if assigns.pax_scores.rest == [] do
-        Scoreboard.paginate(Scoreboard.list_pax_scores())
+        Scoreboard.paginate(Scoreboard.list_pax_scores(), assigns.page_size)
       else
         Scoreboard.next_page(assigns.pax_scores)
       end
@@ -75,7 +89,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
             Scoreboard.next_page(assigns.groups)
           end
 
-        {groups, load_group(groups)}
+        {groups, load_group(groups, assigns.group_page_size)}
       else
         {assigns.groups, Scoreboard.next_page(assigns.group_scores)}
       end
@@ -205,7 +219,15 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     """
   end
 
-  def paged_scores_title(assigns) do
+  defp brand_logo(%{brand: nil} = assigns), do: ~H""
+
+  defp brand_logo(assigns) do
+    ~H"""
+    <img src={@brand.url} class={@class} />
+    """
+  end
+
+  defp paged_scores_title(assigns) do
     ~H"""
     <div class="text-2xl text-center mb-2 font-bold">
       <%= @title %>
@@ -216,7 +238,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     """
   end
 
-  def paged_scores_hr(assigns) do
+  defp paged_scores_hr(assigns) do
     ~H"""
     <tbody>
       <tr>
@@ -227,4 +249,10 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     </tbody>
     """
   end
+
+  defp grid_style(true = _brands?), do: "grid-template-rows: auto fit-content(100px)"
+  defp grid_style(false = _brands?), do: ""
+
+  defp justify_sponsors(nil = _organizer), do: "justify-center"
+  defp justify_sponsors(_organizer), do: "justify-right"
 end

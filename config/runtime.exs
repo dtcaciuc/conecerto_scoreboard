@@ -30,7 +30,7 @@ end
 config :conecerto_scoreboard, Conecerto.Scoreboard,
   event_date: System.get_env("EVENT_DATE"),
   tv_refresh_interval: String.to_integer(System.get_env("TV_REFRESH_INTERVAL", "10")) * 1_000,
-  tv_font_size: to_float.(System.get_env("TV_FONT_SIZE", "17.5")),
+  tv_font_size: to_float.(System.get_env("TV_FONT_SIZE", "17.75")),
   announce_font_size: to_float.(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
   radio_frequency: System.get_env("RADIO_FREQUENCY"),
   live_ftp_host: System.get_env("LIVE_FTP_HOST"),
@@ -40,7 +40,8 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
   mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
   mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
   mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
-  mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000"))
+  mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000")),
+  brands_dir: System.get_env("BRANDS_DIR")
 
 if config_env() == :prod do
   database_path =

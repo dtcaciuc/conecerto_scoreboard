@@ -23,6 +23,9 @@ defmodule Conecerto.ScoreboardWeb.Endpoint do
     gzip: false,
     only: Conecerto.ScoreboardWeb.static_paths()
 
+  # Serve logo and sponsor graphics
+  plug Conecerto.ScoreboardWeb.BrandAssets
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

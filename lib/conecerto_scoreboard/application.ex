@@ -8,12 +8,12 @@ defmodule Conecerto.Scoreboard.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
-      Conecerto.ScoreboardWeb.Telemetry,
       # Start the Ecto repository
       Conecerto.Scoreboard.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub},
+      # Start branding asset resource manager
+      {Conecerto.ScoreboardWeb.Brands, asset_dir: Conecerto.Scoreboard.config(:brands_dir)},
       # Start the Endpoint (http/https)
       Conecerto.ScoreboardWeb.Endpoint
     ]

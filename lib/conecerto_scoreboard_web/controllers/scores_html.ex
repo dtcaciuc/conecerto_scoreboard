@@ -63,4 +63,19 @@ defmodule Conecerto.ScoreboardWeb.ScoresHTML do
     </div>
     """
   end
+
+  def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
+
+  def sponsor_logos(assigns) do
+    ~H"""
+    <div class="bg-neutral-900 text-white mt-4">
+      <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
+      <div class="flex flex-wrap justify-around bg-white my-2 p-2 gap-2">
+        <%= for sponsor <- @sponsors do %>
+          <img src={sponsor.url} class="h-[4rem] object-contain shrink-1" />
+        <% end %>
+      </div>
+    </div>
+    """
+  end
 end

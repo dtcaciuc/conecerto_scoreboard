@@ -18,6 +18,7 @@ module.exports = {
     screens: {
       // Shrink "sm" size down to iPhone SE 1
       'sm': '568px',
+      'md': '768px',
     },
     minWidth: {
       '4': '1rem',
@@ -39,6 +40,8 @@ module.exports = {
     plugin(({addVariant}) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
     plugin(({addVariant}) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
     plugin(({addVariant}) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"])),
+
+    plugin(({addVariant}) => addVariant('child', '& > *')),
 
     // Embeds Hero Icons (https://heroicons.com) into your app.css bundle
     // See your `CoreComponents.icon/1` for more information.

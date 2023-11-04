@@ -1,4 +1,11 @@
-<div class="tv grid grid-cols-3 gap-2 h-screen bg-neutral-900 text-white pt-2 pb-2">
+<% brands? = Brands.any?() %>
+<div
+  class={[
+    "tv h-screen bg-neutral-900 text-white",
+    "grid grid-cols-3 gap-2 place-items-stretch"
+  ]}
+  style={grid_style(brands?)}
+>
   <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@raw_scores}
@@ -26,7 +33,7 @@
         />
       <% end %>
     </div>
-    <div class="bg-neutral-800 p-2 pt-1">
+    <div class="bg-neutral-800 px-2 pt-1 pb-3">
       <div class="text-2xl text-center mb-2 font-bold">
         Most Recent Runs
       </div>
@@ -35,4 +42,16 @@
       </div>
     </div>
   </div>
+
+  <%= if brands? do %>
+    <% organizer = Brands.get_organizer() %>
+    <div class="flex justify-center bg-white p-2 col-span-3 h-[100px]">
+      <.brand_logo brand={organizer} class="object-center shrink-0" />
+      <div class={["flex items-center justify-end gap-5 p-1", justify_sponsors(organizer)]}>
+        <%= for sponsor <- Brands.get_sponsors() do %>
+          <.brand_logo brand={sponsor} class="object-contain h-full shrink grow-0" />
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

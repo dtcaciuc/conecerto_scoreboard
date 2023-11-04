@@ -167,7 +167,16 @@ defmodule Conecerto.Scoreboard do
     %{top10: top10, rest: rest}
   end
 
-  def paginate(scores, page_size \\ 30) do
+  def empty_page() do
+    %{
+      top10: [],
+      current: nil,
+      rest: [],
+      num_pages: 0
+    }
+  end
+
+  def paginate(scores, page_size) do
     {top10, rest} = Enum.split(scores, 10)
 
     pages =
