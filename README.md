@@ -59,10 +59,17 @@ configuration variable (see below). Place organizer and sponsor logos in either
 
 Logos should:
 
-* Target white background
 * Be wider than taller for most visibility
 * Be 100px in height (if not, they will autoscale, but might look
   blurry or take up more bandwidth than necessary).
+
+Organizer logo will be shown both in the TV dashboard footer which has white
+background and in the header of the browsable score listings which has dark
+gray background, so it might take some tweaking to make it look good in both of
+these spots. For example, if the logo has mostly dark lettering on white
+background, it might work better to have a transparent PNG and leave a white
+outline around the lettering. This will make the logo look less jarring against
+the dark gray background of the header.
 
 Note: With footer present, try readjusting `TV_FONT_SIZE` to make the most out
 of the screen real estate. Recommended value for 1080p displays is `18.0`.
