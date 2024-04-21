@@ -134,7 +134,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
                 <%= row.car_model %>
               </td>
               <td class="text-right pl-2">
-                <%= row.counted_run_no %>
+                <%= row.counted_run_no |> format_run_no() %>
               </td>
               <td class="text-right pl-2 whitespace-nowrap">
                 <div><%= row.run_time |> format_score() %></div>
@@ -255,4 +255,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   defp justify_sponsors(nil = _organizer), do: "justify-center"
   defp justify_sponsors(_organizer), do: "justify-right"
+
+  defp format_run_no(-1), do: "-"
+  defp format_run_no(run_no), do: run_no
 end
