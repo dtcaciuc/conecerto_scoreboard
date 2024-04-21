@@ -14,6 +14,7 @@
       time_column_field={:raw_time}
     />
   </div>
+
   <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@pax_scores}
@@ -22,6 +23,7 @@
       time_column_field={:pax_time}
     />
   </div>
+
   <div class="flex flex-col gap-2 overflow-hidden">
     <div class="flex-auto bg-neutral-800 p-2 pt-1">
       <%= if @groups.current do %>
@@ -33,10 +35,12 @@
         />
       <% end %>
     </div>
+
     <div class="bg-neutral-800 px-2 pt-1 pb-3">
       <div class="text-2xl text-center mb-2 font-bold">
         Most Recent Runs
       </div>
+
       <div style="padding-bottom: 0.15rem">
         <.recent_runs runs={@recent_runs} />
       </div>
@@ -45,10 +49,14 @@
 
   <%= if brands? do %>
     <% organizer = Brands.get_organizer() %>
-    <div class="flex justify-center bg-white p-2 col-span-3 h-[100px]">
+    <% sponsors = Brands.get_sponsors() %>
+    <div class={[
+      "flex bg-white p-2 col-span-3 h-[100px]",
+      if(Enum.any?(sponsors), do: "justify-between", else: "justify-center")
+    ]}>
       <.brand_logo brand={organizer} class="object-center shrink-0" />
       <div class={["flex items-center justify-end gap-5 p-1", justify_sponsors(organizer)]}>
-        <%= for sponsor <- Brands.get_sponsors() do %>
+        <%= for sponsor <- sponsors do %>
           <.brand_logo brand={sponsor} class="object-contain h-full shrink grow-0" />
         <% end %>
       </div>
