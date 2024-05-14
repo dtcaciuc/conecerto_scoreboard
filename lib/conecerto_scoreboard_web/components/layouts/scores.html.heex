@@ -1,9 +1,11 @@
-<.top_nav active_tab={@active_tab} />
-<main>
-  <.flash_group flash={@flash} />
-  <div class="flex justify-center">
-    <div class="basis-md">
-      <%= @inner_content %>
+<body class="antialiased bg-neutral-900 overflow-y-auto">
+  <.top_nav active_tab={@active_tab} />
+  <main>
+    <.flash_group flash={@flash} />
+    <div class="flex justify-center">
+      <div class="basis-md">
+        <%= @inner_content %>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
+</body>

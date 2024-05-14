@@ -37,7 +37,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          groups: groups,
          group_scores: group_scores,
          recent_runs: Scoreboard.list_recent_runs()
-       ), layout: false}
+       ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     else
       {:ok,
        assign(socket,
@@ -47,7 +47,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          groups: Scoreboard.empty_page(),
          group_scores: Scoreboard.empty_page(),
          recent_runs: []
-       ), layout: false}
+       ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     end
   end
 

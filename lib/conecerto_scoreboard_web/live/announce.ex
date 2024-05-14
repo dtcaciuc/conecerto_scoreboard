@@ -9,9 +9,9 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   def mount(_params, _session, socket) do
     if connected?(socket) do
       :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("mj")
-      {:ok, assign(socket, load_data()), layout: false}
+      {:ok, assign(socket, load_data()), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     else
-      {:ok, assign(socket, empty_data()), layout: false}
+      {:ok, assign(socket, empty_data()), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     end
   end
 
