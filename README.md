@@ -1,6 +1,6 @@
 # Conecerto Scoreboard
 
-Concerto Scoreboard is an alternative score display program for
+Conecerto Scoreboard is an alternative score display program for
 [MJTiming](https://github.com/mjtiming/mjtiming). It was originally designed to
 present results at [VCMC](https://vcmc.ca/) autocross events.
 
