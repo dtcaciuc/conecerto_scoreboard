@@ -139,6 +139,10 @@ Note: The web server needs to be configured to serve pre-compressed pages. See
 
 ## Developing
 
+### Runtime
+
+You must have Elixir 1.17 & Erlang/OTP 27 installed to build the scoreboard.
+
 ### Notable dependencies
 
 Scoreboard requires a C++ compiler to build SQLite3 library. On Windows, install

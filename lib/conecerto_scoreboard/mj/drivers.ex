@@ -34,7 +34,7 @@ defmodule Conecerto.Scoreboard.MJ.Drivers do
     # Abbreviate model year
     car_model =
       if String.match?(car_model, ~r/^\d{4}/) do
-        "'" <> String.slice(car_model, 2..-1)
+        "'" <> String.slice(car_model, 2..-1//1)
       else
         car_model
       end

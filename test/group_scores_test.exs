@@ -56,7 +56,7 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
              car_class: "DSP",
              car_model: "'86 Nissan 300ZX",
              pax_time: 35.366132,
-             raw_time_to_top: 0.0,
+             raw_time_to_top: +0.0,
              raw_time_to_next: nil
            } = s1
 
