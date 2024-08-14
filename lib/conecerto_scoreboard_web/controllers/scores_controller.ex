@@ -2,6 +2,7 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
   use Conecerto.ScoreboardWeb, :controller
 
   alias Conecerto.Scoreboard
+  alias Conecerto.ScoreboardWeb.Brands
 
   plug :put_layout, html: :scores
 
@@ -17,7 +18,8 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
       active_tab: "Event",
       radio_frequency: Scoreboard.config(:radio_frequency),
       recent_runs: Scoreboard.list_recent_runs(10),
-      last_updated_at: Scoreboard.last_updated_at()
+      last_updated_at: Scoreboard.last_updated_at(),
+      sponsors: Brands.get_sponsors()
     )
   end
 
@@ -25,7 +27,8 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
     render(conn, :raw,
       root_font_size: @root_font_size,
       active_tab: "Raw",
-      raw_scores: Scoreboard.list_raw_scores()
+      raw_scores: Scoreboard.list_raw_scores(),
+      sponsors: Brands.get_sponsors()
     )
   end
 
@@ -33,7 +36,8 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
     render(conn, :pax,
       root_font_size: @root_font_size,
       active_tab: "PAX",
-      pax_scores: Scoreboard.list_pax_scores()
+      pax_scores: Scoreboard.list_pax_scores(),
+      sponsors: Brands.get_sponsors()
     )
   end
 
@@ -41,7 +45,8 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
     render(conn, :groups,
       root_font_size: @root_font_size,
       active_tab: "Groups",
-      groups: Scoreboard.list_all_group_scores()
+      groups: Scoreboard.list_all_group_scores(),
+      sponsors: Brands.get_sponsors()
     )
   end
 
@@ -49,7 +54,8 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
     render(conn, :runs,
       root_font_size: @root_font_size,
       active_tab: "Runs",
-      drivers: Scoreboard.list_drivers_and_runs()
+      drivers: Scoreboard.list_drivers_and_runs(),
+      sponsors: Brands.get_sponsors()
     )
   end
 end
