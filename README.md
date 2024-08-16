@@ -45,6 +45,10 @@ FTP server whenever a new result comes in. This will allow the attendees to use
 their mobile data connectivity to access the scores and to not be limited by
 the local event WiFi range.
 
+Please note that the uploaded pages assume that they're served at the root path
+and so you'll want to create a dedicated sub-domain for that on your club's
+website, e.g `live.myautocrossclub.org`.
+
 See Configuration below for more details.
 
 ## Organizer and sponsor advertisements
