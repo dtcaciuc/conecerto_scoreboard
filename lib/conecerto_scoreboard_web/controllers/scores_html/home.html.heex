@@ -1,4 +1,3 @@
-<!-- .flash_group flash={@flash} / -->
 <%= if @radio_frequency do %>
   <div class="bg-neutral-900 text-white p-1 mt-2">
     <div class="text-xl text-center font-semibold pb-2">Commentary Broadcast</div>
@@ -7,5 +6,5 @@
 <% end %>
 <div class="bg-neutral-900 text-white p-1 mt-3">
   <div class="text-xl text-center font-semibold pb-2">Most Recent Runs</div>
-  <Conecerto.ScoreboardWeb.Tv.recent_runs runs={@recent_runs} />
+  <Conecerto.ScoreboardWeb.Tables.recent_runs runs={@recent_runs} />
 </div>

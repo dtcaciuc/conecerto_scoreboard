@@ -105,51 +105,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
      )}
   end
 
-  def recent_runs(assigns) do
-    ~H"""
-    <div>
-      <table class="border-collapse striped w-full">
-        <thead>
-          <th class="font-bold text-left pl-2">Driver</th>
-          <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
-          <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
-          <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
-          <th class="font-bold text-right">Run</th>
-          <th class="font-bold text-right pl-2">Elapsed</th>
-          <th class="font-bold text-left pl-2">Pen.</th>
-        </thead>
-        <tbody>
-          <%= for row <- @runs do %>
-            <tr>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
-                <%= row.driver_name %>
-              </td>
-              <td class="text-right pl-2 max-sm:hidden">
-                <%= row.car_no %>
-              </td>
-              <td class="text-left pl-2 max-sm:hidden">
-                <%= row.car_class %>
-              </td>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 max-sm:hidden">
-                <%= row.car_model %>
-              </td>
-              <td class="text-right pl-2">
-                <%= row.counted_run_no |> format_run_no() %>
-              </td>
-              <td class="text-right pl-2 whitespace-nowrap">
-                <div><%= row.run_time |> format_score() %></div>
-              </td>
-              <td class="text-left pl-2 whitespace-nowrap">
-                <div><%= row.penalty |> format_penalty() %></div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    """
-  end
-
   def paged_scores(assigns) do
     ~H"""
     <div>
@@ -255,7 +210,4 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   defp justify_sponsors(nil = _organizer), do: "justify-center"
   defp justify_sponsors(_organizer), do: "justify-right"
-
-  defp format_run_no(-1), do: "-"
-  defp format_run_no(run_no), do: run_no
 end
