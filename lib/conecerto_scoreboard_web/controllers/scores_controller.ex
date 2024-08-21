@@ -66,6 +66,7 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
   defp get_assigns(extra) do
     [
       root_font_size: @root_font_size,
+      event_name: Scoreboard.config(:event_name),
       last_updated_at: Scoreboard.last_updated_at(),
       sponsors: Brands.get_sponsors()
     ]

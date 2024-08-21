@@ -29,6 +29,7 @@ end
 
 config :conecerto_scoreboard, Conecerto.Scoreboard,
   event_date: System.get_env("EVENT_DATE"),
+  event_name: System.get_env("EVENT_NAME"),
   tv_refresh_interval: String.to_integer(System.get_env("TV_REFRESH_INTERVAL", "10")) * 1_000,
   tv_font_size: to_float.(System.get_env("TV_FONT_SIZE", "17.75")),
   announce_font_size: to_float.(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),

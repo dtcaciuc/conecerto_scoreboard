@@ -109,8 +109,9 @@ Additionally, you can optionally set the following:
 * `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of
   scores (in seconds) in each panel before moving onto next one.
+* `EVENT_NAME` (string, optional) - Displays given name on top of the Event page.
 * `EVENT_DATE` (`yyyy_mm_dd`, optional) - Forces specified event date. Use this to read past event's data.
-* `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the `/` home page.
+* `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the Event page.
 * `BRANDS_DIR` (optional) - Directory with organizer and sponsor brand logos.
 * `MJ_DIR` (path, optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).
 * `MJ_DEBOUNCE_INTERVAL` (integer, optional) - Interval (in ms) between when MJTiming .csv
@@ -168,7 +169,7 @@ directory.
 
 ## License
 
-Copyright (C) 2023 Dimitri Tcaciuc.
+Copyright (C) 2024 Dimitri Tcaciuc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
