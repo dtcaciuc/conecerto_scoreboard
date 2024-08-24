@@ -7,7 +7,7 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
   require Logger
 
   def start_link(_args) do
-    event_date = Scoreboard.config(:event_date) || today_str()
+    event_date = Scoreboard.config(:event_date)
     mj_dir = Scoreboard.config(:mj_dir)
     load_delay = Scoreboard.config(:mj_debounce_interval)
     poll_changes? = Scoreboard.config(:mj_poll_changes?)
@@ -74,14 +74,5 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
 
   defp schedule_load(delay) do
     Process.send_after(self(), :load, delay)
-  end
-
-  defp today_str() do
-    now = NaiveDateTime.local_now()
-    "#{now.year}_#{pad_date_zero(now.month)}_#{pad_date_zero(now.day)}"
-  end
-
-  defp pad_date_zero(d) do
-    d |> Integer.to_string() |> String.pad_leading(2, "0")
   end
 end

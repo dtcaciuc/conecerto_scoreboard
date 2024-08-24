@@ -27,9 +27,14 @@ if System.get_env("PHX_SERVER") do
   config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint, server: true
 end
 
+event_date = System.get_env("EVENT_DATE", Conecerto.Scoreboard.Datetime.today_str())
+
+event_name =
+  Conecerto.Scoreboard.Events.get_event_name(System.get_env("EVENT_SCHEDULE"), event_date)
+
 config :conecerto_scoreboard, Conecerto.Scoreboard,
-  event_date: System.get_env("EVENT_DATE"),
-  event_name: System.get_env("EVENT_NAME"),
+  event_date: event_date,
+  event_name: System.get_env("EVENT_NAME", event_name),
   tv_refresh_interval: String.to_integer(System.get_env("TV_REFRESH_INTERVAL", "10")) * 1_000,
   tv_font_size: to_float.(System.get_env("TV_FONT_SIZE", "17.75")),
   announce_font_size: to_float.(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),

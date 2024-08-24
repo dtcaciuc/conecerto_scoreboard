@@ -109,7 +109,8 @@ Additionally, you can optionally set the following:
 * `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of
   scores (in seconds) in each panel before moving onto next one.
-* `EVENT_NAME` (string, optional) - Displays given name on top of the Event page.
+* `EVENT_SCHEDULE` (path, optional) - Path to CSV file with event schedule to read the event name from (see below).
+* `EVENT_NAME` (string, optional) - Displays given name on top of the Event page. Leave unset if `EVENT_SCHEDULE` is set.
 * `EVENT_DATE` (`yyyy_mm_dd`, optional) - Forces specified event date. Use this to read past event's data.
 * `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the Event page.
 * `BRANDS_DIR` (optional) - Directory with organizer and sponsor brand logos.
@@ -137,10 +138,21 @@ To continuously upload scores to an external server, set the following:
 * `LIVE_FTP_PASS` - FTP password
 * `LIVE_FTP_PATH` (optional) - Website root path relative to FTP account home directory (defaults to home directory).
 
-Note: On Windows, if your password contains `^`, make sure to escape it with another `^`.
+> Note: On Windows, if your password contains `^`, make sure to escape it with another `^`.
 
-Note: The web server needs to be configured to serve pre-compressed pages. See
-`misc/htaccess` for the base configuration.
+> Note: The web server needs to be configured to serve pre-compressed pages. See
+> `misc/htaccess` for the base configuration.
+
+To display the event name on the Events page, you can either set `EVENT_NAME` directly or point `EVENT_SCHEDULE` to
+a CSV file containing the entire schedule of upcoming events. After that, the correct event name will be picked up
+automatically for whatever day you launch the scoreboard on. The latter is much easier and allows you to define
+the schedule once and forget about it (unless some of the event dates change).
+
+The event CSV file must have two columns:
+
+* `date` - Event date, in the `yyyy_mm_dd` format
+* `name` - Event name (must not contain any commas)
+
 
 ## Developing
 
