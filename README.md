@@ -153,6 +153,8 @@ The event CSV file must have two columns:
 * `date` - Event date, in the `yyyy_mm_dd` format
 * `name` - Event name (must not contain any commas)
 
+> Note: The file must start with a header row containing field names.
+
 
 ## Developing
 
