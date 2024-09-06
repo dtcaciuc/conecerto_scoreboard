@@ -1,12 +1,6 @@
 <% brands? = Brands.any?() %>
-<div
-  class={[
-    "tv h-screen bg-neutral-900 text-white",
-    "grid grid-cols-3 gap-2 place-items-stretch"
-  ]}
-  style={grid_style(brands?)}
->
-  <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
+<div class="tv h-screen grid grid-cols-3 gap-2 place-items-stretch" style={grid_style(brands?)}>
+  <div class="bg-[--panel-fill-color] p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@raw_scores}
       view_title="RAW"
@@ -15,7 +9,7 @@
     />
   </div>
 
-  <div class="bg-neutral-800 p-2 pt-1 overflow-hidden">
+  <div class="bg-[--panel-fill-color] p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@pax_scores}
       view_title="PAX"
@@ -25,7 +19,7 @@
   </div>
 
   <div class="flex flex-col gap-2 overflow-hidden">
-    <div class="flex-auto bg-neutral-800 p-2 pt-1">
+    <div class="flex-auto bg-[--panel-fill-color] p-2 pt-1">
       <%= if @groups.current do %>
         <.paged_scores
           scores={@group_scores}
@@ -36,7 +30,7 @@
       <% end %>
     </div>
 
-    <div class="bg-neutral-800 px-2 pt-1 pb-3">
+    <div class="bg-[--panel-fill-color] px-2 pt-1 pb-3">
       <div class="text-2xl text-center mb-2 font-bold">
         Most Recent Runs
       </div>

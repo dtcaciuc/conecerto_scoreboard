@@ -2,28 +2,26 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+
 @font-face {
-	font-family: 'RobotoCondensed';
-	src: url(/fonts/RobotoCondensed-Regular.ttf);
+    font-family: 'RobotoCondensed';
+    src: url(/fonts/RobotoCondensed-Regular.ttf);
 }
 
 html {
-        line-height: 1.25rem;
+    line-height: 1.25rem;
 }
 
 body {
-	font-family: RobotoCondensed;
+    font-family: RobotoCondensed;
 }
 
 .mw-36 {
-        max-width: 9rem;
+    max-width: 9rem;
 }
 
 table.striped tr:nth-child(2n) td {
-        background-color: #383838;
-}
-
-.best-run {
+    background-color: var(--table-stripe-fill-color);
 }
 
 .best-run::before {

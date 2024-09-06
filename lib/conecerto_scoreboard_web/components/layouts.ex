@@ -5,11 +5,11 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   def top_nav(assigns) do
     ~H"""
-    <div class="top-0 sticky z-50 mb3 bg-neutral-800 text-white text-2xl flex justify-center border-b-2 border-neutral-700">
+    <div class="top-0 sticky z-50 mb3 text-2xl flex justify-center border-b-2 bg-[color:--top-nav-fill-color] border-[--top-nav-border-color]">
       <div class="flex justify-between basis-md">
         <div class="flex-auto flex max-sm:flex-col">
           <.organizer_logo organizer={Conecerto.ScoreboardWeb.Brands.get_organizer()} />
-          <div class="flex flex-auto text-center child:grow child:block child:p-2">
+          <div class="flex flex-auto text-center child:grow child:block child:px-1 child:py-2">
             <%= for tab <- tabs() do %>
               <a class={tab_class(tab.title == @active_tab)} href={tab.url}><%= tab.title %></a>
             <% end %>
@@ -40,14 +40,19 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     ]
   end
 
-  defp tab_class(true = _active), do: "border-b-2 border-red-500 text-red-500 mb-[-2px]"
+  defp tab_class(true = _active),
+    do: [
+      "border-b-2 border-[--top-nav-active-text-color]",
+      "text-[--top-nav-active-text-color] mb-[-2px]"
+    ]
+
   defp tab_class(false = _active), do: ""
 
   def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
 
   def sponsor_logos(assigns) do
     ~H"""
-    <div class="bg-neutral-900 text-white mt-4">
+    <div class="mt-4">
       <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
       <div class="flex flex-wrap justify-around bg-white my-2 p-2 gap-2">
         <%= for sponsor <- @sponsors do %>

@@ -22,7 +22,9 @@ defmodule Conecerto.ScoreboardWeb.Tables do
           </div>
           &nbsp;
         </th>
-        <th class="font-bold whitespace-nowrap text-right pl-2 pt-1" colspan="2">Raw Interval</th>
+        <th class="font-bold whitespace-nowrap text-right pl-2 pt-1 pr-1" colspan="2">
+          Raw Interval
+        </th>
       </thead>
       <tbody>
         <%= for row <- @scores do %>
@@ -48,12 +50,12 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
             <%= if row.pos == 1 do %>
               <td class="font-bold text-right pl-2">Top</td>
-              <td class="font-bold text-right pl-2">Next</td>
+              <td class="font-bold text-right pl-2 pr-1">Next</td>
             <% else %>
               <td class="text-right pl-2">
                 <%= row.raw_time_to_top |> format_score() %>
               </td>
-              <td class="text-right pl-2">
+              <td class="text-right pl-2 pr-1">
                 <%= row.raw_time_to_next |> format_score() %>
               </td>
             <% end %>

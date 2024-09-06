@@ -1,4 +1,4 @@
-<body class="antialiased bg-neutral-900 overflow-y-auto">
+<body class="bg-[--body-fill-color] text-[--primary-text-color] overflow-y-auto">
   <.top_nav active_tab={@active_tab} />
   <main>
     <.flash_group flash={@flash} />
@@ -6,7 +6,7 @@
       <div class="basis-md">
         <%= @inner_content %>
         <.sponsor_logos sponsors={@sponsors} />
-        <div class="bg-neutral-900 text-white p-1 mt-4 mb-3">
+        <div class="p-1 mt-4 mb-3">
           <div class="text-xl text-center font-semibold pb-2">Last Updated</div>
           <div class="text-center"><%= @last_updated_at %></div>
         </div>

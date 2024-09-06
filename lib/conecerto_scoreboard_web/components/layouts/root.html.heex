@@ -2,13 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="theme-color" content="#262626" />
+    <meta name="theme-color" content="var(--top-nav-fill-color)" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix=" · Conecerto Scoreboard">
       <%= assigns[:page_title] || assigns[:active_tab] || "Home" %>
     </.live_title>
     <style>
+      :root {
+        --primary-text-color: white;
+        --body-fill-color: rgb(23, 23, 23);              /* neutral-900 */
+        --panel-fill-color: rgb(38, 38, 38);
+        --top-nav-fill-color: rgb(38, 38, 38);           /* neutral-800 */
+        --top-nav-border-color: rgb(64, 64, 64);         /* neutral-700 */
+        --top-nav-active-text-color: rgb(239, 68, 68);   /* red-500 */
+        --table-stripe-fill-color: #383838;
+      }
       <%= if assigns[:root_font_size] do %>
         html { font-size: <%= @root_font_size %>px; }
       <% end %>

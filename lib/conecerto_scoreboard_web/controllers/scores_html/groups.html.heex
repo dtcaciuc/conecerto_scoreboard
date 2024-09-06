@@ -1,5 +1,5 @@
 <%= for group <- @groups do %>
-  <div class="bg-neutral-900 text-white p-1">
+  <div class="p-1">
     <div class="text-xl text-center font-semibold pb-2 pt-1"><%= group.name %></div>
     <Conecerto.ScoreboardWeb.Tables.group_scores
       scores={group.scores}
