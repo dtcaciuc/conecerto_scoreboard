@@ -95,9 +95,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             </td>
             <td class="text-right pl-2 py-1 whitespace-nowrap relative">
               <%= for r <- d.runs do %>
-                <div class={[r.selected && "best-run", r.penalty == "DNF" && "line-through"]}>
-                  <%= r.run_time |> format_score() %>
-                </div>
+                <div class={run_time_class(r)}><%= r.run_time |> format_score() %></div>
               <% end %>
             </td>
             <td class="text-left pl-2 py-1 whitespace-nowrap">
@@ -111,6 +109,9 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     </table>
     """
   end
+
+  defp run_time_class(run),
+    do: [run.selected && "best-run", run.penalty in ["DNF", "RRN"] && "line-through"]
 
   attr :runs, :list, required: true
 
