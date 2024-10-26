@@ -20,7 +20,6 @@ defmodule Conecerto.ScoreboardWeb.Tables do
           <div class="absolute top-0 right-0 pt-1">
             <%= @time_column_title %>
           </div>
-          &nbsp;
         </th>
         <th class="font-bold whitespace-nowrap text-right pl-2 pt-1 pr-1" colspan="2">
           Raw Interval
@@ -49,8 +48,8 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             </td>
 
             <%= if row.pos == 1 do %>
-              <td class="font-bold text-right pl-2">Top</td>
-              <td class="font-bold text-right pl-2 pr-1">Next</td>
+              <th class="font-bold text-right pl-2">Top</th>
+              <th class="font-bold text-right pl-2 pr-1">Next</th>
             <% else %>
               <td class="text-right pl-2">
                 <%= row.raw_time_to_top |> format_score() %>
@@ -96,7 +95,9 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             </td>
             <td class="text-right pl-2 py-1 whitespace-nowrap relative">
               <%= for r <- d.runs do %>
-                <div class={if r.selected, do: "best-run"}><%= r.run_time |> format_score() %></div>
+                <div class={[r.selected && "best-run", r.penalty == "DNF" && "line-through"]}>
+                  <%= r.run_time |> format_score() %>
+                </div>
               <% end %>
             </td>
             <td class="text-left pl-2 py-1 whitespace-nowrap">

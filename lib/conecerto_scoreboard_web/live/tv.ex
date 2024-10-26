@@ -111,17 +111,17 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       <.paged_scores_title title={@view_title} scores={@scores} />
       <table class="border-collapse striped w-full">
         <thead>
-          <th class="font-bold text-right">P</th>
-          <th class="font-bold text-left pl-2">Driver</th>
-          <th class="font-bold text-right pl-2">#</th>
-          <th class="font-bold text-left pl-2">Class</th>
-          <th class="font-bold text-left pl-2">Model</th>
-          <th class="font-bold whitespace-nowrap text-right relative">
-            <div class="absolute top-0 right-0">
+          <th class="font-bold text-right pt-0">P</th>
+          <th class="font-bold text-left pl-2 pt-0">Driver</th>
+          <th class="font-bold text-right pl-2 pt-0">#</th>
+          <th class="font-bold text-left pl-2 pt-0">Class</th>
+          <th class="font-bold text-left pl-2 pt-0">Model</th>
+          <th class="font-bold whitespace-nowrap text-right relative pt-0">
+            <div class="absolute top-0 right-0 pt-0">
               <%= @time_column_title %>
             </div>
           </th>
-          <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">Raw Interval</th>
+          <th class="font-bold whitespace-nowrap text-right pl-2 pt-0" colspan="2">Raw Interval</th>
         </thead>
         <.paged_scores_page rows={@scores.top10} time_column_field={@time_column_field} />
         <%= if @scores.current do %>
@@ -178,7 +178,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   defp brand_logo(assigns) do
     ~H"""
-    <img src={@brand.url} class={@class} />
+    <img src={brand_path(@brand)} class={@class} />
     """
   end
 
@@ -210,4 +210,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   defp justify_sponsors(nil = _organizer), do: "justify-center"
   defp justify_sponsors(_organizer), do: "justify-right"
+
+  defp brand_path(brand),
+    do: @endpoint.path(brand.path)
 end

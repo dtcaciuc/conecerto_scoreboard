@@ -68,6 +68,7 @@ defmodule Conecerto.ScoreboardWeb.ScoresController do
       root_font_size: @root_font_size,
       event_name: Scoreboard.config(:event_name),
       last_updated_at: Scoreboard.last_updated_at(),
+      organizer: Brands.get_organizer(),
       sponsors: Brands.get_sponsors()
     ]
     |> Keyword.merge(extra)

@@ -291,7 +291,7 @@ defmodule Conecerto.Scoreboard do
   end
 
   # Don't count reruns
-  defp effective_run_time(%{counted_run_no: -1}), do: 9999.9
+  defp effective_run_time(%{counted_run_no: -1}), do: 9999.999
 
   defp effective_run_time(%{run_time: run_time, penalty: ""}), do: run_time
 
@@ -301,7 +301,7 @@ defmodule Conecerto.Scoreboard do
         run_time + num_cones * 2.0
 
       _ ->
-        9999.9
+        9999.999
     end
   end
 

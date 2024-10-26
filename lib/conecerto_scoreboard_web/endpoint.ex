@@ -24,7 +24,7 @@ defmodule Conecerto.ScoreboardWeb.Endpoint do
     only: Conecerto.ScoreboardWeb.static_paths()
 
   # Serve logo and sponsor graphics
-  plug Conecerto.ScoreboardWeb.BrandAssets
+  plug Conecerto.ScoreboardWeb.Brands.Static
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

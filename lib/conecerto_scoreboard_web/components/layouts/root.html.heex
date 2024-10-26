@@ -10,6 +10,7 @@
     <.live_title suffix=" · Conecerto Scoreboard">
       <%= assigns[:page_title] || assigns[:active_tab] || "Home" %>
     </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <style>
       :root {
         --primary-text-color: white;
@@ -20,11 +21,23 @@
         --top-nav-active-text-color: rgb(239, 68, 68);   /* red-500 */
         --table-stripe-fill-color: #383838;
       }
+
+      html {
+        line-height: 1.25rem;
       <%= if assigns[:root_font_size] do %>
-        html { font-size: <%= @root_font_size %>px; }
+        font-size: <%= @root_font_size %>px;
       <% end %>
+      }
+
+      @font-face {
+        font-family: 'RobotoCondensed';
+        src: url(<%= ~p"/fonts/RobotoCondensed-Regular.ttf" %>);
+      }
+
+      body {
+        font-family: RobotoCondensed;
+      }
     </style>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>

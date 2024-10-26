@@ -1,11 +1,12 @@
-defmodule Conecerto.ScoreboardWeb.BrandAssets do
+defmodule Conecerto.ScoreboardWeb.Brands.Static do
   @behaviour Plug
 
   alias Conecerto.Scoreboard
+  alias Conecerto.ScoreboardWeb.Brands
 
   @impl true
   def init(_opts) do
-    Plug.Static.init(at: "/brands", from: nil)
+    Plug.Static.init(at: Brands.root_path(), from: nil)
   end
 
   @impl true

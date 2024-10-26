@@ -3,7 +3,9 @@ defmodule Conecerto.ScoreboardWeb.Brands do
 
   require Logger
 
-  @endpoint Conecerto.ScoreboardWeb.Endpoint
+  @root_path "/brands"
+
+  def root_path(), do: @root_path
 
   def start_link(args) do
     {name, args} = Keyword.pop(args, :name, __MODULE__)
@@ -34,11 +36,11 @@ defmodule Conecerto.ScoreboardWeb.Brands do
 
   @impl true
   def handle_call(:get_organizer, _from, state),
-    do: {:reply, put_url(state.organizer), state}
+    do: {:reply, state.organizer, state}
 
   @impl true
   def handle_call(:get_sponsors, _from, state),
-    do: {:reply, Enum.map(state.sponsors, &put_url/1), state}
+    do: {:reply, state.sponsors, state}
 
   @impl true
   def handle_call(:any?, _from, state),
@@ -54,7 +56,7 @@ defmodule Conecerto.ScoreboardWeb.Brands do
 
           case file_hash(path) do
             {:ok, hash} ->
-              %{name: name, path: path, hash: hash}
+              %{name: name, path: Path.join(@root_path, "#{name}?v=#{hash}")}
 
             _ ->
               Logger.error("Could not hash #{path}; skipping")
@@ -73,20 +75,11 @@ defmodule Conecerto.ScoreboardWeb.Brands do
     end
   end
 
-  # Adding URL dynamically since we start up before the endpoint does.
-  defp put_url(nil),
-    do: nil
+  defp organizer?(name),
+    do: Path.rootname(name) == "organizer"
 
-  defp put_url(entry),
-    do: Map.put(entry, :url, @endpoint.path("/brands/#{entry.name}?v=#{entry.hash}"))
-
-  defp organizer?(path),
-    do: Path.rootname(path) == "organizer"
-
-  defp image?(path) do
-    ext = Path.extname(path)
-    ext == ".png" or ext == ".jpg"
-  end
+  defp image?(name),
+    do: Path.extname(name) in [".jpg", ".png"]
 
   defp file_hash(path) do
     with {:ok, content} <- File.read(path) do
