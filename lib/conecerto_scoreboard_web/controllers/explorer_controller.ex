@@ -1,10 +1,10 @@
-defmodule Conecerto.ScoreboardWeb.ScoresController do
+defmodule Conecerto.ScoreboardWeb.ExplorerController do
   use Conecerto.ScoreboardWeb, :controller
 
   alias Conecerto.Scoreboard
   alias Conecerto.ScoreboardWeb.Brands
 
-  plug :put_layout, html: :scores
+  plug :put_layout, html: :explorer
 
   @root_font_size 16.0
 

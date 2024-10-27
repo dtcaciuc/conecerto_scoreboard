@@ -1,7 +1,7 @@
-defmodule Conecerto.ScoreboardWeb.ScoresHTML do
+defmodule Conecerto.ScoreboardWeb.ExplorerHTML do
   use Conecerto.ScoreboardWeb, :html
 
-  embed_templates "scores_html/*"
+  embed_templates "explorer_html/*"
 
   def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
 

@@ -17,12 +17,12 @@ defmodule Conecerto.ScoreboardWeb.Router do
   scope "/", Conecerto.ScoreboardWeb do
     pipe_through :browser
 
-    head "/", ScoresController, :home
-    get "/", ScoresController, :home
-    get "/raw", ScoresController, :raw
-    get "/pax", ScoresController, :pax
-    get "/groups", ScoresController, :groups
-    get "/runs", ScoresController, :runs
+    head "/", ExplorerController, :home
+    get "/", ExplorerController, :home
+    get "/raw", ExplorerController, :raw
+    get "/pax", ExplorerController, :pax
+    get "/groups", ExplorerController, :groups
+    get "/runs", ExplorerController, :runs
 
     live "/announce", Announce
     live "/tv", Tv
