@@ -5,46 +5,53 @@ defmodule Conecerto.Scoreboard.Uploader do
   require Logger
 
   alias Conecerto.Scoreboard
+  alias Conecerto.Scoreboard.FTP
   alias Conecerto.ScoreboardWeb.Brands
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
 
-  def start_link(args) do
+  def start_link(_) do
+    args = [
+      host: Scoreboard.config(:live_ftp_host),
+      root: Scoreboard.config(:live_ftp_path),
+      user: Scoreboard.config(:live_ftp_user),
+      pass: Scoreboard.config(:live_ftp_pass)
+    ]
+
     GenServer.start_link(__MODULE__, args)
   end
 
   @impl true
-  def init(_) do
-    if Scoreboard.config(:live_ftp_host) == nil do
-      Logger.warning("live ftp server is not configured")
+  def init(args) do
+    if Keyword.get(args, :host) == nil do
+      Logger.warning("FTP server is not configured")
       :ignore
     else
       :ok = Phoenix.PubSub.subscribe(Conecerto.Scoreboard.PubSub, "mj")
-      {:ok, %{}, {:continue, :upload_assets}}
+      {:ok, %{client_args: args}, {:continue, :upload_assets}}
     end
   end
 
   @impl true
   def handle_continue(:upload_assets, state) do
-    with {:ok, pid} <- connect(),
-         :ok = :ftp.type(pid, :binary),
-         :ok <- mkdir(pid, "/"),
-         :ok <- send_static(pid, "/favicon.ico"),
-         :ok <- mkdir(pid, "assets"),
-         :ok <- send_static(pid, "/assets/app.css"),
-         :ok <- send_static(pid, "/assets/app.js"),
-         :ok <- mkdir(pid, "fonts"),
-         :ok <- send_static(pid, "/fonts/RobotoCondensed-Regular.ttf"),
-         :ok <- mkdir(pid, "brands"),
-         :ok <- send_brands(pid),
-         :ftp.close(pid) do
-      Logger.info("results assets uploaded")
+    with {:ok, client} <- FTP.open(state.client_args),
+         :ok <- FTP.mkdir(client, "/"),
+         :ok <- send_static(client, "/favicon.ico"),
+         :ok <- FTP.mkdir(client, "assets"),
+         :ok <- send_static(client, "/assets/app.css"),
+         :ok <- send_static(client, "/assets/app.js"),
+         :ok <- FTP.mkdir(client, "fonts"),
+         :ok <- send_static(client, "/fonts/RobotoCondensed-Regular.ttf"),
+         :ok <- FTP.mkdir(client, "brands"),
+         :ok <- send_brands(client),
+         FTP.close(client) do
+      Logger.info("Assets uploaded")
     else
       {:error, reason} when is_binary(reason) ->
-        Logger.error("could not upload results; #{reason}")
+        Logger.error("Could not upload assets - #{reason}")
 
       other ->
-        Logger.error("could not upload results assets; #{inspect(other)}")
+        Logger.error("Could not upload assets - #{inspect(other)}")
     end
 
     {:noreply, state}
@@ -54,16 +61,15 @@ defmodule Conecerto.Scoreboard.Uploader do
   def handle_info(:mj_update, state) do
     t0 = :os.system_time(:millisecond)
 
-    with {:ok, pid} <- connect(),
-         :ok <- :ftp.type(pid, :binary),
-         :ok <- send_page(pid, "", "index"),
-         :ok <- send_page(pid, "raw"),
-         :ok <- send_page(pid, "pax"),
-         :ok <- send_page(pid, "groups"),
-         :ok <- send_page(pid, "runs"),
-         :ok <- :ftp.close(pid) do
+    with {:ok, client} <- FTP.open(state.client_args),
+         :ok <- send_page(client, "/", "index"),
+         :ok <- send_page(client, "/raw"),
+         :ok <- send_page(client, "/pax"),
+         :ok <- send_page(client, "/groups"),
+         :ok <- send_page(client, "/runs"),
+         :ok <- FTP.close(client) do
       t1 = :os.system_time(:millisecond)
-      Logger.info("live results uploaded in #{t1 - t0}ms")
+      Logger.info("Results uploaded in #{t1 - t0}ms")
     else
       {:error, reason} when is_binary(reason) ->
         Logger.error("could not upload results; #{reason}")
@@ -80,52 +86,28 @@ defmodule Conecerto.Scoreboard.Uploader do
     {:noreply, state}
   end
 
-  defp connect() do
-    with {:ok, pid} <- :ftp.open(Scoreboard.config(:live_ftp_host) |> String.to_charlist()),
-         :ok <-
-           :ftp.user(
-             pid,
-             Scoreboard.config(:live_ftp_user) |> String.to_charlist(),
-             Scoreboard.config(:live_ftp_pass) |> String.to_charlist()
-           ) do
-      {:ok, pid}
-    else
-      {:error, :ehost} ->
-        {:error, "results host is unreachable"}
-
-      {:error, :euser} ->
-        {:error, "wrong results host username or password"}
-    end
-  end
-
-  defp send_page(ftp_pid, url, filename \\ nil) do
-    filename = Path.join(Scoreboard.config(:live_ftp_path), filename || url)
-    Logger.debug("Uploading #{url} -> #{filename}.gz")
+  defp send_page(client, path, new_name \\ nil) do
+    filename = new_name || path
 
     with conn <- Phoenix.ConnTest.build_conn(),
-         %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, "/#{url}"),
-         :ok <- :ftp.send_bin(ftp_pid, :zlib.gzip(body), "#{filename}.gz" |> String.to_charlist()) do
-      :ok
+         %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, path) do
+      FTP.send_bin(client, :zlib.gzip(body), "#{filename}.gz")
     else
       %Plug.Conn{status: status} ->
-        {:error, "could generate results page; request returned status #{status}"}
+        {:error, "Could generate results page - request returned HTTP #{status}"}
     end
   end
 
-  defp send_static(ftp_pid, path, src_path \\ nil) do
+  defp send_static(client, path) do
     [static_path | _] = String.split(@endpoint.static_path(path), "?")
 
-    dest_path = Path.join(Scoreboard.config(:live_ftp_path), static_path)
-
-    src_path =
-      if src_path == nil do
-        Path.join(static_dir(), static_path)
-      else
-        src_path
-      end
-
-    Logger.debug("Uploading #{src_path} > #{dest_path}")
-    :ftp.send(ftp_pid, src_path |> String.to_charlist(), dest_path |> String.to_charlist())
+    with conn <- Phoenix.ConnTest.build_conn(),
+         %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, path) do
+      FTP.send_bin(client, body, static_path)
+    else
+      %Plug.Conn{status: status} ->
+        {:error, "Could not generate static file - request returned HTTP #{status}"}
+    end
   end
 
   defp send_brands(ftp_pid) do
@@ -133,22 +115,10 @@ defmodule Conecerto.Scoreboard.Uploader do
 
     for b <- brands, b != nil, reduce: :ok do
       :ok ->
-        send_static(ftp_pid, b.url, b.path)
+        send_static(ftp_pid, @endpoint.path(b.path))
 
       other ->
         other
     end
-  end
-
-  defp mkdir(pid, path) do
-    path = Path.join(Scoreboard.config(:live_ftp_path), path)
-    Logger.debug("Creating #{path}")
-    # Ignore mkdir result; if directory already exists it returns an error
-    :ftp.mkdir(pid, path |> String.to_charlist())
-    :ok
-  end
-
-  defp static_dir() do
-    Application.app_dir(:conecerto_scoreboard, ["priv", "static"])
   end
 end

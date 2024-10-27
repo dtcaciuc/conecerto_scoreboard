@@ -1,42 +1,40 @@
-# defmodule Conecerto.Scoreboard.FTP do
-#   @callback open(host :: String.t(), user :: String.t(), pass :: String.t()) ::
-#               {:ok, pid()} | {:error, String.t()}
-# 
-#   @callback close(pid()) :: :ok
-# 
-#   @callback mkdir(path :: String.t()) :: :ok
-#   @callback send_bin(pid(), data :: binary(), dest :: String.t()) :: :ok
-#   @callback send_file(pid(), source :: String.t(), dest :: String.t()) :: :ok
-# 
-# end
-# 
-# defmodule Conecerto.Scoreboard.LiveFTP do
-#   @behaviour Conecerto.Scoreboard.FTP
-# 
-#   def open(host, user, pass) do
-#     with {:ok, pid} <- :ftp.open(String.to_charlist(host)),
-#          :ok <- :ftp.user(pid, String.to_charlist(user), String.to_charlist(pass))
-#     do
-#       {:ok, pid}
-#     else
-#       {:error, :ehost} ->
-#         {:error, "results host is unreachable"}
-#       {:error, :euser} ->
-#         {:error, "wrong results host username or password"}
-#     end
-#   end
-# 
-#   def close(pid), do: :ftp.close(pid)
-# 
-#   def mkdir(pid, path) do
-#     :ftp.mkdir(pid, String.to_charlist(path))
-#   end
-# 
-#   def send_bin(pid, data, dest) do
-#     :ftp.send_bin(pid, data, String.to_charlist(filename))
-#   end
-# 
-#   def send_file(pid, source, dest) do
-#     :ftp.send(pid, String.to_charlist(source), String.to_charlist(dest))
-#   end
-# end
+defmodule Conecerto.Scoreboard.FTP do
+  require Logger
+
+  @behaviour Conecerto.Scoreboard.Uploader.Client
+
+  def open(opts) do
+    host = String.to_charlist(Keyword.fetch!(opts, :host))
+    user = String.to_charlist(Keyword.fetch!(opts, :user))
+    pass = String.to_charlist(Keyword.fetch!(opts, :pass))
+
+    with {:ok, pid} <- :ftp.open(host),
+         :ok <- :ftp.user(pid, user, pass),
+         :ok <- :ftp.type(pid, :binary) do
+      {:ok, %{pid: pid, root: Keyword.fetch!(opts, :root)}}
+    else
+      {:error, :ehost} ->
+        {:error, "Host is unreachable"}
+
+      {:error, :euser} ->
+        {:error, "Wrong username or password"}
+    end
+  end
+
+  def close(%{pid: pid}),
+    do: :ftp.close(pid)
+
+  def mkdir(%{pid: pid, root: root}, path) do
+    abs_path = Path.join(root, path)
+    Logger.info("#{__MODULE__} -  Making #{abs_path}")
+    # Ignore mkdir result; if directory already exists it returns an error
+    _ = :ftp.mkdir(pid, abs_path |> String.to_charlist())
+    :ok
+  end
+
+  def send_bin(%{pid: pid, root: root}, contents, dest) do
+    abs_dest = Path.join(root, dest)
+    Logger.info("#{__MODULE__} - Sending #{abs_dest}")
+    :ftp.send_bin(pid, contents, abs_dest |> String.to_charlist())
+  end
+end
