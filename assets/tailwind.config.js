@@ -20,14 +20,6 @@ module.exports = {
       'sm': '568px',
       'md': '768px',
     },
-    minWidth: {
-      '4': '1rem',
-    },
-    extend: {
-      colors: {
-        brand: "#FD4F00",
-      }
-    },
   },
   plugins: [
     require("@tailwindcss/forms"),

@@ -110,7 +110,7 @@ defmodule Conecerto.ScoreboardWeb.Announce do
           <td class="text-right">
             <%= row.pos %>
           </td>
-          <td class="text-left mw-36 truncate pl-2">
+          <td class="text-left max-w-36 truncate pl-2">
             <%= row.driver_name %>
           </td>
           <td class="text-right pl-2">

@@ -2,10 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-.mw-36 {
-    max-width: 9rem;
-}
-
 table.striped tr:nth-child(2n) td {
     background-color: var(--table-stripe-fill-color);
 }

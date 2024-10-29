@@ -44,7 +44,7 @@
         <tbody>
           <%= for row <- @recent_runs do %>
             <tr class={if row.selected, do: "text-amber-300"}>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden">
+              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden">
                 <%= row.driver_name %>
               </td>
               <td class="text-right pl-2">
@@ -53,7 +53,7 @@
               <td class="text-left pl-2">
                 <%= row.car_class %>
               </td>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
+              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
                 <%= row.car_model %>
               </td>
               <td class="text-right pl-2">

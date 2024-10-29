@@ -31,7 +31,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             <td class="text-right min-w-4">
               <%= row.pos %>
             </td>
-            <td class="text-left mw-36 truncate pl-2">
+            <td class="text-left max-w-36 truncate pl-2">
               <%= row.driver_name %>
             </td>
             <td class="text-right pl-2 max-sm:hidden">
@@ -40,7 +40,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             <td class="text-left whitespace-nowrap pl-2 max-sm:hidden">
               <%= row.car_class %>
             </td>
-            <td class="text-left mw-36 truncate pl-2 max-sm:hidden">
+            <td class="text-left max-w-36 truncate pl-2 max-sm:hidden">
               <%= row.car_model %>
             </td>
             <td class="text-right pl-2">
@@ -131,7 +131,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <tbody>
           <%= for row <- @runs do %>
             <tr>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
+              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
                 <%= row.driver_name %>
               </td>
               <td class="text-right pl-2 max-sm:hidden">
@@ -140,7 +140,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
               <td class="text-left pl-2 max-sm:hidden">
                 <%= row.car_class %>
               </td>
-              <td class="text-left mw-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 max-sm:hidden">
+              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 max-sm:hidden">
                 <%= row.car_model %>
               </td>
               <td class="text-right pl-2">
