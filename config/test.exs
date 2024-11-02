@@ -13,17 +13,12 @@ config :conecerto_scoreboard, Conecerto.Scoreboard.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
+  url: [host: "localhost"],
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "s55wO4EN/anFccVU3tDUT6xGQzD+skcYEMZ4wpllEN8PZ+TNzwl14vWWTBYBDLqc",
   server: false
 
-# In test we don't send emails.
-config :conecerto_scoreboard, Conecerto.Scoreboard.Mailer, adapter: Swoosh.Adapters.Test
-
 config :conecerto_scoreboard, Conecerto.Scoreboard, watcher: nil, uploader: nil
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

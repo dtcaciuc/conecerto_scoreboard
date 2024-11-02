@@ -16,7 +16,6 @@ defmodule Conecerto.ScoreboardWeb do
   below. Instead, define additional modules and import
   those modules here.
   """
-
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do
@@ -43,7 +42,6 @@ defmodule Conecerto.ScoreboardWeb do
         layouts: [html: Conecerto.ScoreboardWeb.Layouts]
 
       import Plug.Conn
-      import Conecerto.ScoreboardWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +83,6 @@ defmodule Conecerto.ScoreboardWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import Conecerto.ScoreboardWeb.CoreComponents
-      import Conecerto.ScoreboardWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

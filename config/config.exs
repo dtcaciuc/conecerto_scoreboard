@@ -9,31 +9,20 @@ import Config
 
 config :conecerto_scoreboard,
   namespace: Conecerto.Scoreboard,
-  ecto_repos: [Conecerto.Scoreboard.Repo],
-  mj_path: "C:\\mjtiming"
+  ecto_repos: [Conecerto.Scoreboard.Repo]
+
+config :conecerto_scoreboard, Conecerto.Scoreboard,
+  watcher: Conecerto.Scoreboard.MJ.Watcher,
+  uploader: Conecerto.Scoreboard.Uploader
 
 # Configures the endpoint
 config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
-  url: [host: "localhost"],
   render_errors: [
     formats: [html: Conecerto.ScoreboardWeb.ErrorHTML, json: Conecerto.ScoreboardWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Conecerto.Scoreboard.PubSub,
   live_view: [signing_salt: "cBc7Yzig"]
-
-# Configures the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :conecerto_scoreboard, Conecerto.Scoreboard.Mailer, adapter: Swoosh.Adapters.Local
-
-config :conecerto_scoreboard, Conecerto.Scoreboard,
-  watcher: Conecerto.Scoreboard.MJ.Watcher,
-  uploader: Conecerto.Scoreboard.Uploader
 
 # Configure esbuild (the version is required)
 config :esbuild,
