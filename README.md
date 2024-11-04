@@ -9,9 +9,9 @@ the bundled *mjannounce.exe*.
 
 It provides the following endpoints:
 
-* `/` - Set of mobile browser-optimized pages with full result lists which
-  would be accessed by participants from their mobile phones. The content can be
-  accessed via a local event WiFi or through an external static website (see below).
+* `/` - Mobile browser-optimized results explorer for participants to access from
+  their mobile phones. The content can be accessed via a local event WiFi or
+  via a remote static website (see below).
 
 * `/tv` - An periodically refreshed dashboard that should be displayed on a large
   1080p screen positioned in the spectator area. The provided tables display
@@ -37,17 +37,13 @@ network setup, and make the script run on the startup. The script will wait
 until the scoreboard server is reachable and then attempt to start Chromium in
 kiosk mode.
 
-## Posting results to an external server
+## Posting results to a remote server
 
 If the timing computer where Scoreboard is running has access to the Internet,
-the program can be set up to continuously upload `/` endpoint contents to an
-FTP server whenever a new result comes in. This will allow the attendees to use
-their mobile data connectivity to access the scores and to not be limited by
-the local event WiFi range.
-
-Please note that the uploaded pages assume that they're served at the root path
-and so you'll want to create a dedicated sub-domain for that on your club's
-website, e.g `live.myautocrossclub.org`.
+the program can be set up to continuously upload results explorer contents to an
+FTP server whenever a new result comes in to have them served as a static website.
+This will allow the attendees to use their mobile data connectivity to access
+the results and to not be limited by the local event WiFi range.
 
 See Configuration below for more details.
 
@@ -131,12 +127,15 @@ Additionally, you can optionally set the following:
 * `SECRET_KEY_BASE` (string, optional) - Secret key base required for Phoenix to operate (64
   characters; auto-generated on every launch if not specified)
 
-To continuously upload scores to an external server, set the following:
+To continuously upload results to a remote server, set the following:
 
-* `LIVE_FTP_HOST` - FTP hostname
-* `LIVE_FTP_USER` - FTP username
-* `LIVE_FTP_PASS` - FTP password
-* `LIVE_FTP_PATH` (optional) - Website root path relative to FTP account home directory (defaults to home directory).
+* `EXPLORER_REMOTE_FTP_HOST` - FTP hostname
+* `EXPLORER_REMOTE_FTP_USER` - FTP username
+* `EXPLORER_REMOTE_FTP_PASS` - FTP password
+* `EXPLORER_REMOTE_FTP_BASE_DIR` (optional) - Directory path relative to FTP account home directory
+  where the website files are going to be uploaded (defaults to FTP account home directory). If the directory
+  does not exist, it will be created the first time the upload happens.
+* `EXPLORER_REMOTE_HTTP_BASE_PATH` (optional) - URL base path where uploaded results are served from (defaults to "/").
 
 > Note: On Windows, if your password contains `^`, make sure to escape it with another `^`.
 

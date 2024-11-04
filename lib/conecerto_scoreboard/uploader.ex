@@ -11,24 +11,22 @@ defmodule Conecerto.Scoreboard.Uploader do
   @endpoint Conecerto.ScoreboardWeb.Endpoint
 
   def start_link(_) do
-    args = [
-      host: Scoreboard.config(:live_ftp_host),
-      root: Scoreboard.config(:live_ftp_path),
-      user: Scoreboard.config(:live_ftp_user),
-      pass: Scoreboard.config(:live_ftp_pass)
-    ]
+    args = %{
+      client_args: Scoreboard.config(:explorer_remote_ftp),
+      base_path: Scoreboard.config(:explorer_remote_http_base_path)
+    }
 
     GenServer.start_link(__MODULE__, args)
   end
 
   @impl true
   def init(args) do
-    if Keyword.get(args, :host) == nil do
+    if Keyword.get(args.client_args, :host) == nil do
       Logger.warning("FTP server is not configured")
       :ignore
     else
       :ok = Phoenix.PubSub.subscribe(Conecerto.Scoreboard.PubSub, "mj")
-      {:ok, %{client_args: args}, {:continue, :upload_assets}}
+      {:ok, args, {:continue, :upload_assets}}
     end
   end
 
@@ -59,14 +57,15 @@ defmodule Conecerto.Scoreboard.Uploader do
 
   @impl true
   def handle_info(:mj_update, state) do
+    base_path = state.base_path
     t0 = :os.system_time(:millisecond)
 
     with {:ok, client} <- FTP.open(state.client_args),
-         :ok <- send_page(client, "/", "index"),
-         :ok <- send_page(client, "/raw"),
-         :ok <- send_page(client, "/pax"),
-         :ok <- send_page(client, "/groups"),
-         :ok <- send_page(client, "/runs"),
+         :ok <- send_page(client, base_path, "/", "index"),
+         :ok <- send_page(client, base_path, "/raw"),
+         :ok <- send_page(client, base_path, "/pax"),
+         :ok <- send_page(client, base_path, "/groups"),
+         :ok <- send_page(client, base_path, "/runs"),
          :ok <- FTP.close(client) do
       t1 = :os.system_time(:millisecond)
       Logger.info("Results uploaded in #{t1 - t0}ms")
@@ -86,10 +85,11 @@ defmodule Conecerto.Scoreboard.Uploader do
     {:noreply, state}
   end
 
-  defp send_page(client, path, new_name \\ nil) do
+  defp send_page(client, base_path, path, new_name \\ nil) do
     filename = new_name || path
 
     with conn <- Phoenix.ConnTest.build_conn(),
+         conn <- Plug.Conn.assign(conn, :base_path, base_path),
          %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, path) do
       FTP.send_bin(client, :zlib.gzip(body), "#{filename}.gz")
     else

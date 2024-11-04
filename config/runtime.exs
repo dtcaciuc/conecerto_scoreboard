@@ -14,10 +14,13 @@ if config_env() != :test do
     tv_font_size: parse_float!(System.get_env("TV_FONT_SIZE", "17.75")),
     announce_font_size: parse_float!(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
     radio_frequency: System.get_env("RADIO_FREQUENCY"),
-    live_ftp_host: System.get_env("LIVE_FTP_HOST"),
-    live_ftp_user: System.get_env("LIVE_FTP_USER"),
-    live_ftp_pass: System.get_env("LIVE_FTP_PASS"),
-    live_ftp_path: System.get_env("LIVE_FTP_PATH", "/"),
+    explorer_remote_ftp: [
+      host: System.get_env("EXPLORER_REMOTE_FTP_HOST", System.get_env("LIVE_FTP_HOST")),
+      user: System.get_env("EXPLORER_REMOTE_FTP_USER", System.get_env("LIVE_FTP_USER")),
+      pass: System.get_env("EXPLORER_REMOTE_FTP_PASS", System.get_env("LIVE_FTP_PASS")),
+      root: System.get_env("EXPLORER_REMOTE_FTP_BASE_DIR", System.get_env("LIVE_FTP_PATH", "/"))
+    ],
+    explorer_remote_http_base_path: System.get_env("EXPLORER_REMOTE_HTTP_BASE_PATH", "/"),
     mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
     mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
     mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,

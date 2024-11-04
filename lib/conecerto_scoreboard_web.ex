@@ -89,6 +89,21 @@ defmodule Conecerto.ScoreboardWeb do
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
+
+      def with_base_path(%{assigns: %{base_path: nil}} = conn, path),
+        do: path
+
+      def with_base_path(%{assigns: %{base_path: base_path}} = conn, path) do
+        # This assumes path is a verified path
+        if not String.starts_with?(base_path, "/") do
+          "/" <> base_path
+        else
+          base_path
+        end <> path
+      end
+
+      def with_base_path(_conn, path),
+        do: path
     end
   end
 

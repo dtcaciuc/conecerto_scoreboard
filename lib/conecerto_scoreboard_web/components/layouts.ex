@@ -11,9 +11,9 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     ]}>
       <div class="flex justify-between basis-md">
         <div class="flex-auto flex max-sm:flex-col">
-          <.organizer_logo organizer={@organizer} />
+          <.organizer_logo conn={@conn} organizer={@organizer} />
           <div class="flex text-xl text-center justify-center leading-[3rem] child:block child:px-2 font-semibold">
-            <%= for tab <- tabs() do %>
+            <%= for tab <- tabs(@conn) do %>
               <a class={tab_class(tab.title == @active_tab)} href={tab.path}><%= tab.title %></a>
             <% end %>
           </div>
@@ -23,6 +23,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     """
   end
 
+  attr :conn, :map
   attr :organizer, :map
 
   defp organizer_logo(%{organizer: nil} = assigns), do: ~H""
@@ -30,12 +31,12 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
   defp organizer_logo(assigns) do
     ~H"""
     <div class="flex flex-auto max-sm:justify-center basis-full sm:h-[3rem] max-sm:h-[4rem]">
-      <img src={brand_path(@organizer)} class="object-contain object-left" />
+      <img src={brand_path(@conn, @organizer)} class="object-contain object-left" />
     </div>
     """
   end
 
-  defp tabs() do
+  defp tabs(conn) do
     [
       %{title: "Event", path: ~p"/"},
       %{title: "Raw", path: ~p"/raw"},
@@ -43,6 +44,9 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       %{title: "Groups", path: ~p"/groups"},
       %{title: "Runs", path: ~p"/runs"}
     ]
+    |> Enum.map(fn %{path: path} = tab ->
+      %{tab | path: with_base_path(conn, path)}
+    end)
   end
 
   defp tab_class(true = _active),
@@ -53,6 +57,9 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   defp tab_class(false = _active), do: ""
 
+  attr :conn, :map
+  attr :sponsors, :list
+
   def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
 
   def sponsor_logos(assigns) do
@@ -61,13 +68,13 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
       <div class="flex flex-wrap justify-around bg-white my-2 p-2 gap-2">
         <%= for sponsor <- @sponsors do %>
-          <img src={brand_path(sponsor)} class="h-[4rem] object-contain shrink-1" />
+          <img src={brand_path(@conn, sponsor)} class="h-[4rem] object-contain shrink-1" />
         <% end %>
       </div>
     </div>
     """
   end
 
-  defp brand_path(brand),
-    do: @endpoint.path(brand.path)
+  defp brand_path(conn, brand),
+    do: with_base_path(conn, @endpoint.path(brand.path))
 end
