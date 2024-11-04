@@ -45,6 +45,10 @@ FTP server whenever a new result comes in to have them served as a static websit
 This will allow the attendees to use their mobile data connectivity to access
 the results and to not be limited by the local event WiFi range.
 
+> [!NOTE]
+> The resulting website uses a local `.htaccess` file. Make sure the web server
+> you're using supports mod_rewrite.
+
 See Configuration below for more details.
 
 ## Organizer and sponsor advertisements
@@ -71,8 +75,9 @@ background, it might work better to have a transparent PNG and leave a white
 outline around the lettering. This will make the logo look less jarring against
 the dark gray background of the header.
 
-Note: With footer present, try readjusting `TV_FONT_SIZE` to make the most out
-of the screen real estate. Recommended value for 1080p displays is `18.0`.
+> [!NOTE]
+> With footer present, try readjusting `TV_FONT_SIZE` to make the most out
+> of the screen real estate. Recommended value for 1080p displays is `18.0`.
 
 ## Running a release
 
@@ -89,8 +94,9 @@ the entire release directory with the new content.
 Unless you set `EVENT_DATE` environment variable, the program will read the
 same day's results by default.
 
-Note: Currently, if program is left running after the previous event, it needs
-to be restarted on the day of the next event to start reading new data.
+> [!NOTE]
+> Currently, if program is left running after the previous event, it needs
+> to be restarted on the day of the next event to start reading new data.
 
 ## Configuration
 
@@ -133,14 +139,12 @@ To continuously upload results to a remote server, set the following:
 * `EXPLORER_REMOTE_FTP_USER` - FTP username
 * `EXPLORER_REMOTE_FTP_PASS` - FTP password
 * `EXPLORER_REMOTE_FTP_BASE_DIR` (optional) - Directory path relative to FTP account home directory
-  where the website files are going to be uploaded (defaults to FTP account home directory). If the directory
-  does not exist, it will be created the first time the upload happens.
+  where the static version of explorer is going to be uploaded (defaults to FTP account home directory).
+  If the directory does not exist, it will be created the first time the upload happens.
 * `EXPLORER_REMOTE_HTTP_BASE_PATH` (optional) - URL base path where uploaded results are served from (defaults to "/").
 
-> Note: On Windows, if your password contains `^`, make sure to escape it with another `^`.
-
-> Note: The web server needs to be configured to serve pre-compressed pages. See
-> `misc/htaccess` for the base configuration.
+> [!NOTE]
+> On Windows, if your password contains `^`, make sure to escape it with another `^`.
 
 To display the event name on the Events page, you can either set `EVENT_NAME` directly or point `EVENT_SCHEDULE` to
 a CSV file containing the entire schedule of upcoming events. After that, the correct event name will be picked up
@@ -152,7 +156,8 @@ The event CSV file must have two columns:
 * `date` - Event date, in the `yyyy_mm_dd` format
 * `name` - Event name (must not contain any commas)
 
-> Note: The file must start with a header row containing field names.
+> [!NOTE]
+> The file must start with a header row containing field names.
 
 
 ## Developing

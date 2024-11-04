@@ -8,11 +8,15 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
 
   @root_font_size 16.0
 
-  def home(%{method: "HEAD"} = conn, _params) do
+  def index(%{method: "HEAD"} = conn, _params) do
     send_resp(conn, 200, "OK")
   end
 
-  def home(%{method: "GET"} = conn, _params) do
+  def index(%{method: "GET"} = conn, _params) do
+    redirect(conn, to: ~p"/event")
+  end
+
+  def event(%{method: "GET"} = conn, _params) do
     assigns =
       get_assigns(
         active_tab: "Event",

@@ -38,7 +38,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   defp tabs(conn) do
     [
-      %{title: "Event", path: ~p"/"},
+      %{title: "Event", path: ~p"/event"},
       %{title: "Raw", path: ~p"/raw"},
       %{title: "PAX", path: ~p"/pax"},
       %{title: "Groups", path: ~p"/groups"},

@@ -10,6 +10,33 @@ defmodule Conecerto.Scoreboard.Uploader do
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
 
+  @htaccess ~s(
+RewriteEngine On
+
+# Index redirects to event page
+RewriteRule "^$" event [R=302,L]
+
+# Deny Phoenix live reload stuff that doesn't exist
+RewriteRule "^phoenix/live_reload/frame$" event [R=404,L]
+
+# Serve gzip compressed files.
+RewriteCond "%{HTTP:Accept-Encoding}" "gzip"
+RewriteCond "%{REQUEST_FILENAME}\.html.gz" -s
+RewriteRule "^\(.*\)" "$1\.html.gz" [QSA]
+
+# Serve correct content types, and prevent mod_deflate double gzip.
+RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
+
+<FilesMatch "\(\.gz\)$">
+  Header set Content-Encoding gzip
+  Header append Vary Accept-Encoding
+</FilesMatch>
+
+# Redirect non-existent pages
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ".*" event [R=302,L]
+)
+
   def start_link(_) do
     args = %{
       client_args: Scoreboard.config(:explorer_remote_ftp),
@@ -34,6 +61,7 @@ defmodule Conecerto.Scoreboard.Uploader do
   def handle_continue(:upload_assets, state) do
     with {:ok, client} <- FTP.open(state.client_args),
          :ok <- FTP.mkdir(client, "/"),
+         :ok <- FTP.send_bin(client, @htaccess, "/.htaccess"),
          :ok <- send_static(client, "/favicon.ico"),
          :ok <- FTP.mkdir(client, "assets"),
          :ok <- send_static(client, "/assets/app.css"),
@@ -61,7 +89,7 @@ defmodule Conecerto.Scoreboard.Uploader do
     t0 = :os.system_time(:millisecond)
 
     with {:ok, client} <- FTP.open(state.client_args),
-         :ok <- send_page(client, base_path, "/", "index"),
+         :ok <- send_page(client, base_path, "/event"),
          :ok <- send_page(client, base_path, "/raw"),
          :ok <- send_page(client, base_path, "/pax"),
          :ok <- send_page(client, base_path, "/groups"),
@@ -85,13 +113,11 @@ defmodule Conecerto.Scoreboard.Uploader do
     {:noreply, state}
   end
 
-  defp send_page(client, base_path, path, new_name \\ nil) do
-    filename = new_name || path
-
+  defp send_page(client, base_path, path) do
     with conn <- Phoenix.ConnTest.build_conn(),
          conn <- Plug.Conn.assign(conn, :base_path, base_path),
          %{status: 200, resp_body: body} <- Phoenix.ConnTest.get(conn, path) do
-      FTP.send_bin(client, :zlib.gzip(body), "#{filename}.gz")
+      FTP.send_bin(client, :zlib.gzip(body), "#{path}.html.gz")
     else
       %Plug.Conn{status: status} ->
         {:error, "Could generate results page - request returned HTTP #{status}"}
