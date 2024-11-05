@@ -31,10 +31,6 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
   Header set Content-Encoding gzip
   Header append Vary Accept-Encoding
 </FilesMatch>
-
-# Redirect non-existent pages
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ".*" event [R=302,L]
 )
 
   def start_link(_) do
@@ -94,6 +90,7 @@ RewriteRule ".*" event [R=302,L]
          :ok <- send_page(client, base_path, "/pax"),
          :ok <- send_page(client, base_path, "/groups"),
          :ok <- send_page(client, base_path, "/runs"),
+         :ok <- send_page(client, base_path, "/cones"),
          :ok <- FTP.close(client) do
       t1 = :os.system_time(:millisecond)
       Logger.info("Results uploaded in #{t1 - t0}ms")

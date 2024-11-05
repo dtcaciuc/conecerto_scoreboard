@@ -21,6 +21,7 @@ defmodule Conecerto.ScoreboardWeb.Router do
     get "/pax", ExplorerController, :pax
     get "/groups", ExplorerController, :groups
     get "/runs", ExplorerController, :runs
+    get "/cones", ExplorerController, :cones
 
     live "/announce", Announce
     live "/tv", Tv

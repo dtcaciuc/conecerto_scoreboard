@@ -42,7 +42,8 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       %{title: "Raw", path: ~p"/raw"},
       %{title: "PAX", path: ~p"/pax"},
       %{title: "Groups", path: ~p"/groups"},
-      %{title: "Runs", path: ~p"/runs"}
+      %{title: "Runs", path: ~p"/runs"},
+      %{title: "Δs", path: ~p"/cones"}
     ]
     |> Enum.map(fn %{path: path} = tab ->
       %{tab | path: with_base_path(conn, path)}

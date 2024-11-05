@@ -67,6 +67,16 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     render(conn, :runs, assigns)
   end
 
+  def cones(conn, _params) do
+    assigns =
+      get_assigns(
+        active_tab: "Δs",
+        drivers: Scoreboard.list_total_cones()
+      )
+
+    render(conn, :cones, assigns)
+  end
+
   defp get_assigns(extra) do
     [
       root_font_size: @root_font_size,

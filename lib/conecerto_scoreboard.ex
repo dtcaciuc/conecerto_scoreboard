@@ -308,4 +308,32 @@ defmodule Conecerto.Scoreboard do
   defp select_counted_run(runs, run_no) do
     Enum.map(runs, fn run -> %{run | selected: run.counted_run_no == run_no} end)
   end
+
+  def list_total_cones() do
+    list_drivers_and_runs()
+    |> Enum.map(&Map.put(&1, :num_cones, count_cones(&1.runs)))
+    |> Enum.sort_by(& &1.num_cones, :desc)
+    |> Enum.filter(&(&1.num_cones > 0))
+  end
+
+  defp count_cones(runs) do
+    runs
+    |> Enum.map(fn
+      %{counted_run_no: -1} ->
+        0
+
+      %{penalty: ""} ->
+        0
+
+      %{penalty: penalty} ->
+        case Integer.parse(penalty) do
+          {num_cones, ""} ->
+            num_cones
+
+          _ ->
+            0
+        end
+    end)
+    |> Enum.sum()
+  end
 end

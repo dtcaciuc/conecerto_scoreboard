@@ -159,4 +159,45 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     </div>
     """
   end
+
+  attr :drivers, :list, required: true
+
+  def cones(assigns) do
+    ~H"""
+    <table class="border-collapse striped w-full">
+      <thead>
+        <th class="font-bold text-right pt-1">P</th>
+        <th class="font-bold text-left pl-2 pt-1">Driver</th>
+        <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
+        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Class</th>
+        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Model</th>
+        <th class="font-bold text-right pl-2 pt-1 pr-1">Cones</th>
+      </thead>
+      <tbody>
+        <%= for {d, pos} <- Enum.with_index(@drivers, 1) do %>
+          <tr>
+            <td class="text-right min-w-4">
+              <%= pos %>
+            </td>
+            <td class="text-left pl-2 align-top">
+              <%= d.driver_name %>
+            </td>
+            <td class="text-right pl-2 align-top max-sm:hidden">
+              <%= d.car_no %>
+            </td>
+            <td class="text-left pl-2 align-top max-sm:hidden">
+              <%= d.car_class %>
+            </td>
+            <td class="text-left pl-2 whitespace align-top max-sm:hidden">
+              <%= d.car_model %>
+            </td>
+            <td class="text-right pl-2 whitespace-nowrap pr-1">
+              <%= d.num_cones %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    """
+  end
 end
