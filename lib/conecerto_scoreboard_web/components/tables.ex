@@ -21,9 +21,11 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             <%= @time_column_title %>
           </div>
         </th>
-        <th class="font-bold whitespace-nowrap text-right pl-2 pt-1 pr-1" colspan="2">
+        <th class="font-bold whitespace-nowrap text-right pl-2 pt-1" colspan="2">
           Raw Interval
         </th>
+        <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">Score</th>
+        <th></th>
       </thead>
       <tbody>
         <%= for row <- @scores do %>
@@ -46,18 +48,21 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             <td class="text-right pl-2">
               <%= row |> get_in([Access.key!(@time_column_field)]) |> format_score() %>
             </td>
-
             <%= if row.pos == 1 do %>
               <th class="font-bold text-right pl-2">Top</th>
-              <th class="font-bold text-right pl-2 pr-1">Next</th>
+              <th class="font-bold text-right pl-2">Next</th>
             <% else %>
               <td class="text-right pl-2">
                 <%= row.raw_time_to_top |> format_score() %>
               </td>
-              <td class="text-right pl-2 pr-1">
+              <td class="text-right pl-2">
                 <%= row.raw_time_to_next |> format_score() %>
               </td>
             <% end %>
+            <td class="text-left text-right pl-2 max-sm:hidden">
+              <%= row.score |> format_score() %>
+            </td>
+            <td></td>
           </tr>
         <% end %>
       </tbody>

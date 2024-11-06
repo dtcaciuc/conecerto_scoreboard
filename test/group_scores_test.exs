@@ -57,7 +57,8 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
              car_model: "'86 Nissan 300ZX",
              pax_time: 35.366132,
              raw_time_to_top: +0.0,
-             raw_time_to_next: nil
+             raw_time_to_next: nil,
+             score: 100.000
            } = s1
 
     assert %{
@@ -69,7 +70,8 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
              car_model: "'19 Tesla 3",
              pax_time: 35.414995,
              raw_time_to_top: 0.05865906362544684,
-             raw_time_to_next: 0.05865906362544684
+             raw_time_to_next: 0.05865906362544684,
+             score: 99.86202737004481
            } = s2
 
     assert %{
@@ -81,7 +83,8 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
              car_model: "'99 Mazda Miata",
              pax_time: 37.866312,
              raw_time_to_top: 3.1567929292929295,
-             raw_time_to_next: 3.095097222222226
+             raw_time_to_next: 3.095097222222226,
+             score: 93.39735013011038
            } = s3
   end
 end

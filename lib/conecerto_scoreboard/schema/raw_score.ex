@@ -12,6 +12,7 @@ defmodule Conecerto.Scoreboard.Schema.RawScore do
     field :raw_time_to_top, :float
     field :raw_time_to_next, :float
 
+    field :score, :float, virtual: true
     field :selected, :boolean, virtual: true
   end
 end

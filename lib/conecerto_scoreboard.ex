@@ -62,11 +62,15 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_raw_scores() do
-    Repo.all(Schema.RawScore)
+    Schema.RawScore
+    |> Repo.all()
+    |> put_raw_scores()
   end
 
   def list_pax_scores() do
-    Repo.all(Schema.PaxScore)
+    Schema.PaxScore
+    |> Repo.all()
+    |> put_pax_scores()
   end
 
   def list_groups() do
@@ -96,12 +100,12 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_group_scores(name) do
-    Repo.all(
-      from(g in Schema.GroupScore,
-        where: g.group_name == ^name,
-        order_by: [:pos]
-      )
+    from(g in Schema.GroupScore,
+      where: g.group_name == ^name,
+      order_by: [:pos]
     )
+    |> Repo.all()
+    |> put_pax_scores()
   end
 
   def list_all_group_scores() do
@@ -130,7 +134,8 @@ defmodule Conecerto.Scoreboard do
   end
 
   defp emit_group([last | _rest] = scores, acc \\ []) do
-    {:cont, %{name: last.group_name, scores: Enum.reverse(scores)}, acc}
+    scores = scores |> Enum.reverse() |> put_pax_scores()
+    {:cont, %{name: last.group_name, scores: scores}, acc}
   end
 
   def list_recent_runs(num_runs \\ 10) do
@@ -335,5 +340,19 @@ defmodule Conecerto.Scoreboard do
         end
     end)
     |> Enum.sum()
+  end
+
+  defp put_raw_scores([]), do: []
+
+  defp put_raw_scores(results) do
+    best_time = Enum.min_by(results, & &1.raw_time).raw_time
+    Enum.map(results, fn r -> %{r | score: 100.0 * best_time / r.raw_time} end)
+  end
+
+  defp put_pax_scores([]), do: []
+
+  defp put_pax_scores(results) do
+    best_time = Enum.min_by(results, & &1.pax_time).pax_time
+    Enum.map(results, fn r -> %{r | score: 100.0 * best_time / r.pax_time} end)
   end
 end
