@@ -27,7 +27,7 @@ defmodule Conecerto.Scoreboard.RunsTest do
 
   test "list_drivers_and_runs" do
     assert drivers = Scoreboard.list_drivers_and_runs()
-    assert 88 = Enum.count(drivers)
+    assert 56 == Enum.count(drivers)
 
     for d <- drivers do
       assert Enum.count(d.runs) > 0

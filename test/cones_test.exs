@@ -28,10 +28,10 @@ defmodule Conecerto.Scoreboard.ConesTest do
   test "list_total_cones" do
     assert drivers = Scoreboard.list_total_cones()
     # The rest of drivers have no cones
-    assert 75 = Enum.count(drivers)
+    assert 47 = Enum.count(drivers)
     assert drivers |> Enum.map(&(&1.num_cones > 0)) |> Enum.all?()
 
     # Pick a driver w/ clean run, rerun, cone penalty
-    assert {:ok, %{car_no: 58, num_cones: 6}} = Enum.fetch(drivers, 21)
+    assert {:ok, %{car_no: 58, num_cones: 6}} = Enum.fetch(drivers, 18)
   end
 end

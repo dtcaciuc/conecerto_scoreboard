@@ -26,22 +26,22 @@ defmodule Conecerto.Scoreboard.GroupScoresTest do
   end
 
   test "list_all_group_scores" do
-    assert groups = Scoreboard.list_all_group_scores()
+    counts = %{
+      "Ladies" => 3,
+      "Novice" => 17,
+      "Race" => 9,
+      "Street 1" => 19,
+      "Street 2" => 6,
+      "Street 3" => 9,
+      "Touring 1" => 11,
+      "Touring 2" => 2
+    }
 
-    assert [
-             "Ladies",
-             "Novice",
-             "Race",
-             "Street 1",
-             "Street 2",
-             "Street 3",
-             "Touring 1",
-             "Touring 2"
-           ] =
-             for(g <- groups, do: g.name)
+    groups = Scoreboard.list_all_group_scores()
 
     for g <- groups do
       assert g.scores == Scoreboard.list_group_scores(g.name)
+      assert counts[g.name] == Enum.count(g.scores)
     end
 
     [ladies | _] = groups

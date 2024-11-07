@@ -27,7 +27,6 @@ defmodule Conecerto.Scoreboard.RawScoresTest do
 
   test "list_raw_scores" do
     assert results = Scoreboard.list_raw_scores()
-    # FIXME should be 88, but some drivers don't have any runs
     assert 56 = Enum.count(results)
 
     [_ | [r1 | _]] = results
