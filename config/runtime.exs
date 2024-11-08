@@ -7,6 +7,9 @@ if config_env() != :test do
   event_name =
     Conecerto.Scoreboard.Events.get_event_name(System.get_env("EVENT_SCHEDULE"), event_date)
 
+  explorer_colors =
+    Conecerto.ScoreboardWeb.Colors.read_colors(System.get_env("EXPLORER_COLORS"))
+
   config :conecerto_scoreboard, Conecerto.Scoreboard,
     event_date: event_date,
     event_name: System.get_env("EVENT_NAME", event_name),
@@ -21,6 +24,7 @@ if config_env() != :test do
       root: System.get_env("EXPLORER_REMOTE_FTP_BASE_DIR", System.get_env("LIVE_FTP_PATH", "/"))
     ],
     explorer_remote_http_base_path: System.get_env("EXPLORER_REMOTE_HTTP_BASE_PATH", "/"),
+    explorer_colors: explorer_colors,
     mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
     mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
     mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,

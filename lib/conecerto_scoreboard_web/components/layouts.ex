@@ -3,11 +3,11 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   embed_templates "layouts/*"
 
-  def top_nav(assigns) do
+  def header(assigns) do
     ~H"""
-    <div class={[
+    <header class={[
       "top-0 sticky z-50 mb3 flex justify-center border-b-2",
-      "bg-[color:--top-nav-fill-color] border-[--top-nav-border-color]"
+      "bg-[color:--header-fill-color] border-[--header-border-color]"
     ]}>
       <div class="flex justify-between basis-md">
         <div class="flex-auto flex max-sm:flex-col">
@@ -19,7 +19,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
           </div>
         </div>
       </div>
-    </div>
+    </header>
     """
   end
 
@@ -52,8 +52,8 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   defp tab_class(true = _active),
     do: [
-      "border-b-2 border-[--top-nav-active-text-color]",
-      "text-[--top-nav-active-text-color] mb-[-2px]"
+      "border-b-2 border-[--header-active-text-color]",
+      "text-[--header-active-text-color] mb-[-2px]"
     ]
 
   defp tab_class(false = _active), do: ""

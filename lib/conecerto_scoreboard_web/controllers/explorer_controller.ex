@@ -80,6 +80,7 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
   defp get_assigns(extra) do
     [
       root_font_size: @root_font_size,
+      colors: Conecerto.Scoreboard.config(:explorer_colors),
       event_name: Scoreboard.config(:event_name),
       last_updated_at: Scoreboard.last_updated_at(),
       organizer: Brands.get_organizer(),

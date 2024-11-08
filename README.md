@@ -51,6 +51,17 @@ the results and to not be limited by the local event WiFi range.
 
 See Configuration below for more details.
 
+## Customizing explorer colors
+
+Explorer can be configured to use a custom color scheme to match the club website
+theme or for other reasons.
+
+Make a copy of `misc/dark-colors.csv.template` or `misc/light-colors.csv.template`
+and adjust the values to your liking. The starter themes are very neutral and it
+will likely be sufficient to pick the right `header-active-text` accent color.
+
+Finally, set `EXPLORER_COLORS` envar to point to the custom CSV file.
+
 ## Organizer and sponsor advertisements
 
 Scoreboard can display organizer and event sponsors logos on the dashboard TV
@@ -107,6 +118,7 @@ The following environment variables need to be manually set:
 
 Additionally, you can optionally set the following:
 
+* `EXPLORER_COLORS` (path, optional) - Path to a CSV file with the custom explorer color palette.
 * `ANNOUNCE_FONT_SIZE` (float, optional) - /announce endpoint font size.
 * `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of

@@ -6,6 +6,7 @@ defmodule Conecerto.ScoreboardWeb.Router do
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, {Conecerto.ScoreboardWeb.Layouts, :root}
+    plug :put_default_colors
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -41,5 +42,9 @@ defmodule Conecerto.ScoreboardWeb.Router do
 
       live_dashboard "/dashboard", metrics: Conecerto.ScoreboardWeb.Telemetry
     end
+  end
+
+  defp put_default_colors(conn, _opts) do
+    assign(conn, :colors, Conecerto.ScoreboardWeb.Colors.default_colors())
   end
 end

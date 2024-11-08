@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <% top_nav_fill_color = "rgb(38, 38, 38)" %>
+    <% top_nav_fill_color = assigns[:colors]["header-fill"] %>
 
     <meta charset="utf-8" />
     <meta name="theme-color" content={top_nav_fill_color} />
@@ -13,13 +13,9 @@
     <link phx-track-static rel="stylesheet" href={with_base_path(@conn, ~p"/assets/app.css")} />
     <style>
       :root {
-        --primary-text-color: white;
-        --body-fill-color: rgb(23, 23, 23);              /* neutral-900 */
-        --panel-fill-color: rgb(38, 38, 38);
-        --top-nav-fill-color: <%= top_nav_fill_color %>; /* neutral-800 */
-        --top-nav-border-color: rgb(64, 64, 64);         /* neutral-700 */
-        --top-nav-active-text-color: rgb(239, 68, 68);   /* red-500 */
-        --table-stripe-fill-color: #383838;
+        <%= for {name, value} <- assigns[:colors] do %>
+          --<%= name %>-color: <%= value %>;
+        <% end %>
       }
 
       html {

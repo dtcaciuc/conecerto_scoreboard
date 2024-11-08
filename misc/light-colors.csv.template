@@ -1,0 +1,9 @@
+name,value
+body-text,#333333
+body-fill,white
+panel-fill,#FBFBFB
+header-fill,white
+header-border,#EEEEEE
+header-active-text,#CC0000
+table-stripe-fill,#F0F0F4
+table-selected-text,#FCD34D

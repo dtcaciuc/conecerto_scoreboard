@@ -1,4 +1,4 @@
-<body class="bg-[--body-fill-color] text-[--primary-text-color] overflow-y-auto">
+<body class="bg-[--body-fill-color] text-[--body-text-color] overflow-y-auto">
   <%!-- Shrink everything down to fit into iPhone 5 SE sized screen which is the smallest one we'll try to support --%>
   <style>
     @media
@@ -10,7 +10,7 @@
       }
     }
   </style>
-  <.top_nav {assigns} />
+  <.header {assigns} />
   <main>
     <.flash_group flash={@flash} />
     <div class="flex justify-center">

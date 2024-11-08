@@ -1,0 +1,9 @@
+name,value
+body-text,#FFFFFF
+body-fill,#171717
+panel-fill,#262626
+header-fill,#262626
+header-border,#404040
+header-active-text,#EF4444
+table-stripe-fill,#383838
+table-selected-text,#FCD34D
