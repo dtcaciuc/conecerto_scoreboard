@@ -26,10 +26,10 @@ defmodule Conecerto.ScoreboardWeb.Brands do
     do: {:ok, %{organizer: nil, sponsors: []}}
 
   def init(asset_dir: asset_dir) do
-    files = list_images(asset_dir)
+    brands = list_brands(asset_dir)
 
-    organizer = Enum.find(files, &organizer?(&1.name))
-    sponsors = Enum.reject(files, &organizer?(&1.name))
+    organizer = Enum.find(brands, &organizer?(&1.name))
+    sponsors = Enum.reject(brands, &organizer?(&1.name))
 
     {:ok, %{organizer: organizer, sponsors: sponsors}}
   end
@@ -46,7 +46,9 @@ defmodule Conecerto.ScoreboardWeb.Brands do
   def handle_call(:any?, _from, state),
     do: {:reply, state.organizer != nil || Enum.count(state.sponsors) > 0, state}
 
-  defp list_images(asset_dir) do
+  defp list_brands(asset_dir) do
+    urls = read_urls(Path.join(asset_dir, "urls.csv"))
+
     case File.ls(asset_dir) do
       {:ok, names} ->
         names
@@ -56,7 +58,11 @@ defmodule Conecerto.ScoreboardWeb.Brands do
 
           case file_hash(path) do
             {:ok, hash} ->
-              %{name: name, path: Path.join(@root_path, "#{name}?v=#{hash}")}
+              %{
+                name: name,
+                path: Path.join(@root_path, "#{name}?v=#{hash}"),
+                url: urls[Path.rootname(name)]
+              }
 
             _ ->
               Logger.error("Could not hash #{path}; skipping")
@@ -73,6 +79,32 @@ defmodule Conecerto.ScoreboardWeb.Brands do
         Logger.error("Could not list brands directory #{asset_dir} contents - #{inspect(error)}")
         []
     end
+  end
+
+  defp read_urls(path) do
+    if File.exists?(path) do
+      try do
+        path
+        |> File.stream!()
+        |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
+        |> Enum.reduce(%{}, &parse_url_row/2)
+      rescue
+        err in File.Error ->
+          Logger.warning("Could not read brand URLs - #{inspect(err)}")
+          %{}
+      end
+    else
+      %{}
+    end
+  end
+
+  defp parse_url_row(%{"name" => name, "url" => url}, urls) do
+    Map.put(urls, name, url)
+  end
+
+  defp parse_url_row(row, urls) do
+    Logger.warning("Could not read brand URL entry - #{inspect(row)}")
+    urls
   end
 
   defp organizer?(name),

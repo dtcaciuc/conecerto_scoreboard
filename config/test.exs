@@ -18,7 +18,11 @@ config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
   secret_key_base: "s55wO4EN/anFccVU3tDUT6xGQzD+skcYEMZ4wpllEN8PZ+TNzwl14vWWTBYBDLqc",
   server: false
 
-config :conecerto_scoreboard, Conecerto.Scoreboard, watcher: nil, uploader: nil
+config :conecerto_scoreboard, Conecerto.Scoreboard,
+  watcher: nil,
+  uploader: nil,
+  event_date: "2023_01_01",
+  explorer_colors: %{}
 
 # Print only warnings and errors during test
 config :logger, level: :warning

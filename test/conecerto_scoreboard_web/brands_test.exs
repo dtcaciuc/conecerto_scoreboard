@@ -56,4 +56,15 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
     assert name == name
     assert String.starts_with?(path, "/brands/organizer.jpg?v=")
   end
+
+  @tag :tmp_dir
+  test "reading optional URLs", %{tmp_dir: tmp_dir} do
+    File.write!(Path.join(tmp_dir, "organizer.jpg"), "")
+    File.write!(Path.join(tmp_dir, "a-sponsor.jpg"), "")
+    File.write!(Path.join(tmp_dir, "urls.csv"), "name,url\norganizer,http://organizer.local")
+
+    pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
+    assert %{url: "http://organizer.local"} = GenServer.call(pid, :get_organizer)
+    assert [%{url: nil}] = GenServer.call(pid, :get_sponsors)
+  end
 end
