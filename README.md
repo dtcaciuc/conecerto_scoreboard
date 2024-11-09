@@ -37,6 +37,29 @@ network setup, and make the script run on the startup. The script will wait
 until the scoreboard server is reachable and then attempt to start Chromium in
 kiosk mode.
 
+## Configuring event names and dates
+
+To display custom event names in the explorer, set `EVENT_SCHEDULE` envar to
+point to a CSV file containing the entire schedule of upcoming events. After
+that, the correct event name will be picked up automatically for whatever day
+you launch the scoreboard on. The latter is much easier and allows you to define
+the schedule once and forget about it (unless some of the event dates change).
+
+The event CSV file must have two columns:
+
+* `date` - Event date, in the `yyyy_mm_dd` format
+* `name` - Event name (must not contain any commas)
+
+> [!NOTE]
+> The file must start with a header row containing field names.
+
+You can also set `EVENT_NAME` envar to name the current event directly, however
+you'll need to update the value for every event, and so configuring the schedule
+instead is preferable.
+
+If neither event name nor schedule are configured, explorer will display the
+current date instead.
+
 ## Posting results to a remote server
 
 If the timing computer where Scoreboard is running has access to the Internet,
@@ -170,20 +193,6 @@ To continuously upload results to a remote server, set the following:
 
 > [!NOTE]
 > On Windows, if your password contains `^`, make sure to escape it with another `^`.
-
-To display the event name on the Events page, you can either set `EVENT_NAME` directly or point `EVENT_SCHEDULE` to
-a CSV file containing the entire schedule of upcoming events. After that, the correct event name will be picked up
-automatically for whatever day you launch the scoreboard on. The latter is much easier and allows you to define
-the schedule once and forget about it (unless some of the event dates change).
-
-The event CSV file must have two columns:
-
-* `date` - Event date, in the `yyyy_mm_dd` format
-* `name` - Event name (must not contain any commas)
-
-> [!NOTE]
-> The file must start with a header row containing field names.
-
 
 ## Developing
 
