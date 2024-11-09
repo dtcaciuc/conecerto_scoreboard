@@ -10,7 +10,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       "bg-[color:--header-fill-color] border-[--header-border-color]"
     ]}>
       <div class="flex justify-between basis-md">
-        <div class="flex-auto flex max-sm:flex-col">
+        <div class="flex-auto flex justify-around max-sm:flex-col">
           <.organizer_logo conn={@conn} organizer={@organizer} />
           <div class="flex text-xl text-center justify-center leading-[3rem] child:block child:px-2 font-semibold">
             <%= for tab <- tabs(@conn) do %>
@@ -31,7 +31,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
   defp organizer_logo(assigns) do
     ~H"""
     <div class="flex flex-auto max-sm:justify-center basis-full sm:h-[3rem] max-sm:h-[4rem]">
-      <img src={brand_path(@conn, @organizer)} class="object-contain object-left" />
+      <img src={brand_path(@conn, @organizer)} class="object-contain object-center" />
     </div>
     """
   end
