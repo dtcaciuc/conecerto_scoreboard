@@ -29,10 +29,12 @@ It provides the following endpoints:
 
 ## Running a release
 
-Set up environment variables described in this guide, and run `bin/server.bat` in the
+Follow this guide to set up the configuration and run `bin/server.bat` in the
 release directory.
 
-The program is configured through [environment variables](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1).
+The program is configured through [environment
+variables](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
+(or _envars_).
 
 Rather than modifying `server.bat`, it's recommended to create a wrapper `.bat`
 file outside of the release directory and place all of the configuration there.
@@ -40,11 +42,11 @@ This way, when it's time to upgrade to a new version, you can simply replace
 the entire release directory with the new content.
 
 Unless you set `EVENT_DATE` environment variable, the program will read the
-same day's results by default.
+data for the date on which it was started.
 
 > [!NOTE]
-> Currently, if program is left running after the previous event, it needs
-> to be restarted on the day of the next event to start reading new data.
+> If program was left running after the previous event, it needs to be restarted
+> on the day of the next event to start reading new data.
 
 ## Setting up TV kiosk
 
@@ -53,16 +55,16 @@ similar single board PC running Chromium browser which connects to the timing
 computer via WiFi or an Ethernet cable. Copy the `misc/kiosk.sh` template
 script, change the IP to the one of the timing computer in your specific
 network setup, and make the script run on the startup. The script will wait
-until the scoreboard server is reachable and then attempt to start Chromium in
+until Scoreboard server is reachable and then attempt to start Chromium in
 kiosk mode.
 
 ## Configuring event names and dates
 
-To display custom event names in the explorer, set `EVENT_SCHEDULE` envar to
-point to a CSV file containing the entire schedule of upcoming events. After
-that, the correct event name will be picked up automatically for whatever day
-you launch the scoreboard on. The latter is much easier and allows you to define
-the schedule once and forget about it (unless some of the event dates change).
+By default, Scoreboard reuses event date as the event name. To display custom
+event names in the explorer, set `EVENT_SCHEDULE` envar to point to a CSV file
+containing the entire schedule of the upcoming events. After that, the correct
+event name will be picked up automatically for whatever day you launch
+Scoreboard on.
 
 The event CSV file must have two columns:
 
@@ -73,23 +75,20 @@ The event CSV file must have two columns:
 > The file must start with a header row containing field names.
 
 You can also set `EVENT_NAME` envar to name the current event directly, however
-you'll need to update the value for every event, and so configuring the schedule
-instead is preferable.
-
-If neither event name nor schedule are configured, explorer will display the
-current date instead.
+using the schedule is much easier since you can set it once and forget
+about it (unless some of the event dates change).
 
 ## Publishing results to a remote server
 
 If the timing computer where Scoreboard is running has access to the Internet,
 the program can be set up to continuously upload results explorer contents to an
-FTP server whenever a new result comes in to have them served as a static website.
-This will allow the attendees to use their mobile data connectivity to access
-the results and to not be limited by the local event WiFi range.
+FTP server whenever a new result comes in to have them served as a static
+website. This will allow the attendees to use their mobile data connectivity to
+access the results and to not be limited by the local event WiFi range.
 
 > [!NOTE]
-> The resulting website uses a local `.htaccess` file. Make sure the web server
-> you're using supports mod_rewrite.
+> The resulting website contains a local `.htaccess` file. Make sure the web
+> server you're using supports mod_rewrite.
 
 See Configuration below for more details.
 
@@ -100,8 +99,7 @@ publishes the results once, then exits. This is useful if final results are
 published to one location as live results but are also exported after the
 event is over to another one.
 
-The command takes the same environment variable configuration as the main
-scoreboard program.
+The command takes the same environment variable configuration as the main program.
 
 Just like when running the server, it's recommended to create a wrapper batch
 file which will allow you to configure the publisher with environment variables.
@@ -113,11 +111,12 @@ generate date string in the correct format that can be used to for needed
 envars. For example,
 
 ```
-REM Batch files don't have a good way to set variable to a command output.
+REM This sets EVENT_DATE; batch files don't have a good way to set variable to a command output.
 for /f "delims=" %%i in ('path\to\scoreboard\bin\today.bat') do set EVENT_DATE=%%i
 
 set EXPLORER_REMOTE_HTTP_BASE_PATH=/results/%EVENT_DATE%
 ```
+
 
 ## Customizing explorer colors
 
@@ -140,8 +139,9 @@ To enable, create a separate brands directory and set `BRANDS_DIR` configuration
 variable (see below).
 
 ### Logos
-Place organizer and sponsor logos in either .jpg or .png format into it. Organizer
-logo must be named `organizer.jpg/png` while sponsor logos can have any file name.
+Place organizer and sponsor logos in either .jpg or .png format into the
+directory. Organizer logo must be named `organizer.jpg/png` while sponsor logos
+can have any file name.
 
 All logos should:
 
@@ -152,9 +152,6 @@ All logos should:
 Organizer logo will be shown both in the TV dashboard footer which has white
 background and the explorer header with background determined by `EXPLORER_COLORS`,
 so it might take some tweaking to make it look good in both of these spots.
-
-To make the logo compatible with both bright and dark backround, you canse use a
-transparent PNG and leave a white outline around the contents.
 
 > [!NOTE]
 > With footer present, try readjusting `TV_FONT_SIZE` to make the most out
@@ -175,8 +172,8 @@ directory. The event CSV file must have two columns:
 
 The following environment variables need to be manually set:
 
-* `PHX_HOST` - IP/hostname of the machine that will be running the scoreboard.
-  This is required for LiveViews to work and cannot just be `localhost`.
+* `PHX_HOST` - IP/hostname of the machine that will be running Scoreboard.
+  This is required for TV dashboard to work and cannot just be `localhost`.
 
 Additionally, you can optionally set the following:
 
@@ -224,7 +221,7 @@ To continuously upload results to a remote server, set the following:
 
 ### Runtime
 
-You must have Elixir 1.17 & Erlang/OTP 27 installed to build the scoreboard.
+You must have Elixir 1.17 & Erlang/OTP 27 installed to build Scoreboard.
 
 ### Notable dependencies
 
