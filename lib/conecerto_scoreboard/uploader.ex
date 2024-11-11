@@ -94,6 +94,7 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
          :ok <- FTP.close(client) do
       t1 = :os.system_time(:millisecond)
       Logger.info("Results uploaded in #{t1 - t0}ms")
+      Phoenix.PubSub.broadcast(Conecerto.Scoreboard.PubSub, "explorer", :uploaded)
     else
       {:error, reason} when is_binary(reason) ->
         Logger.error("could not upload results; #{reason}")

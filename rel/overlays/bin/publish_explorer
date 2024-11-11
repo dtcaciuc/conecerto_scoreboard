@@ -1,0 +1,3 @@
+#!/bin/sh
+cd -P -- "$(dirname -- "$0")"
+exec ./conecerto_scoreboard eval Conecerto.Scoreboard.Explorer.publish_once
