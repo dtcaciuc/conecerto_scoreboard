@@ -27,6 +27,25 @@ It provides the following endpoints:
   and driver's updated results in each of the raw, PAX, and group(s)
   categories.
 
+## Running a release
+
+Set up environment variables described in this guide, and run `bin/server.bat` in the
+release directory.
+
+The program is configured through [environment variables](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1).
+
+Rather than modifying `server.bat`, it's recommended to create a wrapper `.bat`
+file outside of the release directory and place all of the configuration there.
+This way, when it's time to upgrade to a new version, you can simply replace
+the entire release directory with the new content.
+
+Unless you set `EVENT_DATE` environment variable, the program will read the
+same day's results by default.
+
+> [!NOTE]
+> Currently, if program is left running after the previous event, it needs
+> to be restarted on the day of the next event to start reading new data.
+
 ## Setting up TV kiosk
 
 The suggested way to drive the live dashboard TV is with a Raspberry Pi 4 or a
@@ -60,7 +79,7 @@ instead is preferable.
 If neither event name nor schedule are configured, explorer will display the
 current date instead.
 
-## Posting results to a remote server
+## Publishing results to a remote server
 
 If the timing computer where Scoreboard is running has access to the Internet,
 the program can be set up to continuously upload results explorer contents to an
@@ -73,6 +92,32 @@ the results and to not be limited by the local event WiFi range.
 > you're using supports mod_rewrite.
 
 See Configuration below for more details.
+
+### Publishing on demand
+
+Scoreboard provides a dedicated `bin/publish_explorer` command which starts up,
+publishes the results once, then exits. This is useful if final results are
+published to one location as live results but are also exported after the
+event is over to another one.
+
+The command takes the same environment variable configuration as the main
+scoreboard program.
+
+Just like when running the server, it's recommended to create a wrapper batch
+file which will allow you to configure the publisher with environment variables.
+You will likely need to set `EXPLORER_REMOTE_HTTP_BASE_PATH` envar which needs
+to be set to the URL path where the result are going to be served from.
+
+If you're organizing the results by date, you can use `bin/today` utility to
+generate date string in the correct format that can be used to for needed
+envars. For example,
+
+```
+REM Batch files don't have a good way to set variable to a command output.
+for /f "delims=" %%i in ('path\to\scoreboard\bin\today.bat') do set EVENT_DATE=%%i
+
+set EXPLORER_REMOTE_HTTP_BASE_PATH=/results/%EVENT_DATE%
+```
 
 ## Customizing explorer colors
 
@@ -125,25 +170,6 @@ directory. The event CSV file must have two columns:
 
 > [!NOTE]
 > The file must start with a header row containing field names.
-
-## Running a release
-
-Set up environment variables listed below, and run `bin/server.bat` in the
-release directory.
-
-The program is configured through [environment variables](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1).
-
-Rather than modifying `server.bat`, it's recommended to create a wrapper `.bat`
-file outside of the release directory and place all of the configuration there.
-This way, when it's time to upgrade to a new version, you can simply replace
-the entire release directory with the new content.
-
-Unless you set `EVENT_DATE` environment variable, the program will read the
-same day's results by default.
-
-> [!NOTE]
-> Currently, if program is left running after the previous event, it needs
-> to be restarted on the day of the next event to start reading new data.
 
 ## Configuration
 
