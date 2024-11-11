@@ -19,6 +19,7 @@ defmodule Conecerto.Scoreboard.Release do
   end
 
   # Alteration of Mix.Tasks.Release.make_tar to create zip files instead of tarballs.
+  # Simplified to always include erts.
   def make_zip(release) do
     build_path = Mix.Project.build_path()
 
@@ -34,35 +35,19 @@ defmodule Conecerto.Scoreboard.Release do
 
     info(release, [:green, "* building ", :reset, out_path])
 
-    lib_dirs =
-      Enum.reduce(release.applications, [], fn {name, app_config}, acc ->
-        vsn = Keyword.fetch!(app_config, :vsn)
-        [Path.join("lib", "#{name}-#{vsn}") | acc]
-      end)
-
-    erts_dir =
-      case release.erts_source do
-        nil -> []
-        _ -> ["erts-#{release.erts_version}"]
-      end
-
-    release_files =
-      for basename <- File.ls!(Path.join(release.path, "releases")),
-          not File.dir?(Path.join([release.path, "releases", basename])),
-          do: Path.join("releases", basename)
-
-    dirs =
-      ["bin", Path.join("releases", release.version)] ++
-        erts_dir ++ lib_dirs ++ release_files
+    if release.erts_source == nil do
+      raise "Excluding erts from the release zip file is not supported"
+    end
 
     files =
-      dirs
-      |> Enum.filter(&File.exists?(Path.join(release.path, &1)))
-      |> Kernel.++(release.overlays)
+      File.ls!(release.path)
+      |> Enum.filter(&(not String.starts_with?(&1, ".")))
       |> Enum.map(&String.to_charlist(&1))
 
     File.rm(out_path)
-    {:ok, _filename} = :zip.zip(String.to_charlist(out_path), files, cwd: release.path)
+
+    {:ok, _filename} =
+      :zip.zip(String.to_charlist(out_path), files, cwd: String.to_charlist(release.path))
 
     release
   end
