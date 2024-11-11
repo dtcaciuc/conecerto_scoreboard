@@ -28,3 +28,5 @@ jobs:
           MIX_ENV: prod
       - name: Upload
         run: gh release upload ${{github.event.release.tag_name}} (Get-Item .\_build\prod\*.zip)
+        env:
+          GH_TOKEN: ${{ github.token }}
