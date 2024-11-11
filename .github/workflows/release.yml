@@ -1,0 +1,27 @@
+name: Build release
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+# Make sure the GITHUB_TOKEN has permission to upload to our releases
+permissions:
+  contents: write
+
+jobs:
+  mix-release:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '27'
+          elixir-version: '1.17'
+      - name: Get dependencies
+        shell: cmd
+        run: mix deps.get
+      - name: Build & upload
+        shell: cmd
+        run: |
+          release.bat
+          gh release upload ${{github.event.release.tag_name}} _build/prod/*.zip
