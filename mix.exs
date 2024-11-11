@@ -9,7 +9,12 @@ defmodule Conecerto.Scoreboard.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        conecerto_scoreboard: [
+          steps: [:assemble, &Conecerto.Scoreboard.Release.make_zip/1]
+        ]
+      ]
     ]
   end
 
