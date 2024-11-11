@@ -29,7 +29,8 @@ defmodule Conecerto.Scoreboard.Release do
         release.path
       end
 
-    out_path = Path.join(dir_path, "#{release.name}-#{release.version}.zip")
+    {_os_family, os_name} = :os.type()
+    out_path = Path.join(dir_path, "#{release.name}-#{release.version}-#{os_name}.zip")
 
     info(release, [:green, "* building ", :reset, out_path])
 
