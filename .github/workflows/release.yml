@@ -18,10 +18,13 @@ jobs:
           otp-version: '27'
           elixir-version: '1.17'
       - name: Get dependencies
-        shell: cmd
         run: mix deps.get
-      - name: Build & upload
-        shell: cmd
+      - name: Build
         run: |
-          build_release.bat
-          upload_release.bat ${{github.event.release.tag_name}}
+          mix assets.deploy
+          mix release
+          mix phx.digest.clean --all
+        env:
+          MIX_ENV: prod
+      - name: Upload
+        run: gh release upload ${{github.event.release.tag_name}} (Get-Item .\_build\prod\*.tar)

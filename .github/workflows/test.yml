@@ -15,8 +15,6 @@ jobs:
           otp-version: '27'
           elixir-version: '1.17'
       - name: Get dependencies
-        shell: cmd
         run: mix deps.get
       - name: Test
-        shell: cmd
         run: mix test
