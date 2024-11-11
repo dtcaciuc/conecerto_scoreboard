@@ -23,5 +23,5 @@ jobs:
       - name: Build & upload
         shell: cmd
         run: |
-          release.bat
-          gh release upload ${{github.event.release.tag_name}} _build/prod/*.zip
+          build_release.bat
+          upload_release.bat ${{github.event.release.tag_name}}
