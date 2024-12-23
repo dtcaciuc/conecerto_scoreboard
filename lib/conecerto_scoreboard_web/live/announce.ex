@@ -83,13 +83,13 @@ defmodule Conecerto.ScoreboardWeb.Announce do
     ~H"""
     <div>
       <div class="text-2xl text-center mb-2 font-bold">
-        <%= @view_title %>
+        {@view_title}
       </div>
       <table class="border-collapse striped w-full">
         <thead>
           <th class="font-bold text-right">P</th>
           <th class="font-bold text-left pl-2">Driver</th>
-          <th class="font-bold whitespace-nowrap text-right"><%= @time_column_title %></th>
+          <th class="font-bold whitespace-nowrap text-right">{@time_column_title}</th>
           <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">Raw Interval</th>
         </thead>
         <.announce_scores_page rows={@scores.top10} time_column_field={@time_column_field} />
@@ -108,23 +108,23 @@ defmodule Conecerto.ScoreboardWeb.Announce do
       <%= for row <- @rows do %>
         <tr class={if row.selected, do: "text-amber-300"}>
           <td class="text-right">
-            <%= row.pos %>
+            {row.pos}
           </td>
           <td class="text-left max-w-36 truncate pl-2">
-            <%= row.driver_name %>
+            {row.driver_name}
           </td>
           <td class="text-right pl-2">
-            <%= row |> get_in([Access.key!(@time_column_field)]) |> format_score() %>
+            {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
           </td>
           <%= if row.pos == 1 do %>
             <td class="font-bold text-right">Top</td>
             <td class="font-bold text-right pl-2">Next</td>
           <% else %>
             <td class="text-right pl-2">
-              <%= row.raw_time_to_top |> format_score() %>
+              {row.raw_time_to_top |> format_score()}
             </td>
             <td class="text-right pl-2">
-              <%= row.raw_time_to_next |> format_score() %>
+              {row.raw_time_to_next |> format_score()}
             </td>
           <% end %>
         </tr>

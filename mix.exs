@@ -5,7 +5,7 @@ defmodule Conecerto.Scoreboard.MixProject do
     [
       app: :conecerto_scoreboard,
       version: "0.9.0-rc.7",
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -39,11 +39,11 @@ defmodule Conecerto.Scoreboard.MixProject do
     [
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.6"},
-      {:ecto_sql, "~> 3.11"},
-      {:ecto_sqlite3, "~> 0.16"},
+      {:ecto_sql, "~> 3.12"},
+      {:ecto_sqlite3, "~> 0.17"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 0.20"},
+      {:phoenix_live_view, "~> 1.0"},
       {:plug, "~> 1.16"},
       {:floki, "~> 0.36", only: :test},
       {:phoenix_live_dashboard, "~> 0.8"},

@@ -15,11 +15,11 @@
     <.flash_group flash={@flash} />
     <div class="flex justify-center">
       <div class="basis-md">
-        <%= @inner_content %>
+        {@inner_content}
         <.sponsor_logos conn={@conn} sponsors={@sponsors} />
         <div class="p-1 mt-4 mb-3">
           <div class="text-xl text-center font-semibold pb-2">Last Updated</div>
-          <div class="text-center"><%= @last_updated_at %></div>
+          <div class="text-center">{@last_updated_at}</div>
         </div>
       </div>
     </div>

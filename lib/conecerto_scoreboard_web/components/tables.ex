@@ -18,7 +18,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Model</th>
         <th class="font-bold whitespace-nowrap text-right relative pt-1">
           <div class="absolute top-0 right-0 pt-1">
-            <%= @time_column_title %>
+            {@time_column_title}
           </div>
         </th>
         <th class="font-bold whitespace-nowrap text-right pl-2 pt-1" colspan="2">
@@ -31,36 +31,36 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <%= for row <- @scores do %>
           <tr>
             <td class="text-right min-w-4">
-              <%= row.pos %>
+              {row.pos}
             </td>
             <td class="text-left max-w-36 truncate pl-2">
-              <%= row.driver_name %>
+              {row.driver_name}
             </td>
             <td class="text-right pl-2 max-sm:hidden">
-              <%= row.car_no %>
+              {row.car_no}
             </td>
             <td class="text-left whitespace-nowrap pl-2 max-sm:hidden">
-              <%= row.car_class %>
+              {row.car_class}
             </td>
             <td class="text-left max-w-36 truncate pl-2 max-sm:hidden">
-              <%= row.car_model %>
+              {row.car_model}
             </td>
             <td class="text-right pl-2">
-              <%= row |> get_in([Access.key!(@time_column_field)]) |> format_score() %>
+              {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
             </td>
             <%= if row.pos == 1 do %>
               <th class="font-bold text-right pl-2">Top</th>
               <th class="font-bold text-right pl-2">Next</th>
             <% else %>
               <td class="text-right pl-2">
-                <%= row.raw_time_to_top |> format_score() %>
+                {row.raw_time_to_top |> format_score()}
               </td>
               <td class="text-right pl-2">
-                <%= row.raw_time_to_next |> format_score() %>
+                {row.raw_time_to_next |> format_score()}
               </td>
             <% end %>
             <td class="text-left text-right pl-2 max-sm:hidden">
-              <%= row.score |> format_score() %>
+              {row.score |> format_score()}
             </td>
             <td></td>
           </tr>
@@ -87,25 +87,25 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <%= for d <- @drivers do %>
           <tr>
             <td class="text-left pl-2 py-1 align-top">
-              <%= d.driver_name %>
+              {d.driver_name}
             </td>
             <td class="text-right pl-2 py-1 align-top max-sm:hidden">
-              <%= d.car_no %>
+              {d.car_no}
             </td>
             <td class="text-left pl-2 py-1 align-top max-sm:hidden">
-              <%= d.car_class %>
+              {d.car_class}
             </td>
             <td class="text-left pl-2 py-1 whitespace align-top max-sm:hidden">
-              <%= d.car_model %>
+              {d.car_model}
             </td>
             <td class="text-right pl-2 py-1 whitespace-nowrap relative">
               <%= for r <- d.runs do %>
-                <div class={run_time_class(r)}><%= r.run_time |> format_score() %></div>
+                <div class={run_time_class(r)}>{r.run_time |> format_score()}</div>
               <% end %>
             </td>
             <td class="text-left pl-2 py-1 whitespace-nowrap">
               <%= for r <- d.runs do %>
-                <div><%= r.penalty |> format_penalty() %></div>
+                <div>{r.penalty |> format_penalty()}</div>
               <% end %>
             </td>
           </tr>
@@ -137,25 +137,25 @@ defmodule Conecerto.ScoreboardWeb.Tables do
           <%= for row <- @runs do %>
             <tr>
               <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2">
-                <%= row.driver_name %>
+                {row.driver_name}
               </td>
               <td class="text-right pl-2 max-sm:hidden">
-                <%= row.car_no %>
+                {row.car_no}
               </td>
               <td class="text-left pl-2 max-sm:hidden">
-                <%= row.car_class %>
+                {row.car_class}
               </td>
               <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 max-sm:hidden">
-                <%= row.car_model %>
+                {row.car_model}
               </td>
               <td class="text-right pl-2">
-                <%= row.counted_run_no |> format_run_no() %>
+                {row.counted_run_no |> format_run_no()}
               </td>
               <td class="text-right pl-2 whitespace-nowrap">
-                <div><%= row.run_time |> format_score() %></div>
+                <div>{row.run_time |> format_score()}</div>
               </td>
               <td class="text-left pl-2 whitespace-nowrap">
-                <div><%= row.penalty |> format_penalty() %></div>
+                <div>{row.penalty |> format_penalty()}</div>
               </td>
             </tr>
           <% end %>
@@ -181,19 +181,19 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <%= for d <- @drivers do %>
           <tr>
             <td class="text-left pl-1 align-top">
-              <%= d.driver_name %>
+              {d.driver_name}
             </td>
             <td class="text-right pl-2 align-top max-sm:hidden">
-              <%= d.car_no %>
+              {d.car_no}
             </td>
             <td class="text-left pl-2 align-top max-sm:hidden">
-              <%= d.car_class %>
+              {d.car_class}
             </td>
             <td class="text-left pl-2 whitespace align-top max-sm:hidden">
-              <%= d.car_model %>
+              {d.car_model}
             </td>
             <td class="text-right pl-2 whitespace-nowrap pr-1">
-              <%= d.num_cones %>
+              {d.num_cones}
             </td>
           </tr>
         <% end %>

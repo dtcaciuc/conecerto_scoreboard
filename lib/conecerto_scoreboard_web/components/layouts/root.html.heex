@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix={title_suffix(assigns[:event_name])}>
-      <%= assigns[:page_title] || assigns[:active_tab] || "Home" %>
+      {assigns[:page_title] || assigns[:active_tab] || "Home"}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={with_base_path(@conn, ~p"/assets/app.css")} />
     <style>
@@ -42,5 +42,5 @@
     >
     </script>
   </head>
-  <%= @inner_content %>
+  {@inner_content}
 </html>

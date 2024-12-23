@@ -118,7 +118,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
           <th class="font-bold text-left pl-2 pt-0">Model</th>
           <th class="font-bold whitespace-nowrap text-right relative pt-0">
             <div class="absolute top-0 right-0 pt-0">
-              <%= @time_column_title %>
+              {@time_column_title}
             </div>
           </th>
           <th class="font-bold whitespace-nowrap text-right pl-2 pt-0" colspan="2">Raw Interval</th>
@@ -139,22 +139,22 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       <%= for row <- @rows do %>
         <tr>
           <td class="text-right">
-            <%= row.pos %>
+            {row.pos}
           </td>
           <td class="text-left max-w-36 truncate pl-2">
-            <%= row.driver_name %>
+            {row.driver_name}
           </td>
           <td class="text-right pl-2">
-            <%= row.car_no %>
+            {row.car_no}
           </td>
           <td class="text-left pl-2">
-            <%= row.car_class %>
+            {row.car_class}
           </td>
           <td class="text-left max-w-36 truncate pl-2">
-            <%= row.car_model %>
+            {row.car_model}
           </td>
           <td class="text-right pl-2">
-            <%= row |> get_in([Access.key!(@time_column_field)]) |> format_score() %>
+            {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
           </td>
 
           <%= if row.pos == 1 do %>
@@ -162,10 +162,10 @@ defmodule Conecerto.ScoreboardWeb.Tv do
             <td class="font-bold text-right pl-2">Next</td>
           <% else %>
             <td class="text-right pl-2">
-              <%= row.raw_time_to_top |> format_score() %>
+              {row.raw_time_to_top |> format_score()}
             </td>
             <td class="text-right pl-2">
-              <%= row.raw_time_to_next |> format_score() %>
+              {row.raw_time_to_next |> format_score()}
             </td>
           <% end %>
         </tr>
@@ -185,9 +185,9 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   defp paged_scores_title(assigns) do
     ~H"""
     <div class="text-2xl text-center mb-2 font-bold">
-      <%= @title %>
+      {@title}
       <%= if @scores.current != nil and @scores.num_pages > 1 do %>
-        (<%= @scores.current.num %>/<%= @scores.num_pages %>)
+        ({@scores.current.num}/{@scores.num_pages})
       <% end %>
     </div>
     """
