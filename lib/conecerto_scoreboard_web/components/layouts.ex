@@ -9,12 +9,12 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       "top-0 sticky z-50 mb3 flex justify-center border-b-2",
       "bg-[color:--header-fill-color] border-[--header-border-color]"
     ]}>
-      <div class="flex justify-between basis-md">
-        <div class="flex-auto flex justify-around max-sm:flex-col">
+      <div class="flex justify-around basis-md">
+        <div class="flex-auto flex justify-between max-sm:flex-col">
           <.organizer_logo conn={@conn} organizer={@organizer} />
           <div class="flex text-xl text-center justify-center leading-[3rem] child:block child:px-2 font-semibold">
             <%= for tab <- tabs(@conn) do %>
-              <a class={tab_class(tab.title == @active_tab)} href={tab.path}><%= tab.title %></a>
+              <a class={tab_class(tab.title == @active_tab)} href={tab.path}>{tab.title}</a>
             <% end %>
           </div>
         </div>
@@ -30,11 +30,9 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   defp organizer_logo(assigns) do
     ~H"""
-    <div class="flex flex-auto max-sm:justify-center basis-full sm:h-[3rem] max-sm:h-[4rem]">
-      <a href={@organizer.url} class="flex">
-        <img src={brand_path(@conn, @organizer)} class="object-contain object-center" />
-      </a>
-    </div>
+    <a href={@organizer.url} class="flex sm:h-[3rem] max-sm:h-[4rem] max-sm:justify-center">
+      <img src={brand_path(@conn, @organizer)} class="object-contain object-center" />
+    </a>
     """
   end
 
