@@ -22,7 +22,8 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
   watcher: nil,
   uploader: nil,
   event_date: "2023_01_01",
-  explorer_colors: %{}
+  explorer_colors: %{},
+  explorer_show_recent_runs?: true
 
 # Print only warnings and errors during test
 config :logger, level: :warning
