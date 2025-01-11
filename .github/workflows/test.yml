@@ -16,7 +16,5 @@ jobs:
           elixir-version: '1.18'
       - name: Get dependencies
         run: mix deps.get
-      - name: Overwrite buggy inotifywait
-        run: cp .\misc\inotifywait.exe .\deps\file_system\priv\
       - name: Test
         run: mix test
