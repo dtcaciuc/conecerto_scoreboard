@@ -67,7 +67,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     ~H"""
     <div class="mt-4">
       <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
-      <div class="flex flex-wrap justify-around bg-white my-2 p-2 gap-2">
+      <div class="flex flex-wrap justify-around bg-white p-2 gap-2">
         <%= for sponsor <- @sponsors do %>
           <a href={sponsor.url} target="_blank" class="flex">
             <img src={brand_path(@conn, sponsor)} class="h-[4rem] object-contain shrink-1" />
@@ -78,11 +78,11 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     """
   end
 
-  def title_suffix(nil = _event_name),
-    do: " · Conecerto Scoreboard"
+  def title_suffix(event_date, nil = _event_name),
+    do: " · #{event_date} · Conecerto Scoreboard"
 
-  def title_suffix(event_name),
-    do: "· #{event_name} · Conecerto Scoreboard"
+  def title_suffix(event_date, event_name),
+    do: " · #{event_name} · #{event_date} · Conecerto Scoreboard"
 
   defp brand_path(conn, brand),
     do: with_base_path(conn, @endpoint.path(brand.path))
