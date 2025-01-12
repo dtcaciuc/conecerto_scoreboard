@@ -25,10 +25,9 @@ if config_env() != :test do
     ],
     explorer_remote_http_base_path: System.get_env("EXPLORER_REMOTE_HTTP_BASE_PATH", "/"),
     explorer_colors: explorer_colors,
-    explorer_show_recent_runs?: parse_bool!(System.get_env("EXPLORER_SHOW_RECENT_RUNS", "yes")),
     mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
     mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
-    mj_poll_changes?: parse_bool!(System.get_env("MJ_POLL_CHANGES", "no")),
+    mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
     mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000")),
     brands_dir: System.get_env("BRANDS_DIR")
 

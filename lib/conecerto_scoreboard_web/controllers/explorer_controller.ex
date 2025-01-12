@@ -20,7 +20,6 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     assigns =
       get_assigns(
         active_tab: "Event",
-        show_recent_runs?: Scoreboard.config(:explorer_show_recent_runs?),
         radio_frequency: Scoreboard.config(:radio_frequency),
         recent_runs: Scoreboard.list_recent_runs(10)
       )

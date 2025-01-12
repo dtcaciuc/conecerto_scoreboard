@@ -178,8 +178,6 @@ The following environment variables need to be manually set:
 Additionally, you can optionally set the following:
 
 * `EXPLORER_COLORS` (path, optional) - Path to a CSV file with the custom explorer color palette.
-* `EXPLORER_SHOW_RECENT_RUNS` (boolean, optional) - Set to `no` to hide most recent runs on the explorer Event page (defaults to `yes`).
-  This may be desired if the scores are published after the event for archival.
 * `ANNOUNCE_FONT_SIZE` (float, optional) - /announce endpoint font size.
 * `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of
@@ -195,9 +193,10 @@ Additionally, you can optionally set the following:
   with more people and runs in them, MJTiming might require more time to flush
   all data to disk. If you see CSV reading errors in the console, try
   increasing this value (defaults to 1000).
-* `MJ_POLL_CHANGES` (boolean, optional) - Set to `yes` to poll for MJ data changes rather than
-  listening for file system alerts (defaults to `no`). This can be used when MJ data is located somewhere that
+* `MJ_POLL_CHANGES` (boolean, optional) - Poll for MJ data changes rather than
+  listening for file system alerts. This can be used when MJ data is located somewhere that
   does not reliably notify of changes (such as a mounted Google Drive folder).
+  Enable by setting to any non-empty value (e.g. `1`, `true`).
 * `MJ_POLL_INTERVAL` (integer, optional) - Change poll interval (in ms,
   defaults to 1000). Used only if `MJ_POLL_CHANGES` is set.
 * `DATABASE_PATH` (path, optional) - Path to SQLite3 database file where Scoreboard stores data
