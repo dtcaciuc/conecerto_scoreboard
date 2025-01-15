@@ -81,7 +81,8 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     [
       root_font_size: @root_font_size,
       colors: Conecerto.Scoreboard.config(:explorer_colors),
-      event_name: Scoreboard.config(:event_name) || format_date(Scoreboard.config(:event_date)),
+      event_date: format_date(Scoreboard.config(:event_date)),
+      event_name: Scoreboard.config(:event_name),
       last_updated_at: Scoreboard.last_updated_at(),
       organizer: Brands.get_organizer(),
       sponsors: Brands.get_sponsors()
@@ -89,6 +90,12 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     |> Keyword.merge(extra)
   end
 
-  defp format_date(date),
-    do: String.replace(date, "_", "/")
+  defp format_date(date) do
+    date
+    |> String.split("_")
+    |> Enum.map(&String.to_integer(&1, 10))
+    |> List.to_tuple()
+    |> Date.from_erl!()
+    |> Calendar.strftime("%b %d, %Y")
+  end
 end
