@@ -8,10 +8,13 @@ defmodule Conecerto.Scoreboard.FTP do
     user = String.to_charlist(Keyword.fetch!(opts, :user))
     pass = String.to_charlist(Keyword.fetch!(opts, :pass))
 
+    root = Keyword.fetch!(opts, :root)
+
     with {:ok, pid} <- :ftp.open(host),
          :ok <- :ftp.user(pid, user, pass),
-         :ok <- :ftp.type(pid, :binary) do
-      {:ok, %{pid: pid, root: Keyword.fetch!(opts, :root)}}
+         :ok <- :ftp.type(pid, :binary),
+         {:ok, ^root} <- mkdir_p(pid, root) do
+      {:ok, %{pid: pid, root: root}}
     else
       {:error, :ehost} ->
         {:error, "Host is unreachable"}
@@ -25,16 +28,50 @@ defmodule Conecerto.Scoreboard.FTP do
     do: :ftp.close(pid)
 
   def mkdir(%{pid: pid, root: root}, path) do
-    abs_path = Path.join(root, path)
-    Logger.info("#{__MODULE__} -  Making #{abs_path}")
-    # Ignore mkdir result; if directory already exists it returns an error
-    _ = :ftp.mkdir(pid, abs_path |> String.to_charlist())
-    :ok
+    do_mkdir(pid, Path.join(root, path))
   end
 
   def send_bin(%{pid: pid, root: root}, contents, dest) do
     abs_dest = Path.join(root, dest)
     Logger.info("#{__MODULE__} - Sending #{abs_dest}")
     :ftp.send_bin(pid, contents, abs_dest |> String.to_charlist())
+  end
+
+  defp mkdir_p(pid, path) do
+    parts =
+      path
+      |> String.trim("/")
+      |> Path.split()
+
+    for part <- parts, reduce: {:ok, "/"} do
+      {:ok, base_path} ->
+        new_path = Path.join(base_path, part)
+        {do_mkdir(pid, new_path), new_path}
+
+      other ->
+        other
+    end
+  end
+
+  defp do_mkdir(pid, path) do
+    with {:ok, false} <- exists?(pid, path),
+         :ok <- Logger.info("#{__MODULE__} -  Making #{path}"),
+         :ok <- :ftp.mkdir(pid, path |> String.to_charlist()) do
+      :ok
+    else
+      {:ok, true} ->
+        :ok
+
+      {:error, reason} ->
+        {:error, "Could not make #{path}: #{inspect(reason)}"}
+    end
+  end
+
+  defp exists?(pid, path) do
+    case :ftp.nlist(pid, path |> String.to_charlist()) do
+      {:ok, _listing} -> {:ok, true}
+      {:error, :epath} -> {:ok, false}
+      {:error, reason} -> {:error, "Could not list #{path}: #{inspect(reason)}"}
+    end
   end
 end
