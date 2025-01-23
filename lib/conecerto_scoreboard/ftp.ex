@@ -10,10 +10,18 @@ defmodule Conecerto.Scoreboard.FTP do
 
     root = Keyword.fetch!(opts, :root)
 
+    # Root directory must be absolute against user home.
+    root =
+      if not String.starts_with?(root, "/") do
+        "/" <> root
+      else
+        root
+      end
+
     with {:ok, pid} <- :ftp.open(host),
          :ok <- :ftp.user(pid, user, pass),
          :ok <- :ftp.type(pid, :binary),
-         {:ok, ^root} <- mkdir_p(pid, root) do
+         :ok <- root_mkdir_p(pid, root) do
       {:ok, %{pid: pid, root: root}}
     else
       {:error, :ehost} ->
@@ -21,6 +29,9 @@ defmodule Conecerto.Scoreboard.FTP do
 
       {:error, :euser} ->
         {:error, "Wrong username or password"}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -37,19 +48,25 @@ defmodule Conecerto.Scoreboard.FTP do
     :ftp.send_bin(pid, contents, abs_dest |> String.to_charlist())
   end
 
-  defp mkdir_p(pid, path) do
+  defp root_mkdir_p(pid, path) do
     parts =
       path
       |> String.trim("/")
       |> Path.split()
 
-    for part <- parts, reduce: {:ok, "/"} do
-      {:ok, base_path} ->
-        new_path = Path.join(base_path, part)
-        {do_mkdir(pid, new_path), new_path}
+    result =
+      for part <- parts, reduce: {:ok, "/"} do
+        {:ok, base_path} ->
+          new_path = Path.join(base_path, part)
+          {do_mkdir(pid, new_path), new_path}
 
-      other ->
-        other
+        {:error, reason} ->
+          {:error, reason}
+      end
+
+    case result do
+      {:ok, _path} -> :ok
+      {:error, reason} -> {:error, reason}
     end
   end
 
