@@ -24,6 +24,7 @@ if config_env() != :test do
       root: System.get_env("EXPLORER_REMOTE_FTP_BASE_DIR", System.get_env("LIVE_FTP_PATH", "/"))
     ],
     explorer_remote_http_base_path: System.get_env("EXPLORER_REMOTE_HTTP_BASE_PATH", "/"),
+    explorer_default_page: parse_explorer_page!(System.get_env("EXPLORER_DEFAULT_PAGE", "event")),
     explorer_colors: explorer_colors,
     mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
     mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
