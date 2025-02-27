@@ -10,14 +10,16 @@ defmodule Conecerto.Scoreboard.Uploader do
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
 
-  @htaccess ~s(
+  @htaccess_template ~s(
 RewriteEngine On
 
+RewriteBase <%= base_path %>
+
 # Index redirects to event page
-RewriteRule "^$" event [R=302,L]
+RewriteRule "^$" <%= default_page %> [R=302,L]
 
 # Deny Phoenix live reload stuff that doesn't exist
-RewriteRule "^phoenix/live_reload/frame$" event [R=404,L]
+RewriteRule "^phoenix/live_reload/frame$" <%= default_page %> [R=404,L]
 
 # Serve gzip compressed files.
 RewriteCond "%{HTTP:Accept-Encoding}" "gzip"
@@ -36,7 +38,8 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
   def start_link(_) do
     args = %{
       client_args: Scoreboard.config(:explorer_remote_ftp),
-      base_path: Scoreboard.config(:explorer_remote_http_base_path)
+      base_path: Scoreboard.config(:explorer_remote_http_base_path),
+      default_page: Scoreboard.config(:explorer_default_page)
     }
 
     GenServer.start_link(__MODULE__, args)
@@ -55,9 +58,15 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
 
   @impl true
   def handle_continue(:upload_assets, state) do
+    htaccess =
+      EEx.eval_string(@htaccess_template,
+        base_path: state.base_path,
+        default_page: state.default_page
+      )
+
     with {:ok, client} <- FTP.open(state.client_args),
          :ok <- FTP.mkdir(client, "/"),
-         :ok <- FTP.send_bin(client, @htaccess, "/.htaccess"),
+         :ok <- FTP.send_bin(client, htaccess, "/.htaccess"),
          :ok <- send_static(client, "/favicon.ico"),
          :ok <- FTP.mkdir(client, "assets"),
          :ok <- send_static(client, "/assets/app.css"),

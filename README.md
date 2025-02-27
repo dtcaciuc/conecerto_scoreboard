@@ -117,7 +117,6 @@ for /f "delims=" %%i in ('path\to\scoreboard\bin\today.bat') do set EVENT_DATE=%
 set EXPLORER_REMOTE_HTTP_BASE_PATH=/results/%EVENT_DATE%
 ```
 
-
 ## Customizing explorer colors
 
 Explorer can be configured to use a custom color scheme to match the club website
@@ -178,6 +177,8 @@ The following environment variables need to be manually set:
 Additionally, you can optionally set the following:
 
 * `EXPLORER_COLORS` (path, optional) - Path to a CSV file with the custom explorer color palette.
+* `EXPLORER_DEFAULT_PAGE` (string, optional) - The page explorer redirects to from its root path
+  (one of `event`, `pax`, `raw`, `runs`, `groups`, or `cones`, defaults to `event`)
 * `ANNOUNCE_FONT_SIZE` (float, optional) - /announce endpoint font size.
 * `TV_FONT_SIZE` (float, optional) - /tv endpoint font size.
 * `TV_REFRESH_INTERVAL` (integer, optional) - Sets how long /tv displays a page of
