@@ -10,6 +10,8 @@ defmodule Conecerto.Scoreboard.Application do
     children = [
       # Start the Ecto repository
       Conecerto.Scoreboard.Repo,
+      {Ecto.Migrator,
+       repos: Application.fetch_env!(:conecerto_scoreboard, :ecto_repos), skip: false},
       # Start the PubSub system
       {Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub},
       # Start branding asset resource manager

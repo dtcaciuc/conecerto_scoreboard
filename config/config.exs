@@ -17,6 +17,7 @@ config :conecerto_scoreboard, Conecerto.Scoreboard,
 
 # Configures the endpoint
 config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: Conecerto.ScoreboardWeb.ErrorHTML, json: Conecerto.ScoreboardWeb.ErrorJSON],
     layout: false

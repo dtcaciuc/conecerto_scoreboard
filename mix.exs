@@ -46,15 +46,13 @@ defmodule Conecerto.Scoreboard.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:plug, "~> 1.16"},
       {:floki, "~> 0.36", only: :test},
-      {:phoenix_live_dashboard, "~> 0.8"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:finch, "~> 0.19"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.4"},
-      {:plug_cowboy, "~> 2.7"},
+      {:bandit, "~> 1.5"},
       {:typed_struct, "~> 0.3.0"},
       {:file_system, "~> 1.0"}
     ]
