@@ -216,7 +216,8 @@ To continuously upload results to a remote server, set the following:
 * `EXPLORER_REMOTE_HTTP_BASE_PATH` (optional) - URL base path where uploaded results are served from (defaults to "/").
 
 > [!NOTE]
-> On Windows, if your password contains `^`, make sure to escape it with another `^`.
+> If your password contains special command shell characters, they will need to be escaped.
+> See the second remark [here](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1#remarks).
 
 ## Developing
 
@@ -226,10 +227,13 @@ You must have Elixir 1.18 & Erlang/OTP 27 installed to build Scoreboard.
 
 ### Notable dependencies
 
-Scoreboard requires a C++ compiler to build SQLite3 library. On Windows, install
-Visual Studio Community edition and work with project from cmd.exe / PowerShell
-session for VS 64-bit (here, we're assuming you're using 64-bit Erlang; for
-32-bit on, VS 32-bit terminal session accordingly.)
+Scoreboard uses an SQLite library with a compiled binary in it, which nowadays
+come pre-built for popular platforms.
+
+However, there may be a case where you will need to install Visual Studio Community
+edition to compile everything. To make the compiler visible to mix, use cmd.exe / PowerShell
+session for VS 64-bit (here, we're assuming you're using 64-bit Erlang; for 32-bit on,
+VS 32-bit terminal session accordingly.)
 
 ### Running in development mode
 
