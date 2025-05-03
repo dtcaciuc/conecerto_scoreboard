@@ -4,7 +4,7 @@ defmodule Conecerto.Scoreboard.MixProject do
   def project do
     [
       app: :conecerto_scoreboard,
-      version: "0.9.0-rc.15",
+      version: "0.9.0",
       elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
