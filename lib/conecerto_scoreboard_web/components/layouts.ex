@@ -10,7 +10,10 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
       "bg-[color:--header-fill-color] border-[--header-border-color]"
     ]}>
       <div class="flex justify-around basis-md">
-        <div class="flex-auto flex justify-between max-sm:flex-col">
+        <div class={[
+          "flex-auto flex max-sm:flex-col",
+          if(@organizer != nil, do: "justify-between", else: "justify-around")
+        ]}>
           <.organizer_logo conn={@conn} organizer={@organizer} />
           <div class="flex text-xl text-center justify-center leading-[3rem] child:block child:px-2 font-semibold">
             <%= for tab <- tabs(@conn) do %>
