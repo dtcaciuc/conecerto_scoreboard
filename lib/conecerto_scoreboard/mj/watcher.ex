@@ -12,6 +12,7 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
     load_delay = Scoreboard.config(:mj_debounce_interval)
     poll_changes? = Scoreboard.config(:mj_poll_changes?)
     poll_interval = Scoreboard.config(:mj_poll_interval)
+    group_by_class? = Scoreboard.config(:group_by_class?)
 
     {:ok, mj_config} = MJ.Config.read(mj_dir, event_date)
 
@@ -19,11 +20,12 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
       mj_config,
       load_delay,
       poll_changes?,
-      poll_interval
+      poll_interval,
+      group_by_class?
     ])
   end
 
-  def init([mj_config, load_delay, poll_changes?, poll_interval]) do
+  def init([mj_config, load_delay, poll_changes?, poll_interval, group_by_class?]) do
     dir_args = [dirs: [Path.dirname(mj_config.class_data_path), mj_config.event_data_path]]
 
     backend_args =
@@ -37,13 +39,18 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
     {:ok, watcher_pid} = FileSystem.start_link(dir_args ++ backend_args)
     FileSystem.subscribe(watcher_pid)
 
-    {:ok, %{mj_config: mj_config, load_delay: load_delay, timer: schedule_load(load_delay)}}
+    {:ok,
+     %{
+       mj_config: mj_config,
+       load_delay: load_delay,
+       timer: schedule_load(load_delay),
+       group_by_class?: group_by_class?
+     }}
   end
 
-  def handle_info(
-        {:file_event, _watcher_pid, {path, _events}},
-        %{mj_config: mj_config, load_delay: load_delay, timer: timer} = state
-      ) do
+  def handle_info({:file_event, _watcher_pid, {path, _events}}, state) do
+    %{mj_config: mj_config, load_delay: load_delay, timer: timer} = state
+
     timer =
       if path == mj_config.class_data_path or
            path == mj_config.event_run_data_path or
@@ -60,10 +67,12 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
     {:noreply, %{state | timer: timer}}
   end
 
-  def handle_info(:load, %{mj_config: mj_config} = state) do
+  def handle_info(:load, state) do
+    %{mj_config: mj_config, group_by_class?: group_by_class?} = state
+
     # TODO load only data that's changed?
     classes = MJ.Classes.read(mj_config.class_data_path)
-    drivers = MJ.Drivers.read(mj_config.event_driver_data_path)
+    drivers = MJ.Drivers.read(mj_config.event_driver_data_path, group_by_class?: group_by_class?)
     runs = MJ.Runs.read_last_day(mj_config.event_run_data_path)
 
     Scoreboard.load_data(classes, drivers, runs)

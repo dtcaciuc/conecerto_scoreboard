@@ -30,7 +30,8 @@ if config_env() != :test do
     mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
     mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
     mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000")),
-    brands_dir: System.get_env("BRANDS_DIR")
+    brands_dir: System.get_env("BRANDS_DIR"),
+    group_by_class?: System.get_env("GROUP_BY_CLASS") != nil
 
   database_path =
     System.get_env("DATABASE_PATH") ||
