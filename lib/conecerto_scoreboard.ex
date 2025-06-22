@@ -77,7 +77,10 @@ defmodule Conecerto.Scoreboard do
     Repo.all(
       from(g in Schema.GroupScore,
         distinct: true,
-        select: g.group_name,
+        select: %{
+          name: g.group_name,
+          car_class?: g.group_name == g.car_class
+        },
         order_by: g.group_name
       )
     )
@@ -99,6 +102,21 @@ defmodule Conecerto.Scoreboard do
     Repo.all(q)
   end
 
+  def list_group_scores("Classes") do
+    Repo.all(
+      from(g in Schema.GroupScore,
+        where: g.group_name == g.car_class,
+        order_by: [g.group_name, :pos]
+      )
+    )
+    |> Enum.chunk_while([], &chunk_scores_by_group/2, &emit_group/1)
+    |> Enum.map(& &1.scores)
+    # Insert separators before splitting in pages
+    # to correctly account for the extra rows.
+    |> Enum.intersperse([:separator])
+    |> Enum.concat()
+  end
+
   def list_group_scores(name) do
     from(g in Schema.GroupScore,
       where: g.group_name == ^name,
@@ -111,7 +129,7 @@ defmodule Conecerto.Scoreboard do
   def list_all_group_scores() do
     Repo.all(
       from(g in Schema.GroupScore,
-        order_by: [g.group_name, :pos]
+        order_by: [g.group_name != g.car_class, g.group_name, :pos]
       )
     )
     |> Enum.chunk_while([], &chunk_scores_by_group/2, &emit_group/1)
@@ -181,8 +199,15 @@ defmodule Conecerto.Scoreboard do
     }
   end
 
-  def paginate(scores, page_size) do
-    {top10, rest} = Enum.split(scores, 10)
+  def paginate(scores, page_size, opts \\ []) do
+    {sticky_top10?, _} = Keyword.pop(opts, :sticky_top10?, true)
+
+    {top10, rest} =
+      if sticky_top10? do
+        Enum.split(scores, 10)
+      else
+        {nil, scores}
+      end
 
     pages =
       rest

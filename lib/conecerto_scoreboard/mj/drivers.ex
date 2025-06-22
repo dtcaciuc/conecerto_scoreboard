@@ -30,13 +30,16 @@ defmodule Conecerto.Scoreboard.MJ.Drivers do
     # TODO car number into string; we need to be able to preserve leading zeros
     {car_no_i, ""} = Integer.parse(car_no)
 
-    group_names =
+    primary_group =
       if state.group_by_class? do
-        [car_class]
+        car_class
       else
-        [group | split_xgroups(x_groups)]
-        |> Enum.filter(&(String.length(&1) > 0))
+        group
       end
+
+    group_names =
+      [primary_group | split_xgroups(x_groups)]
+      |> Enum.filter(&(String.length(&1) > 0))
 
     # Abbreviate model year
     car_model =
