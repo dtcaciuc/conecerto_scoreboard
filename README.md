@@ -186,6 +186,8 @@ Additionally, you can optionally set the following:
 * `EVENT_SCHEDULE` (path, optional) - Path to CSV file with event schedule to read the event name from (see below).
 * `EVENT_NAME` (string, optional) - Displays given name on top of the Event page. Leave unset if `EVENT_SCHEDULE` is set.
 * `EVENT_DATE` (`yyyy_mm_dd`, optional) - Forces specified event date. Use this to read past event's data.
+* `GROUP_BY_CLASS` (boolean, optional) - Use car class as the primary group. Enable by setting to any
+  non-empty value (e.g. `1`, `true`).
 * `RADIO_FREQUENCY` (optional) - Displays commentary broadcast frequency on top of the Event page.
 * `BRANDS_DIR` (optional) - Directory with organizer and sponsor brand logos.
 * `MJ_DIR` (path, optional) - Path to MJTiming directory (defaults to `C:\mjtiming`).

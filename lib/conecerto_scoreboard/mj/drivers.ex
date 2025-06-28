@@ -1,12 +1,15 @@
 defmodule Conecerto.Scoreboard.MJ.Drivers do
   require Logger
 
-  def read(path) do
+  def read(path, opts \\ []) do
+    {group_by_class?, _} = Keyword.pop(opts, :group_by_class?, false)
+
     try do
       path
       |> File.stream!()
       |> Conecerto.Scoreboard.MJ.CSVParser.parse_stream_reversed()
-      |> Enum.reduce([], &parse_row/2)
+      |> Enum.reduce(%{group_by_class?: group_by_class?, drivers: []}, &parse_row/2)
+      |> then(& &1.drivers)
     rescue
       _ in File.Error -> []
     end
@@ -22,13 +25,20 @@ defmodule Conecerto.Scoreboard.MJ.Drivers do
            "Group" => group,
            "XGroup" => x_groups
          },
-         drivers
+         state
        ) do
     # TODO car number into string; we need to be able to preserve leading zeros
     {car_no_i, ""} = Integer.parse(car_no)
 
+    primary_group =
+      if state.group_by_class? do
+        car_class
+      else
+        group
+      end
+
     group_names =
-      [group | split_xgroups(x_groups)]
+      [primary_group | split_xgroups(x_groups)]
       |> Enum.filter(&(String.length(&1) > 0))
 
     # Abbreviate model year
@@ -39,23 +49,26 @@ defmodule Conecerto.Scoreboard.MJ.Drivers do
         car_model
       end
 
-    [
-      %{
-        id: car_no_i,
-        first_name: first_name,
-        last_name: last_name,
-        car_no: car_no_i,
-        car_model: car_model,
-        car_class: car_class,
-        group_names: group_names
-      }
-      | drivers
-    ]
+    drivers =
+      [
+        %{
+          id: car_no_i,
+          first_name: first_name,
+          last_name: last_name,
+          car_no: car_no_i,
+          car_model: car_model,
+          car_class: car_class,
+          group_names: group_names
+        }
+        | state.drivers
+      ]
+
+    %{state | drivers: drivers}
   end
 
-  defp parse_row(row, drivers) do
+  defp parse_row(row, state) do
     Logger.warning("Could not read an incomplete driver definition: #{inspect(row)}")
-    drivers
+    state
   end
 
   defp split_xgroups(""), do: []

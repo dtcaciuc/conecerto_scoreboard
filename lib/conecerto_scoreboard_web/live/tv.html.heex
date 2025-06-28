@@ -21,12 +21,16 @@
   <div class="flex flex-col gap-2 overflow-hidden">
     <div class="flex-auto bg-[--panel-fill-color] p-2 pt-1">
       <%= if @groups.current do %>
-        <.paged_scores
-          scores={@group_scores}
-          view_title={@groups.current <> " Group"}
-          time_column_title="PAX Best"
-          time_column_field={:pax_time}
-        />
+        <%= if @groups.current == "Classes" do %>
+          <.paged_class_scores scores={@group_scores} />
+        <% else %>
+          <.paged_scores
+            scores={@group_scores}
+            view_title={@groups.current}
+            time_column_title="PAX Best"
+            time_column_field={:pax_time}
+          />
+        <% end %>
       <% end %>
     </div>
 
