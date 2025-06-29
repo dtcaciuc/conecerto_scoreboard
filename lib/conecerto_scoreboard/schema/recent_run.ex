@@ -14,5 +14,6 @@ defmodule Conecerto.Scoreboard.Schema.RecentRun do
     field :result, :string
 
     field :selected, :boolean, virtual: true
+    field :best, :boolean, virtual: true
   end
 end

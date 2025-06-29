@@ -116,7 +116,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   end
 
   defp run_time_class(run),
-    do: [run.selected && "best-run", run.penalty in ["DNF", "RRN"] && "line-through"]
+    do: [run.best && "best-run", run.penalty in ["DNF", "RRN"] && "line-through"]
 
   attr :runs, :list, required: true
 

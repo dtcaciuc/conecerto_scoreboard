@@ -106,7 +106,7 @@ defmodule Conecerto.ScoreboardWeb.Announce do
     ~H"""
     <tbody>
       <%= for row <- @rows do %>
-        <tr class={if row.selected, do: "text-amber-300"}>
+        <tr class={row.selected && "text-amber-300"}>
           <td class="text-right">
             {row.pos}
           </td>
