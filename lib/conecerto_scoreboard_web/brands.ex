@@ -12,14 +12,8 @@ defmodule Conecerto.ScoreboardWeb.Brands do
     GenServer.start_link(__MODULE__, args, name: name)
   end
 
-  def get_organizer(),
-    do: GenServer.call(__MODULE__, :get_organizer)
-
-  def get_sponsors(),
-    do: GenServer.call(__MODULE__, :get_sponsors)
-
-  def any?(),
-    do: GenServer.call(__MODULE__, :any?)
+  def get(),
+    do: GenServer.call(__MODULE__, :get)
 
   @impl true
   def init(asset_dir: nil),
@@ -35,16 +29,9 @@ defmodule Conecerto.ScoreboardWeb.Brands do
   end
 
   @impl true
-  def handle_call(:get_organizer, _from, state),
-    do: {:reply, state.organizer, state}
-
-  @impl true
-  def handle_call(:get_sponsors, _from, state),
-    do: {:reply, state.sponsors, state}
-
-  @impl true
-  def handle_call(:any?, _from, state),
-    do: {:reply, state.organizer != nil || Enum.count(state.sponsors) > 0, state}
+  def handle_call(:get, _from, state) do
+    {:reply, state, state}
+  end
 
   defp list_brands(asset_dir) do
     urls = read_urls(Path.join(asset_dir, "urls.csv"))

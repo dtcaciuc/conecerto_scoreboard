@@ -1,5 +1,4 @@
-<% brands? = Brands.any?() %>
-<div class="tv h-screen grid grid-cols-3 gap-2 place-items-stretch" style={grid_style(brands?)}>
+<div class={["tv h-screen grid grid-cols-3 gap-2 place-items-stretch", grid_rows(@brands)]}>
   <div class="bg-[--panel-fill-color] p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@raw_scores}
@@ -45,19 +44,5 @@
     </div>
   </div>
 
-  <%= if brands? do %>
-    <% organizer = Brands.get_organizer() %>
-    <% sponsors = Brands.get_sponsors() %>
-    <div class={[
-      "flex bg-white p-2 col-span-3 h-[100px]",
-      if(Enum.any?(sponsors), do: "justify-between", else: "justify-center")
-    ]}>
-      <.brand_logo brand={organizer} class="object-center shrink-0" />
-      <div class={["flex items-center justify-end gap-5 p-1", justify_sponsors(organizer)]}>
-        <%= for sponsor <- sponsors do %>
-          <.brand_logo brand={sponsor} class="object-contain h-full shrink grow-0" />
-        <% end %>
-      </div>
-    </div>
-  <% end %>
+  <.footer brands={@brands} />
 </div>

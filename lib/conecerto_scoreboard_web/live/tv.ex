@@ -9,19 +9,14 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   @impl true
   def mount(_params, _session, socket) do
     group_by_class? = Scoreboard.config(:group_by_class?)
+    brands = Brands.get()
 
     if connected?(socket) do
       :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("mj")
 
       Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
 
-      # Currently, 100px of footer with ads takes away 5 rows of scores.
-      {page_size, group_page_size} =
-        if Brands.any?() do
-          {25, 10}
-        else
-          {30, 15}
-        end
+      {page_size, group_page_size} = page_sizes(brands)
 
       groups = Scoreboard.paginate_groups(list_groups(group_by_class?))
       group_scores = load_group(groups, group_page_size)
@@ -39,7 +34,8 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          groups: groups,
          group_scores: group_scores,
          group_by_class?: group_by_class?,
-         recent_runs: Scoreboard.list_recent_runs()
+         recent_runs: Scoreboard.list_recent_runs(),
+         brands: brands
        ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     else
       {:ok,
@@ -50,7 +46,8 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          groups: Scoreboard.empty_page(),
          group_scores: Scoreboard.empty_page(),
          group_by_class?: group_by_class?,
-         recent_runs: []
+         recent_runs: [],
+         brands: brands
        ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     end
   end
@@ -289,11 +286,60 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     """
   end
 
-  defp grid_style(true = _brands?), do: "grid-template-rows: auto fit-content(100px)"
-  defp grid_style(false = _brands?), do: ""
+  defp paged_scores_hr(assigns) do
+    ~H"""
+    <tbody>
+      <tr>
+        <td class="text-center" colspan="8">
+          —
+        </td>
+      </tr>
+    </tbody>
+    """
+  end
 
-  defp justify_sponsors(nil = _organizer), do: "justify-center"
-  defp justify_sponsors(_organizer), do: "justify-right"
+  defp footer(%{brands: %{organizer: nil, sponsors: []}} = assigns), do: ~H""
+
+  defp footer(%{brands: %{organizer: nil}} = assigns) do
+    ~H"""
+    <div class="h-[100px] flex gap-5 p-2 col-span-3 bg-white justify-center">
+      <.sponsors sponsors={@brands.sponsors} />
+    </div>
+    """
+  end
+
+  defp footer(assigns) do
+    ~H"""
+    <div class="h-[100px] flex gap-5 p-2 col-span-3 bg-white">
+      <.brand_logo brand={@brands.organizer} />
+      <div class="flex-auto" />
+      <.sponsors sponsors={@brands.sponsors} />
+    </div>
+    """
+  end
+
+  defp sponsors(assigns) do
+    ~H"""
+    <%= for sponsor <- @sponsors do %>
+      <.brand_logo brand={sponsor} />
+    <% end %>
+    """
+  end
+
+  defp brand_logo(%{brand: nil} = assigns), do: ~H""
+
+  defp brand_logo(assigns) do
+    ~H"""
+    <img src={brand_path(@brand)} class="object-scale-down" />
+    """
+  end
+
+  defp grid_rows(%{organizer: nil, sponsors: []} = _brands), do: ""
+  defp grid_rows(_brands?), do: "grid-rows-[auto,fit-content(100px)]"
+
+  # Currently, 100px of footer with ads takes away 5 rows of scores.
+  defp page_sizes(%{organizer: nil, sponsors: []} = _brands), do: {30, 15}
+  defp page_sizes(_brands?), do: {25, 10}
 
   defp brand_path(brand),
     do: @endpoint.path(brand.path)

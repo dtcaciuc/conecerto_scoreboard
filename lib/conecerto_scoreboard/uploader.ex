@@ -144,9 +144,9 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
   end
 
   defp send_brands(ftp_pid) do
-    brands = [Brands.get_organizer() | Brands.get_sponsors()]
+    brands = Brands.get()
 
-    for b <- brands, b != nil, reduce: :ok do
+    for b <- [brands.organizer | brands.sponsors], b != nil, reduce: :ok do
       :ok ->
         send_static(ftp_pid, @endpoint.path(b.path))
 

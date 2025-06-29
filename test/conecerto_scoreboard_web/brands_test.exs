@@ -6,18 +6,14 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
   test "handle no brands directory" do
     pid = start_supervised!({Brands, [asset_dir: nil, name: nil]})
 
-    assert not GenServer.call(pid, :any?)
-    assert nil == GenServer.call(pid, :get_organizer)
-    assert [] = GenServer.call(pid, :get_sponsors)
+    assert %{organizer: nil, sponsors: []} = GenServer.call(pid, :get)
   end
 
   @tag :tmp_dir
   test "handle empty brands directory", %{tmp_dir: tmp_dir} do
     pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
 
-    assert not GenServer.call(pid, :any?)
-    assert nil == GenServer.call(pid, :get_organizer)
-    assert [] = GenServer.call(pid, :get_sponsors)
+    assert %{organizer: nil, sponsors: []} = GenServer.call(pid, :get)
   end
 
   @tag :tmp_dir
@@ -31,9 +27,7 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
 
     pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
 
-    assert GenServer.call(pid, :any?)
-    assert nil == GenServer.call(pid, :get_organizer)
-    assert [s1, s2] = GenServer.call(pid, :get_sponsors)
+    assert %{organizer: nil, sponsors: [s1, s2]} = GenServer.call(pid, :get)
 
     assert s1.name == name1
     assert String.starts_with?(s1.path, "/brands/a-sponsor.jpg?v=")
@@ -49,11 +43,9 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
 
     pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
 
-    assert GenServer.call(pid, :any?)
-    assert %{name: name, path: path} = GenServer.call(pid, :get_organizer)
-    assert [] = GenServer.call(pid, :get_sponsors)
+    assert %{organizer: organizer, sponsors: []} = GenServer.call(pid, :get)
+    assert %{name: ^name, path: path} = organizer
 
-    assert name == name
     assert String.starts_with?(path, "/brands/organizer.jpg?v=")
   end
 
@@ -64,7 +56,10 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
     File.write!(Path.join(tmp_dir, "urls.csv"), "name,url\norganizer,http://organizer.local")
 
     pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
-    assert %{url: "http://organizer.local"} = GenServer.call(pid, :get_organizer)
-    assert [%{url: nil}] = GenServer.call(pid, :get_sponsors)
+
+    assert %{organizer: organizer, sponsors: sponsors} = GenServer.call(pid, :get)
+
+    assert %{url: "http://organizer.local"} = organizer
+    assert [%{url: nil}] = sponsors
   end
 end

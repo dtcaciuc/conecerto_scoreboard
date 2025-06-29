@@ -78,14 +78,16 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
   end
 
   defp get_assigns(extra) do
+    brands = Brands.get()
+
     [
       root_font_size: @root_font_size,
       colors: Conecerto.Scoreboard.config(:explorer_colors),
       event_date: format_date(Scoreboard.config(:event_date)),
       event_name: Scoreboard.config(:event_name),
       last_updated_at: Scoreboard.last_updated_at(),
-      organizer: Brands.get_organizer(),
-      sponsors: Brands.get_sponsors()
+      organizer: brands.organizer,
+      sponsors: brands.sponsors
     ]
     |> Keyword.merge(extra)
   end
