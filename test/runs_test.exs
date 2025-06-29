@@ -39,12 +39,12 @@ defmodule Conecerto.Scoreboard.RunsTest do
     assert 6 = Enum.count(runs)
 
     assert [
-             %{penalty: "2", run_time: 42.785, counted_run_no: 1, selected: false},
-             %{penalty: "", run_time: 42.84, counted_run_no: 2, selected: false},
-             %{penalty: "1", run_time: 42.501, counted_run_no: 3, selected: false},
-             %{penalty: "", run_time: 42.271, counted_run_no: 4, selected: true},
-             %{penalty: "", run_time: 42.661, counted_run_no: 5, selected: false},
-             %{penalty: "2", run_time: 42.161, counted_run_no: 6, selected: false}
+             %{penalty: "2", run_time: 42.785, counted_run_no: 1, best: false},
+             %{penalty: "", run_time: 42.84, counted_run_no: 2, best: false},
+             %{penalty: "1", run_time: 42.501, counted_run_no: 3, best: false},
+             %{penalty: "", run_time: 42.271, counted_run_no: 4, best: true},
+             %{penalty: "", run_time: 42.661, counted_run_no: 5, best: false},
+             %{penalty: "2", run_time: 42.161, counted_run_no: 6, best: false}
            ] =
              runs
              |> Enum.map(
@@ -52,7 +52,7 @@ defmodule Conecerto.Scoreboard.RunsTest do
                  counted_run_no: &1.counted_run_no,
                  run_time: &1.run_time,
                  penalty: &1.penalty,
-                 selected: &1.selected
+                 best: &1.best
                }
              )
   end

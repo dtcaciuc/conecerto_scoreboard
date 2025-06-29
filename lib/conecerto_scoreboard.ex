@@ -243,12 +243,12 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_car_runs(car_no) do
-    Repo.all(
-      from(r in Schema.RecentRun,
-        where: r.car_no == ^car_no,
-        order_by: [{:asc, :global_run_no}]
-      )
+    from(r in Schema.RecentRun,
+      where: r.car_no == ^car_no,
+      order_by: [{:asc, :global_run_no}]
     )
+    |> Repo.all()
+    |> put_best_run()
   end
 
   def get_last_run_driver() do
@@ -293,7 +293,9 @@ defmodule Conecerto.Scoreboard do
            runs: Enum.reverse(acc)
          }, []}
     end)
-    |> Enum.map(&select_best_runs/1)
+    |> Enum.map(fn driver ->
+      %{driver | runs: put_best_run(driver.runs)}
+    end)
   end
 
   defp chunk_runs_by_driver(run, [] = _acc) do
@@ -315,9 +317,12 @@ defmodule Conecerto.Scoreboard do
     end
   end
 
-  defp select_best_runs(%{runs: runs} = driver) do
+  defp put_best_run(runs) do
     fastest_run = Enum.min_by(runs, &effective_run_time/1)
-    %{driver | runs: select_counted_run(runs, fastest_run.counted_run_no)}
+
+    Enum.map(runs, fn run ->
+      %{run | best: run.counted_run_no == fastest_run.counted_run_no}
+    end)
   end
 
   # Don't count reruns
@@ -333,10 +338,6 @@ defmodule Conecerto.Scoreboard do
       _ ->
         9999.999
     end
-  end
-
-  defp select_counted_run(runs, run_no) do
-    Enum.map(runs, fn run -> %{run | selected: run.counted_run_no == run_no} end)
   end
 
   def list_total_cones() do

@@ -13,10 +13,10 @@
               </thead>
               <tbody>
                 <%= for row <- group do %>
-                  <tr class={if row.selected, do: "text-amber-300"}>
+                  <tr class={[row.selected && "text-amber-300"]}>
                     <td class="text-right">{row.counted_run_no}</td>
-                    <td class="text-right pl-2 whitespace-nowrap">
-                      {row.run_time |> format_score()}
+                    <td class="text-right whitespace-nowrap">
+                      <div class={row.best && "best-run"}>{row.run_time |> format_score()}</div>
                     </td>
                     <td class="text-left pl-3 whitespace-nowrap">
                       {row.penalty |> format_penalty()}
