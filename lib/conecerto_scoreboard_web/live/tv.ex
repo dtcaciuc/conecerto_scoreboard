@@ -267,14 +267,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     """
   end
 
-  defp brand_logo(%{brand: nil} = assigns), do: ~H""
-
-  defp brand_logo(assigns) do
-    ~H"""
-    <img src={brand_path(@brand)} class={@class} />
-    """
-  end
-
   defp paged_scores_title(assigns) do
     ~H"""
     <div class="text-2xl text-center mb-2 font-bold">
@@ -283,18 +275,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
         ({@scores.current.num}/{@scores.num_pages})
       <% end %>
     </div>
-    """
-  end
-
-  defp paged_scores_hr(assigns) do
-    ~H"""
-    <tbody>
-      <tr>
-        <td class="text-center" colspan="8">
-          —
-        </td>
-      </tr>
-    </tbody>
     """
   end
 
