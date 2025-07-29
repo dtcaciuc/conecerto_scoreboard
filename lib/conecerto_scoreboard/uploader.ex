@@ -9,6 +9,7 @@ defmodule Conecerto.Scoreboard.Uploader do
   alias Conecerto.ScoreboardWeb.Brands
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
+  @pubsub_server Conecerto.Scoreboard.PubSub
 
   @htaccess_template ~s(
 RewriteEngine On
@@ -45,19 +46,45 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
     GenServer.start_link(__MODULE__, args)
   end
 
+  def upload_once(args) do
+    with :ok <- send_assets(args),
+         :ok <- send_content(args) do
+      :ok
+    end
+  end
+
   @impl true
   def init(args) do
     if Keyword.get(args.client_args, :host) == nil do
       Logger.warning("FTP server is not configured")
       :ignore
     else
-      :ok = Phoenix.PubSub.subscribe(Conecerto.Scoreboard.PubSub, "mj")
-      {:ok, args, {:continue, :upload_assets}}
+      :ok = Phoenix.PubSub.subscribe(@pubsub_server, "mj")
+      {:ok, args, {:continue, :send_assets}}
     end
   end
 
   @impl true
-  def handle_continue(:upload_assets, state) do
+  def handle_continue(:send_assets, state) do
+    send_assets(state)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(:mj_update, state) do
+    with :ok <- send_content(state) do
+      Phoenix.PubSub.broadcast(@pubsub_server, "explorer", :uploaded)
+    end
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(_message, state) do
+    {:noreply, state}
+  end
+
+  defp send_assets(state) do
     htaccess =
       EEx.eval_string(@htaccess_template,
         base_path: state.base_path,
@@ -77,19 +104,19 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
          :ok <- send_brands(client),
          FTP.close(client) do
       Logger.info("Assets uploaded")
+      :ok
     else
       {:error, reason} when is_binary(reason) ->
         Logger.error("Could not upload assets - #{reason}")
+        {:error, reason}
 
       other ->
         Logger.error("Could not upload assets - #{inspect(other)}")
+        {:error, :unknown_reason}
     end
-
-    {:noreply, state}
   end
 
-  @impl true
-  def handle_info(:mj_update, state) do
+  defp send_content(state) do
     base_path = state.base_path
     t0 = :os.system_time(:millisecond)
 
@@ -103,21 +130,16 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
          :ok <- FTP.close(client) do
       t1 = :os.system_time(:millisecond)
       Logger.info("Results uploaded in #{t1 - t0}ms")
-      Phoenix.PubSub.broadcast(Conecerto.Scoreboard.PubSub, "explorer", :uploaded)
+      :ok
     else
       {:error, reason} when is_binary(reason) ->
         Logger.error("could not upload results; #{reason}")
+        {:error, reason}
 
       _ ->
         Logger.error("could not upload results")
+        {:error, :unknown_reason}
     end
-
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_info(_message, state) do
-    {:noreply, state}
   end
 
   defp send_page(client, base_path, path) do
