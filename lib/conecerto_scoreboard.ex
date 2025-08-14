@@ -9,7 +9,7 @@ defmodule Conecerto.Scoreboard do
   alias Conecerto.Scoreboard.Schema.Run
 
   def config(key) do
-    Application.fetch_env!(:conecerto_scoreboard, __MODULE__)[key]
+    Application.fetch_env!(:conecerto_scoreboard, :config_provider).get(key)
   end
 
   def last_updated_at() do

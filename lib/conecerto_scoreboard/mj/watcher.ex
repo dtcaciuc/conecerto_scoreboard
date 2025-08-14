@@ -6,26 +6,29 @@ defmodule Conecerto.Scoreboard.MJ.Watcher do
 
   require Logger
 
-  def start_link(_args) do
-    event_date = Scoreboard.config(:event_date)
-    mj_dir = Scoreboard.config(:mj_dir)
-    load_delay = Scoreboard.config(:mj_debounce_interval)
-    poll_changes? = Scoreboard.config(:mj_poll_changes?)
-    poll_interval = Scoreboard.config(:mj_poll_interval)
-    group_by_class? = Scoreboard.config(:group_by_class?)
+  def start_link(_) do
+    args = Application.fetch_env!(:conecerto_scoreboard, __MODULE__)
+    {mj_dir, args} = Keyword.pop(args, :mj_dir)
 
-    {:ok, mj_config} = MJ.Config.read(mj_dir, event_date)
+    {:ok, mj_config} = MJ.Config.read(mj_dir, Scoreboard.config(:event_date))
 
-    GenServer.start_link(__MODULE__, [
-      mj_config,
-      load_delay,
-      poll_changes?,
-      poll_interval,
-      group_by_class?
-    ])
+    args =
+      args
+      |> Keyword.put(:mj_config, mj_config)
+      |> Keyword.put(:group_by_class?, Scoreboard.config(:group_by_class?))
+
+    GenServer.start_link(__MODULE__, Map.new(args))
   end
 
-  def init([mj_config, load_delay, poll_changes?, poll_interval, group_by_class?]) do
+  def init(args) do
+    %{
+      mj_config: mj_config,
+      poll_changes?: poll_changes?,
+      poll_interval: poll_interval,
+      debounce_interval: load_delay,
+      group_by_class?: group_by_class?
+    } = args
+
     dir_args = [dirs: [Path.dirname(mj_config.class_data_path), mj_config.event_data_path]]
 
     backend_args =

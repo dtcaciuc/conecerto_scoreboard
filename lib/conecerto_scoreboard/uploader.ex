@@ -38,7 +38,12 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
 
   def start_link(_) do
     args = %{
-      client_args: Scoreboard.config(:explorer_remote_ftp),
+      client_args: [
+        host: Scoreboard.config(:explorer_remote_ftp_host),
+        user: Scoreboard.config(:explorer_remote_ftp_user),
+        pass: Scoreboard.config(:explorer_remote_ftp_pass),
+        root: Scoreboard.config(:explorer_remote_ftp_base_dir)
+      ],
       base_path: Scoreboard.config(:explorer_remote_http_base_path),
       default_page: Scoreboard.config(:explorer_default_page)
     }

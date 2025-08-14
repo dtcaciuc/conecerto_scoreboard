@@ -5,34 +5,15 @@ defmodule Conecerto.Scoreboard.Application do
 
   use Application
 
+  @repos Application.compile_env!(:conecerto_scoreboard, :ecto_repos)
+  @watcher Application.compile_env!(:conecerto_scoreboard, :watcher)
+  @uploader Application.compile_env!(:conecerto_scoreboard, :uploader)
+
   @impl true
   def start(_type, _args) do
-    children = [
-      # Start the Ecto repository
-      Conecerto.Scoreboard.Repo,
-      {Ecto.Migrator,
-       repos: Application.fetch_env!(:conecerto_scoreboard, :ecto_repos), skip: false},
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub},
-      # Start branding asset resource manager
-      {Conecerto.ScoreboardWeb.Brands, asset_dir: Conecerto.Scoreboard.config(:brands_dir)},
-      # Start the Endpoint (http/https)
-      Conecerto.ScoreboardWeb.Endpoint
-    ]
-
-    children =
-      children
-      |> add_child_if_set(Conecerto.Scoreboard.config(:watcher))
-      |> add_child_if_set(Conecerto.Scoreboard.config(:uploader))
-
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Conecerto.Scoreboard.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children(), opts)
   end
-
-  defp add_child_if_set(children, nil), do: children
-  defp add_child_if_set(children, child), do: children ++ [child]
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
@@ -41,4 +22,22 @@ defmodule Conecerto.Scoreboard.Application do
     Conecerto.ScoreboardWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  def children() do
+    [
+      Conecerto.Scoreboard.Repo,
+      with_id({Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub}, Conecerto.Scoreboard.PubSub),
+      with_id({Ecto.Migrator, repos: @repos, skip: false}, id: Conecerto.Scoreboard.Migrator),
+      # Branding asset resource manager
+      Conecerto.ScoreboardWeb.Brands,
+      # Start the Endpoint (http/https)
+      Conecerto.ScoreboardWeb.Endpoint,
+      @watcher,
+      @uploader
+    ]
+    |> Enum.filter(&(&1 != nil))
+  end
+
+  defp with_id(spec, id),
+    do: Supervisor.child_spec(spec, id: id)
 end

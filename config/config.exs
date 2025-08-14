@@ -9,9 +9,8 @@ import Config
 
 config :conecerto_scoreboard,
   namespace: Conecerto.Scoreboard,
-  ecto_repos: [Conecerto.Scoreboard.Repo]
-
-config :conecerto_scoreboard, Conecerto.Scoreboard,
+  ecto_repos: [Conecerto.Scoreboard.Repo],
+  config_provider: Conecerto.Scoreboard.EnvConfig,
   watcher: Conecerto.Scoreboard.MJ.Watcher,
   uploader: Conecerto.Scoreboard.Uploader
 

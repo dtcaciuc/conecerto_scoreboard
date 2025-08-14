@@ -8,8 +8,9 @@ defmodule Conecerto.ScoreboardWeb.Brands do
   def root_path(), do: @root_path
 
   def start_link(args) do
-    {name, args} = Keyword.pop(args, :name, __MODULE__)
-    GenServer.start_link(__MODULE__, args, name: name)
+    name = Keyword.get(args, :name, __MODULE__)
+    asset_dir = Keyword.get(args, :asset_dir, Conecerto.Scoreboard.config(:brands_dir))
+    GenServer.start_link(__MODULE__, [asset_dir: asset_dir], name: name)
   end
 
   def get(),

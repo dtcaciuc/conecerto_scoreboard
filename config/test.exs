@@ -1,5 +1,9 @@
 import Config
 
+config :conecerto_scoreboard,
+  watcher: nil,
+  uploader: nil
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -19,8 +23,6 @@ config :conecerto_scoreboard, Conecerto.ScoreboardWeb.Endpoint,
   server: false
 
 config :conecerto_scoreboard, Conecerto.Scoreboard,
-  watcher: nil,
-  uploader: nil,
   event_date: "2023_01_01",
   explorer_colors: %{},
   explorer_default_page: "event"

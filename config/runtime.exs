@@ -17,21 +17,25 @@ if config_env() != :test do
     tv_font_size: parse_float!(System.get_env("TV_FONT_SIZE", "17.75")),
     announce_font_size: parse_float!(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
     radio_frequency: System.get_env("RADIO_FREQUENCY"),
-    explorer_remote_ftp: [
-      host: System.get_env("EXPLORER_REMOTE_FTP_HOST", System.get_env("LIVE_FTP_HOST")),
-      user: System.get_env("EXPLORER_REMOTE_FTP_USER", System.get_env("LIVE_FTP_USER")),
-      pass: System.get_env("EXPLORER_REMOTE_FTP_PASS", System.get_env("LIVE_FTP_PASS")),
-      root: System.get_env("EXPLORER_REMOTE_FTP_BASE_DIR", System.get_env("LIVE_FTP_PATH", "/"))
-    ],
+    explorer_remote_ftp_host:
+      System.get_env("EXPLORER_REMOTE_FTP_HOST", System.get_env("LIVE_FTP_HOST")),
+    explorer_remote_ftp_user:
+      System.get_env("EXPLORER_REMOTE_FTP_USER", System.get_env("LIVE_FTP_USER")),
+    explorer_remote_ftp_pass:
+      System.get_env("EXPLORER_REMOTE_FTP_PASS", System.get_env("LIVE_FTP_PASS")),
+    explorer_remote_ftp_base_dir:
+      System.get_env("EXPLORER_REMOTE_FTP_BASE_DIR", System.get_env("LIVE_FTP_PATH", "/")),
     explorer_remote_http_base_path: System.get_env("EXPLORER_REMOTE_HTTP_BASE_PATH", "/"),
     explorer_default_page: parse_explorer_page!(System.get_env("EXPLORER_DEFAULT_PAGE", "event")),
     explorer_colors: explorer_colors,
-    mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
-    mj_debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
-    mj_poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
-    mj_poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000")),
     brands_dir: System.get_env("BRANDS_DIR"),
     group_by_class?: System.get_env("GROUP_BY_CLASS") != nil
+
+  config :conecerto_scoreboard, Conecerto.Scoreboard.MJ.Watcher,
+    mj_dir: System.get_env("MJ_DIR", "c:/mjtiming"),
+    debounce_interval: String.to_integer(System.get_env("MJ_DEBOUNCE_INTERVAL", "1000")),
+    poll_changes?: System.get_env("MJ_POLL_CHANGES") != nil,
+    poll_interval: String.to_integer(System.get_env("MJ_POLL_INTERVAL", "1000"))
 
   database_path =
     System.get_env("DATABASE_PATH") ||

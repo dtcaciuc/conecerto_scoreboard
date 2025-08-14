@@ -128,7 +128,13 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
   test "wait for data change event", %{tmp_dir: tmp_dir} do
     mj_config = make_mj_config(tmp_dir)
 
-    GenServer.start_link(MJ.Watcher, [mj_config, 100, false, 100, true])
+    GenServer.start_link(MJ.Watcher, %{
+      mj_config: mj_config,
+      debounce_interval: 100,
+      poll_changes?: false,
+      poll_interval: 100,
+      group_by_class?: true
+    })
 
     :timer.sleep(200)
     assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
@@ -164,7 +170,13 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
   test "poll for data changes", %{tmp_dir: tmp_dir} do
     mj_config = make_mj_config(tmp_dir)
 
-    GenServer.start_link(MJ.Watcher, [mj_config, 100, true, 100, true])
+    GenServer.start_link(MJ.Watcher, %{
+      mj_config: mj_config,
+      debounce_interval: 100,
+      poll_changes?: true,
+      poll_interval: 100,
+      group_by_class?: true
+    })
 
     :timer.sleep(200)
     assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
