@@ -26,7 +26,15 @@ jobs:
           mix phx.digest.clean --all
         env:
           MIX_ENV: prod
-      - name: Upload
+      - name: Upload artifact
+        if: ${{github.event.release.tag_name == null}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./_build/prod/*.zip
+          retention-days: 5
+      - name: Upload release
+        if: ${{github.event.release.tag_name != null}}
         run: gh release upload ${{github.event.release.tag_name}} (Get-Item .\_build\prod\*.zip)
         env:
           GH_TOKEN: ${{ github.token }}

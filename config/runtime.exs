@@ -17,6 +17,7 @@ if config_env() != :test do
     tv_font_size: parse_float!(System.get_env("TV_FONT_SIZE", "17.75")),
     announce_font_size: parse_float!(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
     radio_frequency: System.get_env("RADIO_FREQUENCY"),
+    course_maps_dir: System.get_env("COURSE_MAPS_DIR", "maps"),
     explorer_remote_ftp_host:
       System.get_env("EXPLORER_REMOTE_FTP_HOST", System.get_env("LIVE_FTP_HOST")),
     explorer_remote_ftp_user:

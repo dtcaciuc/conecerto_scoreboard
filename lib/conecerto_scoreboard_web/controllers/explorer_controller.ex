@@ -3,6 +3,7 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
 
   alias Conecerto.Scoreboard
   alias Conecerto.ScoreboardWeb.Brands
+  alias Conecerto.ScoreboardWeb.CourseMaps
 
   plug :put_layout, html: :explorer
 
@@ -20,11 +21,12 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     assigns =
       get_assigns(
         active_tab: "Event",
+        course_maps: CourseMaps.list(),
         radio_frequency: Scoreboard.config(:radio_frequency),
         recent_runs: Scoreboard.list_recent_runs(10)
       )
 
-    render(conn, :home, assigns)
+    render(conn, :event, assigns)
   end
 
   def raw(conn, _params) do

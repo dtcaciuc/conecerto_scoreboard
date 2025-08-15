@@ -78,6 +78,14 @@ You can also set `EVENT_NAME` envar to name the current event directly, however
 using the schedule is much easier since you can set it once and forget
 about it (unless some of the event dates change).
 
+## Serving course maps
+
+You can optionally set `COURSE_MAPS_DIR` envar to point to a directory containing
+one or more course maps in `.jpg`, `.png`, or `.pdf` format (defaults to `maps`).
+
+Links to files found in that directory will be shown at the top of the Explorer's
+event page.
+
 ## Publishing results to a remote server
 
 If the timing computer where Scoreboard is running has access to the Internet,
