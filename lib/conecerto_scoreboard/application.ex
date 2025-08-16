@@ -30,6 +30,7 @@ defmodule Conecerto.Scoreboard.Application do
       with_id({Ecto.Migrator, repos: @repos, skip: false}, id: Conecerto.Scoreboard.Migrator),
       # Branding asset resource manager
       Conecerto.ScoreboardWeb.Brands,
+      Conecerto.ScoreboardWeb.CourseMaps,
       # Start the Endpoint (http/https)
       Conecerto.ScoreboardWeb.Endpoint,
       @watcher,

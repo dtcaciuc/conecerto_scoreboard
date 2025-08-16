@@ -7,6 +7,7 @@ defmodule Conecerto.Scoreboard.Uploader do
   alias Conecerto.Scoreboard
   alias Conecerto.Scoreboard.FTP
   alias Conecerto.ScoreboardWeb.Brands
+  alias Conecerto.ScoreboardWeb.CourseMaps
 
   @endpoint Conecerto.ScoreboardWeb.Endpoint
   @pubsub_server Conecerto.Scoreboard.PubSub
@@ -106,7 +107,9 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
          :ok <- FTP.mkdir(client, "fonts"),
          :ok <- send_static(client, "/fonts/RobotoCondensed-Regular.ttf"),
          :ok <- FTP.mkdir(client, "brands"),
-         :ok <- send_brands(client),
+         :ok <- send_resources(client, Brands.list()),
+         :ok <- FTP.mkdir(client, "maps"),
+         :ok <- send_resources(client, CourseMaps.list()),
          FTP.close(client) do
       Logger.info("Assets uploaded")
       :ok
@@ -170,10 +173,8 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
     end
   end
 
-  defp send_brands(ftp_pid) do
-    brands = Brands.get()
-
-    for b <- [brands.organizer | brands.sponsors], b != nil, reduce: :ok do
+  defp send_resources(ftp_pid, resources) do
+    for b <- resources, b != nil, reduce: :ok do
       :ok ->
         send_static(ftp_pid, @endpoint.path(b.path))
 

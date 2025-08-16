@@ -16,6 +16,18 @@ defmodule Conecerto.ScoreboardWeb.Brands do
   def get(),
     do: GenServer.call(__MODULE__, :get)
 
+  def list() do
+    brands = get()
+
+    case brands.organizer do
+      nil ->
+        brands.sponsors
+
+      organizer ->
+        [organizer | brands.sponsors]
+    end
+  end
+
   @impl true
   def init(asset_dir: nil),
     do: {:ok, %{organizer: nil, sponsors: []}}

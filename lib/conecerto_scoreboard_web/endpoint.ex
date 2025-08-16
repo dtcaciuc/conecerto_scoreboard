@@ -26,7 +26,13 @@ defmodule Conecerto.ScoreboardWeb.Endpoint do
     only: Conecerto.ScoreboardWeb.static_paths()
 
   # Serve logo and sponsor graphics
-  plug Conecerto.ScoreboardWeb.Brands.Static
+  plug Plug.Static,
+    at: Conecerto.ScoreboardWeb.Brands.root_path(),
+    from: {Conecerto.Scoreboard, :config, [:brands_dir]}
+
+  plug Plug.Static,
+    at: Conecerto.ScoreboardWeb.CourseMaps.root_path(),
+    from: {Conecerto.Scoreboard, :config, [:course_maps_dir]}
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

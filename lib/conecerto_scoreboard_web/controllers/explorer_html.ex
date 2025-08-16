@@ -3,18 +3,7 @@ defmodule Conecerto.ScoreboardWeb.ExplorerHTML do
 
   embed_templates "explorer_html/*"
 
-  def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
-
-  def sponsor_logos(assigns) do
-    ~H"""
-    <div class="mt-4">
-      <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
-      <div class="flex flex-wrap justify-around bg-white my-2 p-2 gap-2">
-        <%= for sponsor <- @sponsors do %>
-          <img src={sponsor.url} class="h-[4rem] object-contain shrink-1" />
-        <% end %>
-      </div>
-    </div>
-    """
-  end
+  # TODO common "asset_path" with brands?
+  defp map_path(conn, map),
+    do: with_base_path(conn, @endpoint.path(map.path))
 end
