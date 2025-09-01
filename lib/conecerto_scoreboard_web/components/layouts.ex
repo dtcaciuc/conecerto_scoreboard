@@ -6,7 +6,7 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
   def header(assigns) do
     ~H"""
     <header class={[
-      "top-0 sticky z-50 mb3 flex justify-center border-b-2",
+      "print:hidden top-0 sticky z-50 mb3 flex justify-center border-b-2",
       "bg-[color:--header-fill-color] border-[--header-border-color]"
     ]}>
       <div class="flex justify-around basis-md">
@@ -29,9 +29,9 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
   attr :conn, :map
   attr :organizer, :map
 
-  defp organizer_logo(%{organizer: nil} = assigns), do: ~H""
+  def organizer_logo(%{organizer: nil} = assigns), do: ~H""
 
-  defp organizer_logo(assigns) do
+  def organizer_logo(assigns) do
     ~H"""
     <a href={@organizer.url} class="flex sm:h-[3rem] max-sm:h-[4rem] max-sm:justify-center">
       <img src={brand_path(@conn, @organizer)} class="object-contain object-center" />
@@ -63,13 +63,14 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
 
   attr :conn, :map
   attr :sponsors, :list
+  attr :show_title, :boolean, default: true
 
   def sponsor_logos(%{sponsors: []} = assigns), do: ~H""
 
   def sponsor_logos(assigns) do
     ~H"""
-    <div class="mt-4">
-      <div class="text-xl text-center font-semibold pb-2">Sponsored By</div>
+    <div class="break-inside-avoid">
+      <div :if={@show_title} class="text-xl text-center font-semibold pb-2">Sponsored By</div>
       <div class="flex flex-wrap justify-around bg-white p-2 gap-2">
         <%= for sponsor <- @sponsors do %>
           <a href={sponsor.url} target="_blank" class="flex">

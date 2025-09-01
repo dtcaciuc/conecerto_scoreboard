@@ -2,15 +2,14 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-table.striped tr:nth-child(2n) td {
+table.striped > tbody > tr:nth-child(2n + 1) {
     background-color: var(--table-stripe-fill-color);
 }
 
-.best-run::before {
-    content: "(";
+.w-13 {
+    width: 3.25rem;
 }
 
-.best-run::after {
-    content: ")";
-    position: absolute;
+.body-text-muted {
+    color: color-mix(in srgb, var(--body-text-color) 50%, transparent);
 }
