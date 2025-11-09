@@ -24,6 +24,8 @@ defmodule Conecerto.ScoreboardWeb.Router do
     get "/runs", ExplorerController, :runs
     get "/cones", ExplorerController, :cones
 
+    get "/collated", ExplorerController, :collated
+
     live "/announce", Announce
     live "/tv", Tv
   end

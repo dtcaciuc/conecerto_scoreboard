@@ -106,6 +106,7 @@ RewriteRule "\.html.gz$" "-" [T=text/html,E=no-gzip:1]
          :ok <- send_static(client, "/assets/app.js"),
          :ok <- FTP.mkdir(client, "fonts"),
          :ok <- send_static(client, "/fonts/RobotoCondensed-Regular.ttf"),
+         :ok <- send_static(client, "/fonts/RobotoCondensed-Bold.ttf"),
          :ok <- FTP.mkdir(client, "brands"),
          :ok <- send_resources(client, Brands.list()),
          :ok <- FTP.mkdir(client, "maps"),

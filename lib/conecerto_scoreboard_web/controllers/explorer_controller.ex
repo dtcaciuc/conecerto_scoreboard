@@ -5,7 +5,8 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
   alias Conecerto.ScoreboardWeb.Brands
   alias Conecerto.ScoreboardWeb.CourseMaps
 
-  plug :put_layout, html: :explorer
+  plug :put_layout, [html: :explorer] when action not in [:collated]
+  plug :put_layout, false when action in [:collated]
 
   @root_font_size 16.0
 
@@ -77,6 +78,21 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
       )
 
     render(conn, :cones, assigns)
+  end
+
+  def collated(conn, params) do
+    assigns =
+      get_assigns(
+        active_tab: "Collated",
+        raw_scores: Scoreboard.list_raw_scores(),
+        pax_scores: Scoreboard.list_pax_scores(),
+        groups: Scoreboard.list_all_group_scores(),
+        runs: Scoreboard.list_drivers_and_runs(),
+        cones: Scoreboard.list_total_cones(),
+        print?: Map.get(params, "print")
+      )
+
+    render(conn, :collated, assigns)
   end
 
   defp get_assigns(extra) do

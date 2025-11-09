@@ -12,10 +12,21 @@
     </.live_title>
     <link phx-track-static rel="stylesheet" href={with_base_path(@conn, ~p"/assets/app.css")} />
     <style>
-      :root {
-        <%= for {name, value} <- assigns[:colors] do %>
-          --<%= name %>-color: <%= value %>;
-        <% end %>
+      @media screen {
+        :root {
+          <%= for {name, value} <- assigns[:colors] do %>
+            --<%= name %>-color: <%= value %>;
+          <% end %>
+        }
+      }
+
+      @media print {
+        :root {
+          print-color-adjust: exact;
+          --body-text-color: black;
+          --body-fill-color: none;
+          --table-stripe-fill-color: #eee;
+        }
       }
 
       html {
@@ -27,7 +38,14 @@
 
       @font-face {
         font-family: 'RobotoCondensed';
+        font-weight: 400;
         src: url(<%= with_base_path(@conn, ~p"/fonts/RobotoCondensed-Regular.ttf") %>);
+      }
+
+      @font-face {
+        font-family: 'RobotoCondensed';
+        font-weight: 600;
+        src: url(<%= with_base_path(@conn, ~p"/fonts/RobotoCondensed-Bold.ttf") %>);
       }
 
       body {
@@ -40,6 +58,13 @@
       type="text/javascript"
       src={with_base_path(@conn, ~p"/assets/app.js")}
     >
+    </script>
+
+    <script :if={Map.get(assigns, :print?, false)}>
+      window.addEventListener("load", (event) => {
+        window.onafterprint = window.close;
+        window.print();
+      });
     </script>
   </head>
   {@inner_content}

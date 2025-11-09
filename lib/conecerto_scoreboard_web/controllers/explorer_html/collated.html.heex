@@ -1,0 +1,55 @@
+<body class="bg-[--body-fill-color] text-[--body-text-color]">
+  <div
+    :if={@print?}
+    class="fixed top-0 left-0 w-screen h-screen block print:hidden bg-black z-10 grid"
+  >
+    <div class="place-self-center text-xl">Please wait</div>
+  </div>
+  <div class="mb-5">
+    <.collated_section title="Raw Overall" conn={@conn} {assigns}>
+      <Conecerto.ScoreboardWeb.Tables.group_scores
+        scores={@raw_scores}
+        time_column_title="RAW Best"
+        time_column_field={:raw_time}
+      />
+    </.collated_section>
+  </div>
+  <div class="mb-5 break-before-page">
+    <.collated_section title="PAX Overall" {assigns}>
+      <Conecerto.ScoreboardWeb.Tables.group_scores
+        scores={@pax_scores}
+        time_column_title="PAX Best"
+        time_column_field={:pax_time}
+      />
+    </.collated_section>
+  </div>
+  <div class="break-before-page">
+    <.collated_section title="Groups" {assigns}>
+      <div class="-mt-1"></div>
+      <div :for={group <- @groups} class="mb-5 break-inside-avoid">
+        <div class="text-xl text-center font-semibold self-center flex items-center">
+          <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
+          <div class="mx-3">{group.name}</div>
+          <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
+        </div>
+        <Conecerto.ScoreboardWeb.Tables.group_scores
+          scores={group.scores}
+          time_column_title="PAX Best"
+          time_column_field={:pax_time}
+        />
+      </div>
+    </.collated_section>
+  </div>
+
+  <div class="mb-5 break-before-page">
+    <.collated_section title="Runs" {assigns}>
+      <Conecerto.ScoreboardWeb.Tables.runs_compact drivers={@runs} />
+    </.collated_section>
+  </div>
+
+  <div class="break-before-page">
+    <.collated_section title="Cones" {assigns}>
+      <Conecerto.ScoreboardWeb.Tables.cones drivers={@cones} />
+    </.collated_section>
+  </div>
+</body>
