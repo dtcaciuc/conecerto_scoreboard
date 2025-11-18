@@ -1,59 +1,30 @@
 defmodule Conecerto.ScoreboardWeb.CourseMaps do
-  use GenServer
+  use Conecerto.ScoreboardWeb.DynamicAssets
 
   require Logger
-
-  @root_path "/maps"
-
-  def root_path(),
-    do: @root_path
 
   def start_link(args) do
     name = Keyword.get(args, :name, __MODULE__)
     dir = Keyword.get(args, :dir, Conecerto.Scoreboard.config(:course_maps_dir))
-    GenServer.start_link(__MODULE__, dir, name: name)
+    load_delay = Keyword.get(args, :load_delay, 500)
+    GenServer.start_link(__MODULE__, %{dir: dir, load_delay: load_delay}, name: name)
   end
 
   def list(),
     do: GenServer.call(__MODULE__, :list)
 
-  @impl GenServer
-  def init(nil),
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def root_path(), do: "/maps"
+
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def init_dynamic_assets(_args),
     do: {:ok, %{maps: []}}
 
-  def init(dir) do
-    maps =
-      case File.ls(dir) do
-        {:ok, names} ->
-          names
-          |> Enum.sort()
-          |> Enum.map(fn name ->
-            path = Path.join(dir, name)
-
-            case file_hash(path) do
-              {:ok, hash} ->
-                %{
-                  name: name,
-                  path: Path.join(@root_path, "#{name}?v=#{hash}")
-                }
-
-              _ ->
-                Logger.error("Could not hash #{path}; skipping")
-                nil
-            end
-          end)
-          |> Enum.filter(&(&1 != nil and image?(&1.name)))
-
-        {:error, :enoent} ->
-          Logger.error("Course maps directory #{dir} does not exist")
-          []
-
-        {:error, error} ->
-          Logger.error("Could not list course maps directory #{dir} contents - #{inspect(error)}")
-          []
-      end
-
-    {:ok, %{maps: maps}}
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def assign_dynamic_assets(assets, state) do
+    maps = assets |> Enum.filter(&image?(&1.name))
+    # No need to broadcast, there's no live view displaying maps
+    %{state | maps: maps}
   end
 
   @impl GenServer
@@ -63,10 +34,4 @@ defmodule Conecerto.ScoreboardWeb.CourseMaps do
 
   defp image?(name),
     do: Path.extname(name) in [".jpg", ".png", ".pdf"]
-
-  defp file_hash(path) do
-    with {:ok, content} <- File.read(path) do
-      {:ok, :crypto.hash(:md5, content) |> Base.encode16() |> String.downcase()}
-    end
-  end
 end

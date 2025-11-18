@@ -1,16 +1,13 @@
 defmodule Conecerto.ScoreboardWeb.Brands do
-  use GenServer
+  use Conecerto.ScoreboardWeb.DynamicAssets
 
   require Logger
 
-  @root_path "/brands"
-
-  def root_path(), do: @root_path
-
   def start_link(args) do
     name = Keyword.get(args, :name, __MODULE__)
-    asset_dir = Keyword.get(args, :asset_dir, Conecerto.Scoreboard.config(:brands_dir))
-    GenServer.start_link(__MODULE__, [asset_dir: asset_dir], name: name)
+    dir = Keyword.get(args, :dir, Conecerto.Scoreboard.config(:brands_dir))
+    load_delay = Keyword.get(args, :load_delay, 500)
+    GenServer.start_link(__MODULE__, %{dir: dir, load_delay: load_delay}, name: name)
   end
 
   def get(),
@@ -28,57 +25,34 @@ defmodule Conecerto.ScoreboardWeb.Brands do
     end
   end
 
-  @impl true
-  def init(asset_dir: nil),
-    do: {:ok, %{organizer: nil, sponsors: []}}
-
-  def init(asset_dir: asset_dir) do
-    brands = list_brands(asset_dir)
-
-    organizer = Enum.find(brands, &organizer?(&1.name))
-    sponsors = Enum.reject(brands, &organizer?(&1.name))
-
-    {:ok, %{organizer: organizer, sponsors: sponsors}}
-  end
-
-  @impl true
+  @impl GenServer
   def handle_call(:get, _from, state) do
-    {:reply, state, state}
+    {:reply, state.brands, state}
   end
 
-  defp list_brands(asset_dir) do
-    urls = read_urls(Path.join(asset_dir, "urls.csv"))
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def root_path(), do: "/brands"
 
-    case File.ls(asset_dir) do
-      {:ok, names} ->
-        names
-        |> Enum.sort()
-        |> Enum.map(fn name ->
-          path = Path.join(asset_dir, name)
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def init_dynamic_assets(_args),
+    do: {:ok, %{brands: %{organizer: nil, sponsors: []}}}
 
-          case file_hash(path) do
-            {:ok, hash} ->
-              %{
-                name: name,
-                path: Path.join(@root_path, "#{name}?v=#{hash}"),
-                url: urls[Path.rootname(name)]
-              }
+  @impl Conecerto.ScoreboardWeb.DynamicAssets
+  def assign_dynamic_assets(assets, state) do
+    urls = read_urls(Path.join(state.dir, "urls.csv"))
 
-            _ ->
-              Logger.error("Could not hash #{path}; skipping")
-              nil
-          end
-        end)
-        |> Enum.filter(&(&1 != nil and image?(&1.name)))
+    brands_list =
+      assets
+      |> Enum.map(&Map.put(&1, :url, urls[Path.rootname(&1.name)]))
+      |> Enum.filter(&image?(&1.name))
 
-      {:error, :enoent} ->
-        Logger.error("Brands directory #{asset_dir} does not exist")
-        []
+    organizer = Enum.find(brands_list, &organizer?(&1.name))
+    sponsors = Enum.reject(brands_list, &organizer?(&1.name))
 
-      {:error, error} ->
-        Logger.error("Could not list brands directory #{asset_dir} contents - #{inspect(error)}")
-        []
-    end
+    brands = %{organizer: organizer, sponsors: sponsors}
+    Phoenix.PubSub.broadcast(Conecerto.Scoreboard.PubSub, "assets", {:brands_updated, brands})
+
+    %{state | brands: brands}
   end
 
   defp read_urls(path) do
@@ -112,10 +86,4 @@ defmodule Conecerto.ScoreboardWeb.Brands do
 
   defp image?(name),
     do: Path.extname(name) in [".jpg", ".png"]
-
-  defp file_hash(path) do
-    with {:ok, content} <- File.read(path) do
-      {:ok, :crypto.hash(:md5, content) |> Base.encode16() |> String.downcase()}
-    end
-  end
 end

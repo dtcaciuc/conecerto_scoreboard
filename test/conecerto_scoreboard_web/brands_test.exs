@@ -4,14 +4,16 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
   alias Conecerto.ScoreboardWeb.Brands
 
   test "handle no brands directory" do
-    pid = start_supervised!({Brands, [asset_dir: nil, name: nil]})
+    pid = start_supervised!({Brands, [dir: nil, load_delay: 50, name: nil]})
+    :timer.sleep(100)
 
     assert %{organizer: nil, sponsors: []} = GenServer.call(pid, :get)
   end
 
   @tag :tmp_dir
   test "handle empty brands directory", %{tmp_dir: tmp_dir} do
-    pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
+    pid = start_supervised!({Brands, [dir: tmp_dir, load_delay: 50, name: nil]})
+    :timer.sleep(100)
 
     assert %{organizer: nil, sponsors: []} = GenServer.call(pid, :get)
   end
@@ -25,7 +27,8 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
     File.write!(Path.join(tmp_dir, name2), "")
     File.write!(Path.join(tmp_dir, "c-sponsor.notanimage"), "")
 
-    pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
+    pid = start_supervised!({Brands, [dir: tmp_dir, load_delay: 50, name: nil]})
+    :timer.sleep(100)
 
     assert %{organizer: nil, sponsors: [s1, s2]} = GenServer.call(pid, :get)
 
@@ -41,7 +44,8 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
     name = "organizer.jpg"
     File.write!(Path.join(tmp_dir, name), "")
 
-    pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
+    pid = start_supervised!({Brands, [dir: tmp_dir, load_delay: 50, name: nil]})
+    :timer.sleep(100)
 
     assert %{organizer: organizer, sponsors: []} = GenServer.call(pid, :get)
     assert %{name: ^name, path: path} = organizer
@@ -55,7 +59,8 @@ defmodule Conecerto.ScoreboardWeb.BrandsTest do
     File.write!(Path.join(tmp_dir, "a-sponsor.jpg"), "")
     File.write!(Path.join(tmp_dir, "urls.csv"), "name,url\norganizer,http://organizer.local")
 
-    pid = start_supervised!({Brands, [asset_dir: tmp_dir, name: nil]})
+    pid = start_supervised!({Brands, [dir: tmp_dir, load_delay: 50, name: nil]})
+    :timer.sleep(100)
 
     assert %{organizer: organizer, sponsors: sponsors} = GenServer.call(pid, :get)
 
