@@ -13,6 +13,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
     if connected?(socket) do
       :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("mj")
+      :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("assets")
 
       Process.send_after(self(), :refresh, Scoreboard.config(:tv_refresh_interval))
 
@@ -101,6 +102,39 @@ defmodule Conecerto.ScoreboardWeb.Tv do
     # Immediately refresh recent runs;
     # Let paging views reload data on their own pace.
     {:noreply, assign(socket, recent_runs: Scoreboard.list_recent_runs())}
+  end
+
+  def handle_info({:brands_updated, brands}, socket) do
+    {page_size, group_page_size} = page_sizes(brands)
+
+    socket =
+      if page_size != socket.assigns.page_size do
+        socket
+        |> assign(
+          page_size: page_size,
+          raw_scores: Scoreboard.paginate(Scoreboard.list_raw_scores(), page_size),
+          pax_scores: Scoreboard.paginate(Scoreboard.list_pax_scores(), page_size)
+        )
+      else
+        socket
+      end
+
+    socket =
+      if group_page_size != socket.assigns.group_page_size do
+        groups = Scoreboard.paginate_groups(list_groups(socket.assigns.group_by_class?))
+        group_scores = load_group(groups, group_page_size)
+
+        socket
+        |> assign(
+          group_page_size: group_page_size,
+          groups: groups,
+          group_scores: group_scores
+        )
+      else
+        socket
+      end
+
+    {:noreply, assign(socket, brands: brands)}
   end
 
   @impl true
