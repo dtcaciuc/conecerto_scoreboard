@@ -28,6 +28,7 @@ defmodule Conecerto.Scoreboard.Application do
       Conecerto.Scoreboard.Repo,
       with_id({Phoenix.PubSub, name: Conecerto.Scoreboard.PubSub}, Conecerto.Scoreboard.PubSub),
       with_id({Ecto.Migrator, repos: @repos, skip: false}, id: Conecerto.Scoreboard.Migrator),
+      with_id({Task, &clear_database/0}, :clear_database),
       # Branding asset resource manager
       Conecerto.ScoreboardWeb.Brands,
       Conecerto.ScoreboardWeb.CourseMaps,
@@ -38,6 +39,9 @@ defmodule Conecerto.Scoreboard.Application do
     ]
     |> Enum.filter(&(&1 != nil))
   end
+
+  defp clear_database(),
+    do: Conecerto.Scoreboard.load_data([], [], [])
 
   defp with_id(spec, id),
     do: Supervisor.child_spec(spec, id: id)
