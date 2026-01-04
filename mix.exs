@@ -10,6 +10,7 @@ defmodule Conecerto.Scoreboard.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      listeners: [Phoenix.CodeReloader],
       releases: [
         conecerto_scoreboard: [
           steps: [:assemble, &Conecerto.Scoreboard.Release.make_zip/1]
@@ -37,7 +38,7 @@ defmodule Conecerto.Scoreboard.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7"},
+      {:phoenix, "~> 1.8"},
       {:phoenix_ecto, "~> 4.6"},
       {:ecto_sql, "~> 3.12"},
       {:ecto_sqlite3, "~> 0.18"},
@@ -50,7 +51,7 @@ defmodule Conecerto.Scoreboard.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 1.0"},
       {:jason, "~> 1.4"},
       {:bandit, "~> 1.5"},
       {:typed_struct, "~> 0.3.0"},

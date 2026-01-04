@@ -5,7 +5,10 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
   alias Conecerto.ScoreboardWeb.Brands
   alias Conecerto.ScoreboardWeb.CourseMaps
 
-  plug :put_layout, [html: :explorer] when action not in [:collated]
+  plug :put_layout,
+       [html: {Conecerto.ScoreboardWeb.Layouts, :explorer}]
+       when action not in [:collated]
+
   plug :put_layout, false when action in [:collated]
 
   @root_font_size 16.0

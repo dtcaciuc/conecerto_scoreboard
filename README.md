@@ -233,7 +233,7 @@ To continuously upload results to a remote server, set the following:
 
 ### Runtime
 
-You must have Elixir 1.18 & Erlang/OTP 27 installed to build Scoreboard.
+You must have Elixir 1.19 & Erlang/OTP 28 installed to build Scoreboard.
 
 ### Notable dependencies
 
@@ -259,7 +259,7 @@ directory.
 
 ## License
 
-Copyright (C) 2025 Dimitri Tcaciuc.
+Copyright (C) 2023 - 2026 Dimitri Tcaciuc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
