@@ -203,8 +203,10 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       <.paged_scores_title title="Classes" scores={@scores} />
       <table class="border-collapse striped w-full">
         <.paged_scores_header time_column_title="PAX Best" />
-        <%= for rows <- split_by_class(@scores.current.entries) do %>
-          <.paged_scores_page rows={rows} time_column_field={:pax_time} />
+        <%= if @scores.current do %>
+          <%= for rows <- split_by_class(@scores.current.entries) do %>
+            <.paged_scores_page rows={rows} time_column_field={:pax_time} />
+          <% end %>
         <% end %>
       </table>
     </div>
