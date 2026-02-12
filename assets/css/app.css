@@ -2,7 +2,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-table.striped > tbody > tr:nth-child(2n) {
+table.striped > tbody > tr:nth-child(2n + 1) {
     background-color: var(--table-stripe-fill-color);
 }
 

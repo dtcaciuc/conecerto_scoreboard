@@ -71,94 +71,55 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   end
 
   attr :drivers, :list, required: true
+  attr :exclude_reruns?, :boolean, default: false
 
   def runs(assigns) do
     ~H"""
     <table class="border-collapse striped w-full">
       <thead>
-        <th class="font-bold text-left pl-2 pt-1">Driver</th>
+        <th class="font-bold text-left pl-2 pt-1">Driver / Car</th>
         <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
-        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Class</th>
-        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Model</th>
-        <th class="font-bold text-right pl-2 pt-1">Run</th>
-        <th class="font-bold text-right pl-2 pt-1">Elapsed</th>
-        <th class="font-bold text-left pl-2 pt-1">Pen.</th>
-      </thead>
-      <tbody>
-        <%= for d <- @drivers do %>
-          <tr>
-            <td class="text-left pl-2 py-1 align-top">
-              {d.driver_name}
-            </td>
-            <td class="text-right pl-2 py-1 align-top max-sm:hidden">
-              {d.car_no}
-            </td>
-            <td class="text-left pl-2 py-1 align-top max-sm:hidden">
-              {d.car_class}
-            </td>
-            <td class="text-left pl-2 py-1 whitespace align-top max-sm:hidden">
-              {d.car_model}
-            </td>
-            <td class="text-right pl-2 py-1 whitespace-nowrap">
-              <%= for r <- d.runs do %>
-                <div>{r.counted_run_no |> format_run_no()}</div>
-              <% end %>
-            </td>
-            <td class="text-right pl-2 py-1 whitespace-nowrap">
-              <%= for r <- d.runs do %>
-                <div class={run_time_class(r)}>{r.run_time |> format_score()}</div>
-              <% end %>
-            </td>
-            <td class="text-left pl-2 py-1 whitespace-nowrap">
-              <%= for r <- d.runs do %>
-                <div>{r.penalty |> format_penalty()}</div>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    """
-  end
-
-  attr :drivers, :list, required: true
-
-  def runs_compact(assigns) do
-    ~H"""
-    <table class="border-collapse striped w-full relative">
-      <thead>
-        <th class="font-bold text-left pl-2 pt-1">Driver</th>
-        <th class="font-bold text-right pl-2 pt-1">#</th>
-        <th class="font-bold text-left pl-2 pt-1">Class</th>
-        <th class="font-bold text-left pl-2 pt-1">Car</th>
+        <th class="font-bold text-left pl-1 pt-1 max-sm:hidden">Class</th>
         <th class="font-bold text-right pr-2 pt-1">
-          Elapsed/<span class="underline underline-offset-2">Best</span>, Penalty
+          Elapsed | Pen
         </th>
       </thead>
       <tbody>
-        <%= for d <- @drivers do %>
-          <tr class="break-inside-avoid">
-            <td class="text-left pl-2 py-1 align-top text-nowrap whitespace-nowrap max-w-48 truncate">
-              {d.driver_name}
-            </td>
-            <td class="text-right pl-2 py-1 align-top text-nowrap">
-              {d.car_no}
-            </td>
-            <td class="text-left pl-2 py-1 align-top text-nowrap">
-              {d.car_class}
-            </td>
-            <td class="text-left pl-2 py-1 align-top text-nowrap whitespace-nowrap max-w-48 truncate">
-              {d.car_model}
-            </td>
-            <td class="text-right pl-8 pr-2 py-1 align-top">
-              <div class="grid grid-cols-[repeat(3,_auto)] gap-x-8 gap-y-1 justify-start">
-                <%= for r <- exclude_reruns(d.runs) do %>
-                  <.run_result run={r} />
-                <% end %>
+        <tr :for={d <- @drivers}>
+          <td class={[
+            "text-left pl-2 py-1 align-top text-nowrap whitespace-nowrap",
+            "max-w-36 w-[50%] max-sm:w-[75%] max-[384px]:w-[75%]"
+          ]}>
+            <div>
+              <div class="truncate">
+                {d.driver_name}
               </div>
-            </td>
-          </tr>
-        <% end %>
+              <div class="pl-3 truncate">
+                <i>{d.car_model}</i>
+              </div>
+            </div>
+          </td>
+          <td class="text-right pl-2 py-1 align-top text-nowrap max-sm:hidden">
+            {d.car_no}
+          </td>
+          <td class="text-left w-[10%] pl-1 py-1 align-top text-nowrap max-sm:hidden">
+            {d.car_class}
+          </td>
+          <td class="text-right pl-8 pr-2 py-1 align-top min-w-[25%]">
+            <div class={[
+              "grid",
+              "sm:grid-cols-[repeat(3,auto)]",
+              "max-sm:grid-cols-[repeat(2,auto)]",
+              "max-[384px]:grid-cols-[repeat(1,auto)]",
+              "gap-x-8 gap-y-1 justify-start"
+            ]}>
+              <% driver_runs = if @exclude_reruns?, do: exclude_reruns(d.runs), else: d.runs %>
+              <%= for r <- driver_runs do %>
+                <.run_result run={r} />
+              <% end %>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
     """
@@ -169,27 +130,24 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
   defp run_result(assigns) do
     ~H"""
-    <div class="flex relative gap-x-2">
-      <div class="absolute -left-4 body-text-muted">
+    <div class={[
+      "flex relative gap-x-2",
+      @run.penalty in ["DNF", "RRN"] && "body-text-muted"
+    ]}>
+      <div :if={@run.counted_run_no != -1} class="absolute -left-4 body-text-muted">
         {@run.counted_run_no}›
       </div>
-      <div class={["w-13" | run_time_class(@run)]}>
+      <div class={["w-13", @run.best && "underline underline-offset-2"]}>
         {@run.run_time |> format_score()}
       </div>
       <div class="w-7 text-left">
         <%= if @run.penalty != "" do %>
-          <div>{@run.penalty |> format_penalty()}</div>
+          {@run.penalty |> format_penalty()}
         <% end %>
       </div>
     </div>
     """
   end
-
-  defp run_time_class(run),
-    do: [
-      run.best && "underline underline-offset-2",
-      run.penalty in ["DNF", "RRN"] && "line-through"
-    ]
 
   attr :runs, :list, required: true
 
@@ -242,36 +200,26 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
   def cones(assigns) do
     ~H"""
-    <table class="border-collapse striped w-full">
-      <thead>
-        <th class="font-bold text-left pl-1 pt-1">Driver</th>
-        <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
-        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Class</th>
-        <th class="font-bold text-left pl-2 pt-1 max-sm:hidden">Model</th>
-        <th class="font-bold text-right pl-2 pt-1 pr-1">Cones</th>
-      </thead>
-      <tbody>
-        <%= for d <- @drivers do %>
-          <tr>
-            <td class="text-left pl-1 align-top">
-              {d.driver_name}
-            </td>
-            <td class="text-right pl-2 align-top max-sm:hidden">
-              {d.car_no}
-            </td>
-            <td class="text-left pl-2 align-top max-sm:hidden">
-              {d.car_class}
-            </td>
-            <td class="text-left pl-2 whitespace align-top max-sm:hidden">
-              {d.car_model}
-            </td>
-            <td class="text-right pl-2 whitespace-nowrap pr-1">
-              {d.num_cones}
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <div class={[
+      "grid grid-flow-col",
+      "grid-rows-1 max-[586px]:grid-rows-2 max-[384px]:grid-rows-3",
+      "items-start gap-x-10"
+    ]}>
+      <%= for block <- Enum.chunk_every(@drivers, floor(Enum.count(@drivers) / 3)) do %>
+        <table class="border-collapse striped">
+          <tbody>
+            <tr :for={d <- block}>
+              <td class="text-left pl-1 max-w-36 whitespace-nowrap text-ellipsis overflow-hidden truncate">
+                {d.driver_name}
+              </td>
+              <td class="text-right pl-5 pr-1">
+                {d.num_cones}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
     """
   end
 end

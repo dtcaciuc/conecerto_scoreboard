@@ -43,7 +43,7 @@
 
   <div class="mb-5 break-before-page">
     <.collated_section title="Runs" {assigns}>
-      <Conecerto.ScoreboardWeb.Tables.runs_compact drivers={@runs} />
+      <Conecerto.ScoreboardWeb.Tables.runs drivers={@runs} exclude_reruns?={true} />
     </.collated_section>
   </div>
 
