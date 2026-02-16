@@ -126,7 +126,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
   def table_head(assigns) do
     ~H"""
-    <thead class={["sticky top-[3rem] max-sm:top-[7rem] bg-[color:--header-fill-color]", @class]}>
+    <thead class={["stick-to-page-header bg-[color:--header-fill-color]", @class]}>
       <tr class="[&>th]:py-1">
         {render_slot(@inner_block)}
       </tr>

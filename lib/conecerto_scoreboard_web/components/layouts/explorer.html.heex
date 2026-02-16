@@ -9,6 +9,24 @@
          font-size: <%= @root_font_size - 2 %>px;
       }
     }
+
+    @media screen and (max-width: 568px) {
+      .stick-to-page-header {
+        position: sticky;
+      <%= if @organizer do %>
+        top: 7rem;
+      <% else %>
+        top: 3rem;
+      <% end %>
+      }
+    }
+
+    @media screen and (min-width: 568px) {
+      .stick-to-page-header {
+        position: sticky;
+        top: 3rem;
+      }
+    }
   </style>
   <.header {assigns} />
   <main>
