@@ -269,7 +269,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
       "grid-rows-2 max-[586px]:grid-rows-3 max-[384px]:grid-rows-6",
       "items-start gap-x-6"
     ]}>
-      <%= for block <- Enum.chunk_every(@drivers, ceil(Enum.count(@drivers) / 6)) do %>
+      <%= for block <- chunk_drivers(@drivers, 6) do %>
         <table class="border-collapse striped">
           <tbody>
             <tr :for={d <- block}>
@@ -285,5 +285,23 @@ defmodule Conecerto.ScoreboardWeb.Tables do
       <% end %>
     </div>
     """
+  end
+
+  defp chunk_drivers([], _max_chunks),
+    do: []
+
+  defp chunk_drivers(drivers, max_chunks) do
+    n = ceil(Enum.count(drivers) / max_chunks)
+
+    Enum.chunk_every(
+      drivers,
+      # Round up to even number of rows for each chunk so that
+      # striped rows alternate correctly between each consequent pair.
+      if rem(n, 2) != 0 do
+        n + 1
+      else
+        n
+      end
+    )
   end
 end
