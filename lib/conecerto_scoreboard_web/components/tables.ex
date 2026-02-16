@@ -266,10 +266,10 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     ~H"""
     <div class={[
       "grid grid-flow-col",
-      "grid-rows-1 max-[586px]:grid-rows-2 max-[384px]:grid-rows-3",
-      "items-start gap-x-10"
+      "grid-rows-2 max-[586px]:grid-rows-3 max-[384px]:grid-rows-6",
+      "items-start gap-x-6"
     ]}>
-      <%= for block <- Enum.chunk_every(@drivers, floor(Enum.count(@drivers) / 3)) do %>
+      <%= for block <- Enum.chunk_every(@drivers, ceil(Enum.count(@drivers) / 6)) do %>
         <table class="border-collapse striped">
           <tbody>
             <tr :for={d <- block}>
