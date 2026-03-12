@@ -136,6 +136,7 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   def announce_scores_hr(assigns) do
     ~H"""
     <tbody>
+      <tr />
       <tr>
         <td class="text-center" colspan="7">
           —
