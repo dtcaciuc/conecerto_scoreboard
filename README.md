@@ -257,6 +257,14 @@ iex -S mix phx.server
 Run `release.bat`. Release files should now be available in `_build/prod/rel`
 directory.
 
+## Credits
+
+### Font - _Radio Canada_
+
+Copyright 2019 The Radio-Canada Project Authors (https://github.com/cbcrc/radiocanadafonts)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+
 ## License
 
 Copyright (C) 2023 - 2026 Dimitri Tcaciuc.
