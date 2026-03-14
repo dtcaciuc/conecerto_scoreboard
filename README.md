@@ -48,6 +48,12 @@ data for the date on which it was started.
 > If program was left running after the previous event, it needs to be restarted
 > on the day of the next event to start reading new data.
 
+## Connecting to Scoreboard
+
+By default, scoreboard endpoints are reachable via host's mDNS `http://<hostname>.local` address.
+
+To customize it, see `PHX_HOST` and `PHX_PORT` envars below.
+
 ## Setting up TV kiosk
 
 The suggested way to drive the live dashboard TV is with a Raspberry Pi 4 or a
@@ -177,13 +183,7 @@ directory. The event CSV file must have two columns:
 
 ## Configuration
 
-The following environment variables need to be manually set:
-
-* `PHX_HOST` - IP/hostname of the machine that will be running Scoreboard.
-  This is required for TV dashboard to work and cannot just be `localhost`.
-
-Additionally, you can optionally set the following:
-
+* `PHX_HOST` - (string, optional) IP/hostname of the machine that will be running Scoreboard.
 * `EXPLORER_COLORS` (path, optional) - Path to a CSV file with the custom explorer color palette.
 * `EXPLORER_DEFAULT_PAGE` (string, optional) - The page explorer redirects to from its root path
   (one of `event`, `pax`, `raw`, `runs`, `groups`, or `cones`, defaults to `event`)

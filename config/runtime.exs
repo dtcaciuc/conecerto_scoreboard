@@ -46,7 +46,8 @@ if config_env() != :test do
     database: database_path,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
-  host = System.get_env("PHX_HOST") || "localhost"
+  {:ok, hostname} = :inet.gethostname()
+  host = (System.get_env("PHX_HOST") || "#{hostname}.local") |> String.downcase()
   port = String.to_integer(System.get_env("PHX_PORT") || "80")
 
   # Live endpoints will be unsecured and used on a local network so there's
