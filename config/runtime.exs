@@ -15,7 +15,7 @@ if config_env() != :test do
     event_name: System.get_env("EVENT_NAME", event_name),
     tv_refresh_interval: String.to_integer(System.get_env("TV_REFRESH_INTERVAL", "10")) * 1_000,
     tv_font_size: parse_float!(System.get_env("TV_FONT_SIZE", "17.75")),
-    announce_font_size: parse_float!(System.get_env("ANNOUNCE_FONT_SIZE", "16.5")),
+    announce_font_size: parse_float!(System.get_env("ANNOUNCE_FONT_SIZE", "17.5")),
     radio_frequency: System.get_env("RADIO_FREQUENCY"),
     course_maps_dir: System.get_env("COURSE_MAPS_DIR", "maps"),
     explorer_remote_ftp_host:

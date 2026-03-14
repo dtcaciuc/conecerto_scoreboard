@@ -9,15 +9,38 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   def mount(_params, _session, socket) do
     if connected?(socket) do
       :ok = Conecerto.ScoreboardWeb.Endpoint.subscribe("mj")
-      {:ok, assign(socket, load_data()), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
-    else
-      {:ok, assign(socket, empty_data()), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
     end
+
+    {:ok, socket, layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
+  end
+
+  @impl true
+  def handle_params(params, _uri, socket) do
+    font_size =
+      Map.get(params, "font-size", to_string(Scoreboard.config(:announce_font_size)))
+      |> String.to_float()
+
+    {:noreply, socket |> assign(:root_font_size, font_size) |> assign(load_data())}
   end
 
   @impl true
   def handle_info(:mj_update, socket) do
     {:noreply, assign(socket, load_data())}
+  end
+
+  @impl true
+  def handle_event("font_size:increase", _params, socket) do
+    size = socket.assigns.root_font_size + 0.5
+    {:noreply, socket |> push_patch(to: ~p"/announce?font-size=#{size}")}
+  end
+
+  def handle_event("font_size:decrease", _params, socket) do
+    size = socket.assigns.root_font_size - 0.5
+    {:noreply, socket |> push_patch(to: ~p"/announce?font-size=#{size}")}
+  end
+
+  def handle_event("font_size:reset", _params, socket) do
+    {:noreply, socket |> push_patch(to: ~p"/announce")}
   end
 
   defp load_data() do
@@ -44,7 +67,6 @@ defmodule Conecerto.ScoreboardWeb.Announce do
           end)
 
         %{
-          root_font_size: Scoreboard.config(:announce_font_size),
           recent_runs: recent_runs,
           last_driver: %{
             name: last.driver_name,
@@ -62,7 +84,6 @@ defmodule Conecerto.ScoreboardWeb.Announce do
 
   defp empty_data() do
     %{
-      root_font_size: Scoreboard.config(:announce_font_size),
       recent_runs: [],
       last_driver: nil,
       raw_scores: %{top10: [], rest: []},
@@ -82,9 +103,7 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   def announce_scores(assigns) do
     ~H"""
     <div>
-      <div class="text-2xl text-center mb-2 font-bold">
-        {@view_title}
-      </div>
+      <.panel_header>{@view_title}</.panel_header>
       <table class="border-collapse striped w-full">
         <thead>
           <th class="font-bold text-right">P</th>
@@ -143,6 +162,14 @@ defmodule Conecerto.ScoreboardWeb.Announce do
         </td>
       </tr>
     </tbody>
+    """
+  end
+
+  def panel_header(assigns) do
+    ~H"""
+    <div class="text-2xl -mt-1 mb-2 font-bold text-center">
+      {render_slot(@inner_block)}
+    </div>
     """
   end
 end
