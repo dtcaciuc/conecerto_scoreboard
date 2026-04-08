@@ -8,7 +8,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   @impl true
   def mount(_params, _session, socket) do
-    group_by_class? = Scoreboard.config(:group_by_class?)
     brands = Brands.get()
 
     if connected?(socket) do
@@ -19,7 +18,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
       {page_size, group_page_size} = page_sizes(brands)
 
-      groups = Scoreboard.paginate_groups(list_groups(group_by_class?))
+      groups = Scoreboard.paginate_groups(list_groups(Scoreboard.config(:group_by_class?)))
       group_scores = load_group(groups, group_page_size)
 
       socket =
@@ -34,7 +33,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          pax_scores: Scoreboard.paginate(Scoreboard.list_pax_scores(), page_size),
          groups: groups,
          group_scores: group_scores,
-         group_by_class?: group_by_class?,
          recent_runs: Scoreboard.list_recent_runs(),
          brands: brands
        ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
@@ -46,7 +44,6 @@ defmodule Conecerto.ScoreboardWeb.Tv do
          pax_scores: Scoreboard.empty_page(),
          groups: Scoreboard.empty_page(),
          group_scores: Scoreboard.empty_page(),
-         group_by_class?: group_by_class?,
          recent_runs: [],
          brands: brands
        ), layout: {Conecerto.ScoreboardWeb.Layouts, :tv}}
@@ -121,7 +118,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
     socket =
       if group_page_size != socket.assigns.group_page_size do
-        groups = Scoreboard.paginate_groups(list_groups(socket.assigns.group_by_class?))
+        groups = Scoreboard.paginate_groups(list_groups(Scoreboard.config(:group_by_class?)))
         group_scores = load_group(groups, group_page_size)
 
         socket
@@ -157,7 +154,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       if assigns.group_scores.rest == [] do
         groups =
           if assigns.groups.rest == [] do
-            Scoreboard.paginate_groups(list_groups(assigns.group_by_class?))
+            Scoreboard.paginate_groups(list_groups(Scoreboard.config(:group_by_class?)))
           else
             Scoreboard.next_page(assigns.groups)
           end
