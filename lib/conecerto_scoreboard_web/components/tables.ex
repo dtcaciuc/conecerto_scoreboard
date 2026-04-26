@@ -57,7 +57,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         </div>
       </th>
       <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">
-        Raw Interval
+        Raw Intervals
       </th>
       <th class="font-bold text-right pl-2 max-sm:hidden">Score</th>
       <th></th>
@@ -101,8 +101,8 @@ defmodule Conecerto.ScoreboardWeb.Tables do
           {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
         </td>
         <%= if row.pos == 1 do %>
-          <th class="font-bold text-right pl-2">Top</th>
-          <th class="font-bold text-right pl-2">Next</th>
+          <th class="font-bold text-right pl-2">P1+</th>
+          <th class="font-bold text-right pl-2">Next+</th>
         <% else %>
           <td class="text-right pl-2">
             {row.raw_time_to_top |> format_score()}
@@ -195,13 +195,13 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   defp run_result(assigns) do
     ~H"""
     <div class={[
-      "flex relative gap-x-2",
-      @run.penalty in ["RRN"] && "body-text-muted"
+      "flex relative gap-x-1.5",
+      @run.penalty == "RRN" && "body-text-muted"
     ]}>
-      <div :if={@run.counted_run_no != -1} class="absolute -left-4 body-text-muted">
-        {@run.counted_run_no}›
+      <div class="absolute -left-4 body-text-muted">
+        {@run.counted_run_no |> format_run_no()}
       </div>
-      <div class={["w-13", @run.best && "underline underline-offset-2"]}>
+      <div class={["w-13", @run.best && "underline underline-offset-4"]}>
         {@run.run_time |> format_score()}
       </div>
       <div class="w-7 text-left">

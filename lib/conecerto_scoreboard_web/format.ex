@@ -6,6 +6,6 @@ defmodule Conecerto.ScoreboardWeb.Format do
   def format_penalty("RRN"), do: "RRN"
   def format_penalty(v), do: "#{v}Δ"
 
-  def format_run_no(-1), do: "-"
+  def format_run_no(-1), do: "–"
   def format_run_no(run_no), do: run_no
 end

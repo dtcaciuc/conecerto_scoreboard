@@ -24,7 +24,9 @@
               <tbody>
                 <%= for row <- group do %>
                   <tr class={[row.selected && "text-amber-300"]}>
-                    <td class="text-right">{row.counted_run_no}</td>
+                    <td class="text-right">
+                      {row.counted_run_no |> format_run_no()}
+                    </td>
                     <td class="text-right whitespace-nowrap">
                       <div class={row.best && "underline underline-offset-2"}>
                         {row.run_time |> format_score()}
