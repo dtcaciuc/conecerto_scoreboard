@@ -144,8 +144,8 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <th class="font-bold text-left pl-2 pt-1">Driver / Car</th>
         <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
         <th class="font-bold text-left pl-1 pt-1 max-sm:hidden">Class</th>
-        <th class="font-bold text-right pr-2 pt-1 flex justify-end">
-          <span>Elapsed</span><span class="ml-2 w-7 text-left">Pen</span>
+        <th class="font-bold text-right pr-2 pt-1 flex justify-start">
+          <span class="ml-8">Elapsed</span><span class="ml-2 w-7 text-left">Pen</span>
         </th>
       </.table_head>
       <tbody>
