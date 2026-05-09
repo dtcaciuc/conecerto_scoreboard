@@ -1,4 +1,4 @@
-<div class={["tv h-screen grid grid-cols-3 gap-2 place-items-stretch", grid_rows(@brands)]}>
+<div class={["tv h-screen grid grid-cols-3 gap-1 place-items-stretch", grid_rows(@brands)]}>
   <div class="bg-[--panel-fill-color] p-2 pt-1 overflow-hidden">
     <.paged_scores
       scores={@raw_scores}
@@ -17,7 +17,7 @@
     />
   </div>
 
-  <div class="flex flex-col gap-2 overflow-hidden">
+  <div class="flex flex-col gap-1 overflow-hidden">
     <div class="flex-auto bg-[--panel-fill-color] p-2 pt-1">
       <%= if @groups.current do %>
         <%= if @groups.current == "Classes" do %>

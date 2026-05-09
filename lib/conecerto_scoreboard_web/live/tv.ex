@@ -222,7 +222,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
 
   def paged_scores_header(assigns) do
     ~H"""
-    <thead>
+    <thead class="text-sm">
       <th class="font-bold text-right pt-0">P</th>
       <th class="font-bold text-left pl-2 pt-0">Driver</th>
       <th class="font-bold text-right pl-2 pt-0">#</th>
@@ -233,7 +233,8 @@ defmodule Conecerto.ScoreboardWeb.Tv do
           {@time_column_title}
         </div>
       </th>
-      <th class="font-bold whitespace-nowrap text-right pl-2 pt-0" colspan="2">Raw Interval</th>
+      <th class="font-bold whitespace-nowrap text-right pl-1.5 pt-0">Raw Gap</th>
+      <th class="font-bold whitespace-nowrap text-right pl-1.5 pt-0">Raw Int</th>
     </thead>
     """
   end
@@ -269,16 +270,16 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       <td class="text-right">
         {@row.pos}
       </td>
-      <td class="text-left max-w-36 truncate pl-2">
+      <td class="text-left max-w-36 w-1/3 truncate pl-2">
         {@row.driver_name}
       </td>
       <td class="text-right pl-2">
         {@row.car_no}
       </td>
-      <td class="text-left pl-2">
+      <td class="text-left whitespace-nowrap pl-2">
         {@row.car_class}
       </td>
-      <td class="text-left max-w-36 truncate pl-2">
+      <td class="text-left max-w-36 w-1/3 truncate pl-2">
         {@row.car_model}
       </td>
       <td class="text-right pl-2">
@@ -286,8 +287,8 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       </td>
 
       <%= if @row.pos == 1 do %>
-        <th class="text-right">Top</th>
-        <th class="text-right pl-2">Next</th>
+        <td class="text-right">–</td>
+        <td class="text-right pl-2">–</td>
       <% else %>
         <td class="text-right pl-2">
           {@row.raw_time_to_top |> format_score()}

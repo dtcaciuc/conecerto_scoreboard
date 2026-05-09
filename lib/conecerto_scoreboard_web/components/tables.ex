@@ -47,18 +47,15 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     ~H"""
     <.table_head>
       <th class="font-bold text-right min-w-4">P</th>
-      <th class="font-bold text-left pl-2">Driver</th>
+      <th class="font-bold text-left pl-2 w-1/2 max-sm:w-2/3">Driver</th>
       <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
       <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
-      <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
+      <th class="font-bold text-left pl-3 w-1/2 max-sm:hidden">Model</th>
       <th class="font-bold whitespace-nowrap text-right relative pt-1">
-        <div class="absolute top-0 right-0 pt-1">
-          {@time_column_title}
-        </div>
+        {@time_column_title}
       </th>
-      <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">
-        Raw Intervals
-      </th>
+      <th class="font-bold whitespace-nowrap text-right pl-2">Raw Gap</th>
+      <th class="font-bold whitespace-nowrap text-right pl-2">Raw Int</th>
       <th class="font-bold text-right pl-2 max-sm:hidden">Score</th>
       <th></th>
     </.table_head>
@@ -94,15 +91,15 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <td class="text-left whitespace-nowrap pl-2 max-sm:hidden">
           {row.car_class}
         </td>
-        <td class="text-left max-w-36 truncate pl-2 max-sm:hidden">
+        <td class="text-left max-w-36 truncate pl-3 max-sm:hidden">
           {row.car_model}
         </td>
         <td class="text-right pl-2">
           {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
         </td>
         <%= if row.pos == 1 do %>
-          <th class="font-bold text-right pl-2">P1+</th>
-          <th class="font-bold text-right pl-2">Next+</th>
+          <td class="text-right pl-2">–</td>
+          <td class="text-right pl-2">–</td>
         <% else %>
           <td class="text-right pl-2">
             {row.raw_time_to_top |> format_score()}
@@ -111,7 +108,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
             {row.raw_time_to_next |> format_score()}
           </td>
         <% end %>
-        <td class="text-left text-right pl-2 max-sm:hidden">
+        <td class="text-left text-right pl-3 max-sm:hidden">
           {row.score |> format_score()}
         </td>
         <td></td>
@@ -126,7 +123,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
   def table_head(assigns) do
     ~H"""
-    <thead class={["stick-to-page-header bg-[color:--header-fill-color]", @class]}>
+    <thead class={["stick-to-page-header bg-[color:--header-fill-color] text-sm", @class]}>
       <tr class="[&>th]:py-1">
         {render_slot(@inner_block)}
       </tr>
@@ -145,7 +142,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
         <th class="font-bold text-right pl-2 pt-1 max-sm:hidden">#</th>
         <th class="font-bold text-left pl-1 pt-1 max-sm:hidden">Class</th>
         <th class="font-bold text-right pr-2 pt-1 flex justify-start">
-          <span class="ml-8">Elapsed</span><span class="ml-2 w-7 text-left">Pen</span>
+          <span class="w-[5.25rem]">Elapsed</span><span class="ml-1.5 text-left">Pen</span>
         </th>
       </.table_head>
       <tbody>

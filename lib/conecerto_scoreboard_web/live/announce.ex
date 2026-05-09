@@ -105,11 +105,12 @@ defmodule Conecerto.ScoreboardWeb.Announce do
     <div>
       <.panel_header>{@view_title}</.panel_header>
       <table class="border-collapse striped w-full">
-        <thead>
+        <thead class="text-sm">
           <th class="font-bold text-right">P</th>
           <th class="font-bold text-left pl-2">Driver</th>
           <th class="font-bold whitespace-nowrap text-right">{@time_column_title}</th>
-          <th class="font-bold whitespace-nowrap text-right pl-2" colspan="2">Raw Interval</th>
+          <th class="font-bold whitespace-nowrap text-right pl-2">Raw Gap</th>
+          <th class="font-bold whitespace-nowrap text-right pl-2">Raw Int</th>
         </thead>
         <.announce_scores_page rows={@scores.top10} time_column_field={@time_column_field} />
         <%= if Enum.count(@scores.rest) > 0 do %>
@@ -136,8 +137,8 @@ defmodule Conecerto.ScoreboardWeb.Announce do
             {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
           </td>
           <%= if row.pos == 1 do %>
-            <td class="font-bold text-right">Top</td>
-            <td class="font-bold text-right pl-2">Next</td>
+            <th class="text-right">–</th>
+            <th class="text-right pl-2">–</th>
           <% else %>
             <td class="text-right pl-2">
               {row.raw_time_to_top |> format_score()}
