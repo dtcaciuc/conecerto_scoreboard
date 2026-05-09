@@ -157,8 +157,9 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_recent_runs(num_runs \\ 10) do
-    from(r in Schema.RecentRun,
-      order_by: [{:desc, :global_run_no}],
+    from(
+      r in runs_with_driver_info(),
+      order_by: [{:desc, r.id}],
       limit: ^num_runs
     )
     |> Repo.all()
@@ -243,9 +244,10 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_car_runs(car_no) do
-    from(r in Schema.RecentRun,
+    from(
+      r in runs_with_driver_info(),
       where: r.car_no == ^car_no,
-      order_by: [{:asc, :global_run_no}]
+      order_by: [{:asc, r.id}]
     )
     |> Repo.all()
     |> put_best_run()
@@ -269,16 +271,15 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_drivers_and_runs() do
-    q =
-      from(r in Schema.RecentRun,
-        order_by: [
-          {:asc, :driver_name},
-          {:asc, :car_no},
-          {:asc, :global_run_no}
-        ]
-      )
-
-    Repo.all(q)
+    from(
+      r in subquery(runs_with_driver_info()),
+      order_by: [
+        {:asc, r.driver_name},
+        {:asc, r.car_no},
+        {:asc, r.id}
+      ]
+    )
+    |> Repo.all()
     |> Enum.chunk_while([], &chunk_runs_by_driver/2, fn
       [] ->
         {:cont, []}
@@ -319,14 +320,8 @@ defmodule Conecerto.Scoreboard do
 
   defp put_best_run(runs) do
     fastest_run = Enum.min_by(runs, &effective_run_time/1)
-
-    Enum.map(runs, fn run ->
-      %{run | best: run.counted_run_no == fastest_run.counted_run_no}
-    end)
+    Enum.map(runs, &Map.put(&1, :best, &1.counted_run_no == fastest_run.counted_run_no))
   end
-
-  # Don't count reruns
-  defp effective_run_time(%{counted_run_no: -1}), do: 9999.999
 
   defp effective_run_time(%{run_time: run_time, penalty: ""}), do: run_time
 
@@ -336,6 +331,7 @@ defmodule Conecerto.Scoreboard do
         run_time + num_cones * 2.0
 
       _ ->
+        # Includes reruns which are nil
         9999.999
     end
   end
@@ -380,5 +376,23 @@ defmodule Conecerto.Scoreboard do
   defp put_pax_scores(results) do
     best_time = Enum.min_by(results, & &1.pax_time).pax_time
     Enum.map(results, fn r -> %{r | score: 100.0 * best_time / r.pax_time} end)
+  end
+
+  defp runs_with_driver_info() do
+    from(
+      r in Run,
+      join: d in Driver,
+      on: r.car_no == d.car_no,
+      select: %{
+        id: r.id,
+        driver_name: fragment("concat(?, ', ', ?)", d.last_name, d.first_name),
+        car_no: d.car_no,
+        car_class: d.car_class,
+        car_model: d.car_model,
+        counted_run_no: r.run_no,
+        run_time: r.run_time,
+        penalty: r.penalty
+      }
+    )
   end
 end

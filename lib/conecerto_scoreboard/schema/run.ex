@@ -5,6 +5,7 @@ defmodule Conecerto.Scoreboard.Schema.Run do
 
   schema "runs" do
     field :car_no, :integer
+    field :run_no, :integer
     field :run_time, :float
     field :penalty, :string
   end

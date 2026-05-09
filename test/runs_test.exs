@@ -33,10 +33,12 @@ defmodule Conecerto.Scoreboard.RunsTest do
       assert Enum.count(d.runs) > 0
     end
 
-    [d0 | _rest] = drivers
+    assert {d, 0} =
+             drivers
+             |> Enum.with_index()
+             |> Enum.find(fn {d, _} -> d.car_no == 27 end)
 
-    assert %{driver_name: "Allen, Jess", runs: runs} = d0
-    assert 6 = Enum.count(runs)
+    assert %{driver_name: "Allen, Jess", runs: runs} = d
 
     assert [
              %{penalty: "2", run_time: 42.785, counted_run_no: 1, best: false},
@@ -55,5 +57,18 @@ defmodule Conecerto.Scoreboard.RunsTest do
                  best: &1.best
                }
              )
+  end
+
+  test "list_drivers_and_runs - Reruns are excluded" do
+    assert drivers = Scoreboard.list_drivers_and_runs()
+
+    # Rerun is the fastest time but its excluded
+    assert {d, 22} =
+             drivers
+             |> Enum.with_index()
+             |> Enum.find(fn {d, _} -> d.car_no == 35 end)
+
+    assert %{driver_name: "Hossack, Richard", runs: runs} = d
+    assert %{penalty: "RRN", best: false} = runs |> Enum.min_by(& &1.run_time)
   end
 end

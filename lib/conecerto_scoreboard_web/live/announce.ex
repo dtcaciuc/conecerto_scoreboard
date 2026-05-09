@@ -93,11 +93,11 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   end
 
   defp select_car(rows, car_no) do
-    Enum.map(rows, fn row -> %{row | selected: row.car_no == car_no} end)
+    Enum.map(rows, &Map.put(&1, :selected, &1.car_no == car_no))
   end
 
   defp select_counted_run(runs, run_no) do
-    Enum.map(runs, fn run -> %{run | selected: run.counted_run_no == run_no} end)
+    Enum.map(runs, &Map.put(&1, :selected, &1.counted_run_no == run_no))
   end
 
   def announce_scores(assigns) do

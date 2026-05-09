@@ -23,6 +23,7 @@ defmodule Conecerto.Scoreboard.MJ.Runs do
     rows
     |> Enum.filter(&(&1.day == last_day))
     |> Enum.map(&Map.delete(&1, :day))
+    |> put_run_numbers()
   end
 
   defp parse_row(
@@ -50,5 +51,24 @@ defmodule Conecerto.Scoreboard.MJ.Runs do
   defp parse_row(row, runs) do
     Logger.warning("Could not read an incomplete run definition: #{inspect(row)}")
     runs
+  end
+
+  defp put_run_numbers(runs) do
+    %{runs: runs} =
+      for run <- runs, reduce: %{runs: [], run_counts: %{}} do
+        %{runs: runs, run_counts: run_counts} ->
+          {run_no, run_counts} =
+            if run.penalty != "RRN" do
+              Map.get_and_update(run_counts, run.car_no, fn value ->
+                {value || 1, (value || 1) + 1}
+              end)
+            else
+              {nil, run_counts}
+            end
+
+          %{runs: [Map.put(run, :run_no, run_no) | runs], run_counts: run_counts}
+      end
+
+    runs |> Enum.reverse()
   end
 end
