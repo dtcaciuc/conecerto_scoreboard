@@ -49,11 +49,11 @@ defmodule Conecerto.ScoreboardWeb.Announce do
         recent_runs =
           [last | rest]
           |> Enum.reverse()
-          |> select_car(last.car_no)
+          |> select_run(last)
 
         last_driver_runs =
           Scoreboard.list_car_runs(last.car_no)
-          |> select_counted_run(last.counted_run_no)
+          |> select_run(last)
 
         group_scores =
           Scoreboard.list_recent_groups(6)
@@ -92,12 +92,16 @@ defmodule Conecerto.ScoreboardWeb.Announce do
     }
   end
 
-  defp select_car(rows, car_no) do
-    Enum.map(rows, &Map.put(&1, :selected, &1.car_no == car_no))
-  end
-
-  defp select_counted_run(runs, run_no) do
-    Enum.map(runs, &Map.put(&1, :selected, &1.counted_run_no == run_no))
+  defp select_run(runs, run) do
+    Enum.map(
+      runs,
+      &Map.put(
+        &1,
+        :selected,
+        &1.car_no == run.car_no &&
+          &1.counted_run_no == run.counted_run_no
+      )
+    )
   end
 
   def announce_scores(assigns) do
