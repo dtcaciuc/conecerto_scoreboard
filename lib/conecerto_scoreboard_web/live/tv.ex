@@ -227,7 +227,7 @@ defmodule Conecerto.ScoreboardWeb.Tv do
       <th class="font-bold text-left pl-2 pt-0">Driver</th>
       <th class="font-bold text-right pl-2 pt-0">#</th>
       <th class="font-bold text-left pl-2 pt-0">Class</th>
-      <th class="font-bold text-left pl-2 pt-0">Model</th>
+      <th class="font-bold text-left pl-2 pt-0 min-w-16">Model</th>
       <th class="font-bold whitespace-nowrap text-right relative pt-0">
         <div class="absolute top-0 right-0 pt-0">
           {@time_column_title}

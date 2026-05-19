@@ -7,6 +7,7 @@ defmodule Conecerto.Scoreboard do
   alias Conecerto.Scoreboard.Schema.Driver
   alias Conecerto.Scoreboard.Schema.Group
   alias Conecerto.Scoreboard.Schema.Run
+  alias Conecerto.Scoreboard.Schema.PendingRun
 
   def config(key) do
     Application.fetch_env!(:conecerto_scoreboard, :config_provider).get(key)
@@ -29,6 +30,24 @@ defmodule Conecerto.Scoreboard do
   end
 
   def load_data(classes, drivers, runs) do
+    # run_time:
+    #  = 0.0 - emitted by MJ timing but replaced with max time by parser.
+    #  > 0.0 - completed (emitted from MJ)
+    #  < 0.0 - in progress
+    #    nil - did not yet start
+    {completed_runs, pending_runs} =
+      runs
+      |> Enum.filter(&(&1.run_time != 0.0))
+      |> Enum.split_while(&(&1.run_time != nil and &1.run_time > 0.0))
+
+    pending_runs =
+      pending_runs
+      |> Enum.map(fn run ->
+        run
+        |> Map.put(:running?, run.run_time < 0.0)
+        |> Map.delete(:run_time)
+      end)
+
     {drivers, groups} = groups_from_drivers(drivers)
 
     Ecto.Multi.new()
@@ -36,10 +55,12 @@ defmodule Conecerto.Scoreboard do
     |> Ecto.Multi.delete_all(:delete_drivers, Driver)
     |> Ecto.Multi.delete_all(:delete_groups, Group)
     |> Ecto.Multi.delete_all(:delete_run, Run)
+    |> Ecto.Multi.delete_all(:delete_pending_run, PendingRun)
     |> Ecto.Multi.insert_all(:classes, Class, classes)
     |> Ecto.Multi.insert_all(:drivers, Driver, drivers)
     |> Ecto.Multi.insert_all(:groups, Group, groups)
-    |> Ecto.Multi.insert_all(:runs, Run, runs)
+    |> Ecto.Multi.insert_all(:runs, Run, completed_runs)
+    |> Ecto.Multi.insert_all(:pending_runs, PendingRun, pending_runs)
     |> Ecto.Multi.insert(
       :last_updated_at,
       Schema.Metadata.build_timestamp(),
@@ -157,12 +178,42 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_recent_runs(num_runs \\ 10) do
-    from(
-      r in runs_with_driver_info(),
-      order_by: [{:desc, r.id}],
-      limit: ^num_runs
-    )
-    |> Repo.all()
+    {not_started, started} =
+      from(
+        r in PendingRun,
+        join: d in Driver,
+        on: r.car_no == d.car_no,
+        select: %{
+          id: r.id,
+          driver_name: fragment("concat(?, ', ', ?)", d.last_name, d.first_name),
+          car_no: d.car_no,
+          car_class: d.car_class,
+          car_model: d.car_model,
+          counted_run_no: r.run_no,
+          status: fragment("iif(?, ?, ?)", r.running?, "running", "queued"),
+          penalty: r.penalty,
+          run_time: nil
+        },
+        order_by: [{:desc, r.id}],
+        limit: ^num_runs
+      )
+      |> Repo.all()
+      |> Enum.split_while(&(&1.status == "queued"))
+
+    not_started =
+      not_started |> Enum.take(1)
+
+    completed =
+      from(
+        r in runs_with_driver_info(),
+        order_by: [{:desc, r.id}],
+        limit: ^num_runs
+      )
+      |> Repo.all()
+      |> Enum.map(&Map.put(&1, :status, "completed"))
+
+    (not_started ++ started ++ completed)
+    |> Enum.take(num_runs)
     |> Enum.reverse()
   end
 
@@ -319,8 +370,15 @@ defmodule Conecerto.Scoreboard do
   end
 
   defp put_best_run(runs) do
-    fastest_run = Enum.min_by(runs, &effective_run_time/1)
-    Enum.map(runs, &Map.put(&1, :best, &1.counted_run_no == fastest_run.counted_run_no))
+    # Consider only valid runs
+    case Enum.filter(runs, &(&1.penalty not in ["RRN", "DNF"])) do
+      [] ->
+        Enum.map(runs, &Map.put(&1, :best, false))
+
+      valid_runs ->
+        fastest = Enum.min_by(valid_runs, &effective_run_time/1)
+        Enum.map(runs, &Map.put(&1, :best, &1.counted_run_no == fastest.counted_run_no))
+    end
   end
 
   defp effective_run_time(%{run_time: run_time, penalty: ""}), do: run_time

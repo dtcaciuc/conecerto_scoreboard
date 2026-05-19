@@ -1,4 +1,5 @@
 defmodule Conecerto.ScoreboardWeb.Format do
+  def format_score(nil), do: nil
   def format_score(v), do: :erlang.float_to_binary(v, decimals: 3)
 
   def format_penalty(""), do: "\u00A0"

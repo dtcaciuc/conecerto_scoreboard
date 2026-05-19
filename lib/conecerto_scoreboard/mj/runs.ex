@@ -33,6 +33,14 @@ defmodule Conecerto.Scoreboard.MJ.Runs do
     with {parsed_day, ""} <- Integer.parse(day),
          {parsed_car_no, ""} <- Integer.parse(car_no),
          {parsed_time, ""} <- Float.parse(run_time) do
+      # MJ timing scoring interprets 0.0 as max time
+      parsed_time =
+        if parsed_time == 0.0 do
+          999.999
+        else
+          parsed_time
+        end
+
       [
         %{
           day: parsed_day,

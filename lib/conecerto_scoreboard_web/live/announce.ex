@@ -44,64 +44,61 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   end
 
   defp load_data() do
-    case Scoreboard.list_recent_runs(5) |> Enum.reverse() do
-      [last | rest] ->
-        recent_runs =
-          [last | rest]
-          |> Enum.reverse()
-          |> select_run(last)
+    {recent, rest} =
+      Scoreboard.list_recent_runs(10) |> Enum.split_while(&(&1.status == "completed"))
 
-        last_driver_runs =
-          Scoreboard.list_car_runs(last.car_no)
-          |> select_run(last)
+    data =
+      case recent |> Enum.reverse() do
+        [last | rest] ->
+          recent =
+            [Map.put(last, :selected, true) | Enum.map(rest, &Map.put(&1, :selected, false))]
+            |> Enum.reverse()
 
-        group_scores =
-          Scoreboard.list_recent_groups(6)
-          |> Enum.map(fn name ->
-            scores =
-              name
-              |> Scoreboard.list_group_scores()
-              |> Scoreboard.announce_run(last.car_no)
+          last_driver_runs =
+            Scoreboard.list_car_runs(last.car_no)
 
-            %{name: name, scores: scores}
-          end)
+          group_scores =
+            Scoreboard.list_recent_groups(4)
+            |> Enum.map(fn name ->
+              scores =
+                name
+                |> Scoreboard.list_group_scores()
+                |> Scoreboard.announce_run(last.car_no)
 
-        %{
-          recent_runs: recent_runs,
-          last_driver: %{
-            name: last.driver_name,
-            runs: last_driver_runs
-          },
-          raw_scores: Scoreboard.announce_run(Scoreboard.list_raw_scores(), last.car_no),
-          pax_scores: Scoreboard.announce_run(Scoreboard.list_pax_scores(), last.car_no),
-          group_scores: group_scores
-        }
+              %{name: name, scores: scores}
+            end)
 
-      _ ->
-        empty_data()
-    end
+          %{
+            recent: recent,
+            last_driver: %{
+              name: last.driver_name,
+              runs: last_driver_runs
+            },
+            raw_scores: Scoreboard.announce_run(Scoreboard.list_raw_scores(), last.car_no),
+            pax_scores: Scoreboard.announce_run(Scoreboard.list_pax_scores(), last.car_no),
+            group_scores: group_scores
+          }
+
+        _ ->
+          empty_data()
+      end
+
+    {running, queued} =
+      rest |> Enum.split_while(&(&1.status == "running"))
+
+    data
+    |> Map.put(:running, running)
+    |> Map.put(:queued, queued)
   end
 
   defp empty_data() do
     %{
-      recent_runs: [],
+      recent: [],
       last_driver: nil,
       raw_scores: %{top10: [], rest: []},
       pax_scores: %{top10: [], rest: []},
       group_scores: []
     }
-  end
-
-  defp select_run(runs, run) do
-    Enum.map(
-      runs,
-      &Map.put(
-        &1,
-        :selected,
-        &1.car_no == run.car_no &&
-          &1.counted_run_no == run.counted_run_no
-      )
-    )
   end
 
   def announce_scores(assigns) do
@@ -141,8 +138,8 @@ defmodule Conecerto.ScoreboardWeb.Announce do
             {row |> get_in([Access.key!(@time_column_field)]) |> format_score()}
           </td>
           <%= if row.pos == 1 do %>
-            <th class="text-right">–</th>
-            <th class="text-right pl-2">–</th>
+            <td class="text-right">–</td>
+            <td class="text-right pl-2">–</td>
           <% else %>
             <td class="text-right pl-2">
               {row.raw_time_to_top |> format_score()}
@@ -172,7 +169,7 @@ defmodule Conecerto.ScoreboardWeb.Announce do
 
   def panel_header(assigns) do
     ~H"""
-    <div class="text-2xl -mt-1 mb-2 font-bold text-center">
+    <div class="text-xl -mt-1 mb-1.5 font-bold text-center">
       {render_slot(@inner_block)}
     </div>
     """

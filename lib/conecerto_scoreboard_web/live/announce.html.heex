@@ -5,86 +5,82 @@
     <% end %>
   }
   body {
-    font-stretch: semi-condensed;
+    font-stretch: condensed;
   }
 </style>
-<div class="tv flex flex-col gap-2 h-screen p-2">
-  <div class="flex flex-row justify-stretch gap-2">
-    <div class="basis-[40%] bg-[--panel-fill-color] p-2 rounded-md">
-      <%= if @last_driver do %>
-        <.panel_header>{@last_driver.name}</.panel_header>
-        <div class="flex flex-row gap-10 items-start justify-center">
-          <%= for group <- Enum.chunk_every(@last_driver.runs, 5) do %>
-            <table class="striped">
-              <thead>
-                <th class="text-right">Run</th>
-                <th class="text-left pl-2">Elapsed</th>
-                <th class="text-left pl-3">Pen</th>
-              </thead>
-              <tbody>
-                <%= for row <- group do %>
-                  <tr class={[row.selected && "text-amber-300"]}>
-                    <td class="text-right">
-                      {row.counted_run_no |> format_run_no()}
-                    </td>
-                    <td class="text-right whitespace-nowrap">
-                      <div class={row.best && "underline underline-offset-4"}>
-                        {row.run_time |> format_score()}
-                      </div>
-                    </td>
-                    <td class="text-left pl-3 whitespace-nowrap">
-                      {row.penalty |> format_penalty()}
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-    <div class="basis-[50%] bg-[--panel-fill-color] p-2 rounded-md flex flex-col items-center">
-      <.panel_header>Recent runs</.panel_header>
-      <Conecerto.ScoreboardWeb.Tables.recent_runs runs={@recent_runs} show_selection?={true} />
-    </div>
-    <div class="basis-[10%] bg-[--panel-fill-color] p-2 rounded-md flex flex-col items-center">
-      <.panel_header>Settings</.panel_header>
-      <div class="text-lg">
-        <div class="whitespace-nowrap text-center">Font size</div>
-        <div>
-          <button class="px-2 py-1 text-2xl" phx-click="font_size:increase">+</button>
-          <button class="px-2 py-1 text-2xl" phx-click="font_size:decrease">-</button>
-          <button class="px-2 py-1 text-2xl" phx-click="font_size:reset">⮌</button>
-        </div>
+<div class="tv flex flex-col justify-between gap-2 h-screen p-1">
+  <div class="flex flex-row gap-2">
+    <div class="flex flex-col basis-[25%] justify-stretch gap-2">
+      <div class="bg-[--panel-fill-color] p-2 rounded-md">
+        <.panel_header>Recently Finished</.panel_header>
+        <Conecerto.ScoreboardWeb.Tables.recent_runs
+          runs={@recent}
+          combine_model_column?={true}
+          show_selection?={true}
+        />
+        <%= if @last_driver do %>
+          <hr class="border-[--header-border-color] border-dashed my-0.5" />
+          <div class="flex flex-row gap-3 items-start justify-center">
+            <div class="grid grid-cols-3 gap-x-8 gap-y-1 pl-8 pr-2 pt-1 text-right">
+              <%= for run <- @last_driver.runs do %>
+                <Conecerto.ScoreboardWeb.Tables.run_result run={run} />
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="bg-[--panel-fill-color] p-2 rounded-md">
+        <.panel_header>Out On Course</.panel_header>
+        <Conecerto.ScoreboardWeb.Tables.recent_runs
+          runs={@running}
+          combine_model_column?={true}
+        />
+      </div>
+      <div class="bg-[--panel-fill-color] p-2 rounded-md flex-auto">
+        <.panel_header>At the Start Line</.panel_header>
+        <Conecerto.ScoreboardWeb.Tables.recent_runs
+          runs={@queued}
+          combine_model_column?={true}
+        />
       </div>
     </div>
-  </div>
-  <div class="flex-auto grid grid-cols-4 gap-2">
-    <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3 col-start-1 row-start-1">
-      <.announce_scores
-        scores={@raw_scores}
-        view_title="RAW"
-        time_column_title="Raw Best"
-        time_column_field={:raw_time}
-      />
-    </div>
-    <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3 col-start-1 row-start-2">
-      <.announce_scores
-        scores={@pax_scores}
-        view_title="PAX"
-        time_column_title="Pax Best"
-        time_column_field={:pax_time}
-      />
-    </div>
-    <%= for group <- @group_scores do %>
-      <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3">
+    <div class="flex-auto grid grid-cols-3 gap-2">
+      <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3 col-start-1 row-start-1">
         <.announce_scores
-          scores={group.scores}
-          view_title={group.name}
+          scores={@raw_scores}
+          view_title="RAW"
+          time_column_title="Raw Best"
+          time_column_field={:raw_time}
+        />
+      </div>
+      <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3 col-start-1 row-start-2">
+        <.announce_scores
+          scores={@pax_scores}
+          view_title="PAX"
           time_column_title="Pax Best"
           time_column_field={:pax_time}
         />
       </div>
-    <% end %>
+      <%= for group <- @group_scores do %>
+        <div class="bg-[--panel-fill-color] p-2 rounded-md pr-3">
+          <.announce_scores
+            scores={group.scores}
+            view_title={group.name}
+            time_column_title="Pax Best"
+            time_column_field={:pax_time}
+          />
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="bg-[--panel-fill-color] p-2 rounded-md flex flex-col items-center sticky bottom-0">
+    <div class="text-lg flex items-center gap-5">
+      <div class="whitespace-nowrap text-center">Font size:</div>
+      <div class="flex items-center">
+        <button class="px-2 text-2xl" phx-click="font_size:increase">+</button>
+        <button class="px-2 text-2xl" phx-click="font_size:decrease">-</button>
+        <button class="px-2 text-2xl" phx-click="font_size:reset">⮌</button>
+      </div>
+    </div>
   </div>
 </div>

@@ -189,7 +189,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   defp exclude_reruns(runs),
     do: runs |> Enum.filter(&(&1.penalty != "RRN"))
 
-  defp run_result(assigns) do
+  def run_result(assigns) do
     ~H"""
     <div class={[
       "flex relative gap-x-1.5",
@@ -211,6 +211,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   end
 
   attr :runs, :list, required: true
+  attr :combine_model_column?, :boolean, default: false
   attr :show_selection?, :boolean, default: false
 
   def recent_runs(assigns) do
@@ -218,19 +219,25 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     <div>
       <table class="border-collapse striped w-full">
         <.table_head>
-          <th class="font-bold text-left pl-2">Driver</th>
+          <th class={["font-bold text-left pl-2", @combine_model_column? && "w-2/3"]}>Driver</th>
           <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
           <th class="font-bold text-left pl-2 max-sm:hidden">Class</th>
-          <th class="font-bold text-left pl-2 max-sm:hidden">Model</th>
-          <th class="font-bold text-right">Run</th>
-          <th class="font-bold text-right pl-2">Elapsed</th>
-          <th class="font-bold text-left pl-2 pr-2">Pen</th>
+          <th :if={not @combine_model_column?} class="font-bold text-left pl-2 max-sm:hidden">
+            Model
+          </th>
+          <th class="font-bold text-right pl-2">Run</th>
+          <th class="font-bold text-right text-transparent">⏵</th>
+          <th class="font-bold text-right">Elapsed</th>
+          <th class="font-bold text-left pl-1.5 pr-2">Pen</th>
         </.table_head>
         <tbody>
           <%= for row <- @runs do %>
             <tr class={@show_selection? && row.selected && "text-amber-300"}>
-              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 w-[35%] max-sm:w-[75%]">
+              <td class="text-left max-w-40 whitespace-nowrap text-ellipsis overflow-hidden pl-2 w-[35%] max-sm:w-[75%]">
                 {row.driver_name}
+                <div :if={@combine_model_column?} class="pl-3 truncate">
+                  <i>{row.car_model}</i>
+                </div>
               </td>
               <td class="text-right pl-2 max-sm:hidden">
                 {row.car_no}
@@ -238,17 +245,23 @@ defmodule Conecerto.ScoreboardWeb.Tables do
               <td class="text-left pl-2 break-keep max-sm:hidden">
                 {row.car_class}
               </td>
-              <td class="text-left max-w-36 whitespace-nowrap text-ellipsis overflow-hidden pl-2 w-[35%] max-sm:hidden">
+              <td
+                :if={not @combine_model_column?}
+                class="text-left max-w-40 whitespace-nowrap text-ellipsis overflow-hidden pl-2 w-[35%] max-sm:hidden"
+              >
                 {row.car_model}
               </td>
-              <td class="text-right pl-2">
+              <td class="text-right pl-2 relative">
                 {row.counted_run_no |> format_run_no()}
               </td>
-              <td class="text-right pl-2 whitespace-nowrap">
-                <div>{row.run_time |> format_score()}</div>
+              <td class="">
+                <div :if={row.status == "running"} class="run-blinker">⏵</div>
               </td>
-              <td class="text-left pl-2 pr-2 whitespace-nowrap">
-                <div>{row.penalty |> format_penalty()}</div>
+              <td class="text-right whitespace-nowrap">
+                <div class="w-13">{row.run_time |> format_score()}</div>
+              </td>
+              <td class="text-left pl-1.5 pr-2 whitespace-nowrap">
+                <div class="w-7">{row.penalty |> format_penalty()}</div>
               </td>
             </tr>
           <% end %>
