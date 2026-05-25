@@ -242,7 +242,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
               <td class="text-right pl-2 max-sm:hidden">
                 {row.car_no}
               </td>
-              <td class="text-left pl-2 break-keep max-sm:hidden">
+              <td class="text-left pl-2 break-keep max-sm:hidden whitespace-nowrap">
                 {row.car_class}
               </td>
               <td
