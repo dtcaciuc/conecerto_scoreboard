@@ -98,7 +98,12 @@ defmodule Conecerto.ScoreboardWeb.Tv do
   def handle_info(:mj_update, socket) do
     # Immediately refresh recent runs;
     # Let paging views reload data on their own pace.
-    {:noreply, assign(socket, recent_runs: Scoreboard.list_recent_runs())}
+    {:noreply,
+     assign(socket,
+       # Font size might've changed.
+       root_font_size: Scoreboard.config(:tv_font_size),
+       recent_runs: Scoreboard.list_recent_runs()
+     )}
   end
 
   def handle_info({:brands_updated, brands}, socket) do

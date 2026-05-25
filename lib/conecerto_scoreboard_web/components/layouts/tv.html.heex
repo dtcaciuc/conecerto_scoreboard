@@ -1,3 +1,10 @@
 <body class="bg-[--body-fill-color] text-[--body-text-color] overflow-y-hidden">
+  <style>
+    html {
+    <%= if assigns[:root_font_size] do %>
+      font-size: <%= @root_font_size %>px;
+    <% end %>
+    }
+  </style>
   {@inner_content}
 </body>

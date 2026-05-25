@@ -29,19 +29,13 @@
         }
       }
 
-      html {
-        line-height: 1.25rem;
-      <%= if assigns[:root_font_size] do %>
-        font-size: <%= @root_font_size %>px;
-      <% end %>
-      }
-
       @font-face {
         font-family: 'RadioCanada';
         src: url(<%= with_base_path(@conn, ~p"/fonts/RadioCanada-Variable.ttf") %>);
       }
 
-      body {
+      html {
+        line-height: 1.25rem;
         font-family: "RadioCanada";
         font-stretch: condensed;
       }
