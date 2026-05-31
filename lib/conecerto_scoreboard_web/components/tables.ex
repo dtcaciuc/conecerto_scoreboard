@@ -210,6 +210,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     """
   end
 
+  attr :id, :string, default: nil
   attr :runs, :list, required: true
   attr :combine_model_column?, :boolean, default: false
   attr :show_selection?, :boolean, default: false
@@ -217,7 +218,11 @@ defmodule Conecerto.ScoreboardWeb.Tables do
   def recent_runs(assigns) do
     ~H"""
     <div>
-      <table class="border-collapse striped w-full">
+      <table
+        id={@id}
+        class="border-collapse striped w-full"
+        phx-hook={@id != nil && "RecentRunsTable"}
+      >
         <.table_head>
           <th class={["font-bold text-left pl-2", @combine_model_column? && "w-2/3"]}>Driver</th>
           <th class="font-bold text-right pl-2 max-sm:hidden">#</th>
@@ -255,7 +260,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
                 {row.counted_run_no |> format_run_no()}
               </td>
               <td class="">
-                <div :if={row.status == "running"} class="run-blinker">⏵</div>
+                <div :if={row.status == "running"} class="blinker">⏵</div>
               </td>
               <td class="text-right whitespace-nowrap">
                 <div class="w-13">{row.run_time |> format_score()}</div>

@@ -22,8 +22,32 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+let Hooks = {};
+
+Hooks.RecentRunsTable = {
+  mounted() {
+    this.el.addEventListener("animationstart", e => {
+      // Find previous instance of the progress animation;
+      // if one is found then sync the new one up to it.
+      let prevStartTime = null;
+      for (let x of this.el.getElementsByClassName("blinker")) {
+        if (x !== e.target) {
+          var [ani] = x.getAnimations({subtree: true})
+          prevStartTime = ani.startTime;
+          break;
+        }
+      }
+      if (prevStartTime !== null) {
+        var [ani] = e.target.getAnimations()
+        ani.startTime = prevStartTime;
+      }
+    });
+  }
+};
+
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
