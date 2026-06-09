@@ -325,7 +325,7 @@ defmodule Conecerto.Scoreboard do
     from(
       r in subquery(runs_with_driver_info()),
       order_by: [
-        {:asc, r.driver_name},
+        {:asc, fragment("lower(?)", r.driver_name)},
         {:asc, r.car_no},
         {:asc, r.id}
       ]
