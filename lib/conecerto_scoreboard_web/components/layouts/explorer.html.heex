@@ -27,6 +27,15 @@
         top: 3rem;
       <% end %>
       }
+      .anchor-target-offset {
+      <%= if @organizer do %>
+        padding-top: 9rem;
+        margin-top: -9rem;
+      <% else %>
+        padding-top: 5rem;
+        margin-top: -5rem;
+      <% end %>
+      }
     }
 
     @media screen and (min-width: 568px) {
@@ -34,10 +43,14 @@
         position: sticky;
         top: 3rem;
       }
+      .anchor-target-offset {
+        padding-top: 5rem;
+        margin-top: -5rem;
+      }
     }
   </style>
   <.header {assigns} />
-  <main>
+  <main class="header-scroll-padding transform-gpu">
     <.flash_group flash={@flash} />
     <div class="flex justify-center">
       <div class="basis-md">

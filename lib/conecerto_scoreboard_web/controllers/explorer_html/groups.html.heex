@@ -1,4 +1,9 @@
 <div class="flex flex-col gap-4">
+  <Conecerto.ScoreboardWeb.Tables.subgroup_nav
+    names={@groups |> Enum.map(& &1.name)}
+    divider="•"
+  />
+
   <Conecerto.ScoreboardWeb.Tables.multi_group_scores
     groups={@groups}
     time_column_title="PAX Best"

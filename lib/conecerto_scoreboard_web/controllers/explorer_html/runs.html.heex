@@ -1,3 +1,6 @@
-<div class="px-1">
-  <Conecerto.ScoreboardWeb.Tables.runs drivers={@drivers} />
+<div class="px-1 flex flex-col gap-4">
+  <Conecerto.ScoreboardWeb.Tables.subgroup_nav names={
+    @driver_groups |> Enum.map(fn {name, _} -> name end)
+  } />
+  <Conecerto.ScoreboardWeb.Tables.runs driver_groups={@driver_groups} />
 </div>

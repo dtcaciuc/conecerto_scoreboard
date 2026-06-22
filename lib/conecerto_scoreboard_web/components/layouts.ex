@@ -7,7 +7,8 @@ defmodule Conecerto.ScoreboardWeb.Layouts do
     ~H"""
     <header class={[
       "print:hidden top-0 sticky z-50 mb3 flex justify-center border-b-2",
-      "bg-[color:--header-fill-color] border-[--header-border-color]"
+      "bg-[color:--header-fill-color] border-[--header-border-color]",
+      "transform-gpu"
     ]}>
       <div class="flex justify-around basis-md">
         <div class={[

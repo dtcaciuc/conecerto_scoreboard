@@ -3,6 +3,25 @@ defmodule Conecerto.ScoreboardWeb.Tables do
 
   import Conecerto.ScoreboardWeb.Format
 
+  attr :names, :list, required: true
+  attr :divider, :string, default: nil
+
+  def subgroup_nav(assigns) do
+    ~H"""
+    <div class="px-3 text-center z-10 text-lg">
+      <%= for {name, i} <- Enum.with_index(@names) do %>
+        {if @divider && i > 0, do: @divider}
+        <a
+          href={"#" <> String.replace(name, " ", "-")}
+          class="whitespace-nowrap"
+        >
+          {name}
+        </a>
+      <% end %>
+    </div>
+    """
+  end
+
   attr :scores, :list, required: true
   attr :time_column_field, :atom, required: true
   attr :time_column_title, :string, required: true
@@ -25,21 +44,31 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     <table class="border-collapse striped w-full">
       <.group_scores_head time_column_title={@time_column_title} />
       <%= for group <- @groups do %>
-        <tbody>
-          <tr />
-          <tr :if={group.name}>
-            <td colspan="10">
-              <div class="text-xl text-center font-semibold self-center flex items-center mt-2 mb-1">
-                <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
-                <div class="mx-3">{group.name}</div>
-                <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+        <.subgroup_heading_body :if={group.name} title={group.name} />
         <.group_scores_body scores={group.scores} time_column_field={@time_column_field} />
       <% end %>
     </table>
+    """
+  end
+
+  attr :title, :string, required: true
+
+  defp subgroup_heading_body(assigns) do
+    ~H"""
+    <tbody>
+      <tr />
+      <tr>
+        <td colspan="10">
+          <div class="text-xl text-center font-semibold self-center flex items-center mt-2 mb-1">
+            <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
+            <div class="mx-3 anchor-target-offset" id={@title |> String.replace(" ", "-")}>
+              {@title}
+            </div>
+            <div class="border-b border-b-[--table-stripe-fill-color] flex-auto h-0"></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
     """
   end
 
@@ -131,7 +160,7 @@ defmodule Conecerto.ScoreboardWeb.Tables do
     """
   end
 
-  attr :drivers, :list, required: true
+  attr :driver_groups, :list, required: true
   attr :exclude_reruns?, :boolean, default: false
 
   def runs(assigns) do
@@ -145,43 +174,46 @@ defmodule Conecerto.ScoreboardWeb.Tables do
           <span class="w-[5.25rem]">Elapsed</span><span class="ml-1.5 text-left">Pen</span>
         </th>
       </.table_head>
-      <tbody>
-        <tr :for={d <- @drivers}>
-          <td class={[
-            "text-left pl-2 py-1 align-top text-nowrap whitespace-nowrap",
-            "max-w-36 w-[50%] max-sm:w-[75%]"
-          ]}>
-            <div>
-              <div class="truncate">
-                {d.driver_name}
-              </div>
-              <div class="pl-3 truncate">
-                <i>{d.car_model}</i>
-              </div>
-            </div>
-          </td>
-          <td class="text-right pl-2 py-1 align-top text-nowrap max-sm:hidden">
-            {d.car_no}
-          </td>
-          <td class="text-left w-[10%] pl-1 py-1 align-top text-nowrap max-sm:hidden">
-            {d.car_class}
-          </td>
-          <td class="text-right pl-8 pr-2 py-1 align-top min-w-[25%]">
-            <div class={[
-              "grid",
-              "sm:grid-cols-[repeat(3,auto)]",
-              "max-sm:grid-cols-[repeat(2,auto)]",
-              "max-[384px]:grid-cols-[repeat(1,auto)]",
-              "gap-x-8 gap-y-1 justify-start"
+      <%= for {title, drivers} <- @driver_groups do %>
+        <.subgroup_heading_body title={title} />
+        <tbody>
+          <tr :for={d <- drivers}>
+            <td class={[
+              "text-left pl-2 py-1 align-top text-nowrap whitespace-nowrap",
+              "max-w-36 w-[50%] max-sm:w-[75%]"
             ]}>
-              <% driver_runs = if @exclude_reruns?, do: exclude_reruns(d.runs), else: d.runs %>
-              <%= for r <- driver_runs do %>
-                <.run_result run={r} />
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      </tbody>
+              <div>
+                <div class="truncate">
+                  {d.driver_name}
+                </div>
+                <div class="pl-3 truncate">
+                  <i>{d.car_model}</i>
+                </div>
+              </div>
+            </td>
+            <td class="text-right pl-2 py-1 align-top text-nowrap max-sm:hidden">
+              {d.car_no}
+            </td>
+            <td class="text-left w-[10%] pl-1 py-1 align-top text-nowrap max-sm:hidden">
+              {d.car_class}
+            </td>
+            <td class="text-right pl-8 pr-2 py-1 align-top min-w-[25%]">
+              <div class={[
+                "grid",
+                "sm:grid-cols-[repeat(3,auto)]",
+                "max-sm:grid-cols-[repeat(2,auto)]",
+                "max-[384px]:grid-cols-[repeat(1,auto)]",
+                "gap-x-8 gap-y-1 justify-start"
+              ]}>
+                <% driver_runs = if @exclude_reruns?, do: exclude_reruns(d.runs), else: d.runs %>
+                <%= for r <- driver_runs do %>
+                  <.run_result run={r} />
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      <% end %>
     </table>
     """
   end

@@ -67,7 +67,7 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
     assigns =
       get_assigns(
         active_tab: "Runs",
-        drivers: Scoreboard.list_drivers_and_runs()
+        driver_groups: group_drivers_and_runs()
       )
 
     render(conn, :runs, assigns)
@@ -90,12 +90,22 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
         raw_scores: Scoreboard.list_raw_scores(),
         pax_scores: Scoreboard.list_pax_scores(),
         groups: Scoreboard.list_all_group_scores(),
-        runs: Scoreboard.list_drivers_and_runs(),
+        runs: group_drivers_and_runs(),
         cones: Scoreboard.list_total_cones(),
         print?: Map.get(params, "print")
       )
 
     render(conn, :collated, assigns)
+  end
+
+  defp group_drivers_and_runs() do
+    Scoreboard.list_drivers_and_runs()
+    |> Enum.group_by(fn entry ->
+      case entry.driver_name do
+        "" -> "-"
+        driver_name -> driver_name |> String.at(0) |> String.upcase()
+      end
+    end)
   end
 
   defp get_assigns(extra) do
