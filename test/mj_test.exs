@@ -137,7 +137,9 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
     })
 
     :timer.sleep(200)
-    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    %{completed: completed} = Scoreboard.list_recent_runs()
+    assert [run | _] = completed |> Enum.reverse()
 
     assert %{
              driver_name: "Jackson, Miguel",
@@ -156,7 +158,9 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
 
     # Wait for change to be picked up
     :timer.sleep(1000)
-    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    %{completed: completed} = Scoreboard.list_recent_runs()
+    assert [run | _] = completed |> Enum.reverse()
 
     assert %{
              driver_name: "Jackson, Miguel",
@@ -179,7 +183,9 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
     })
 
     :timer.sleep(200)
-    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    %{completed: completed} = Scoreboard.list_recent_runs()
+    assert [run | _] = completed |> Enum.reverse()
 
     assert %{
              driver_name: "Jackson, Miguel",
@@ -202,7 +208,9 @@ defmodule Conecerto.Scoreboard.MJWatcherTest do
 
     # Wait for change to be picked up
     :timer.sleep(200)
-    assert [run | _] = Scoreboard.list_recent_runs() |> Enum.reverse()
+
+    %{completed: completed} = Scoreboard.list_recent_runs()
+    assert [run | _] = completed |> Enum.reverse()
 
     assert %{
              driver_name: "Jackson, Miguel",

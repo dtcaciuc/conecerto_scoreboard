@@ -22,12 +22,14 @@ defmodule Conecerto.ScoreboardWeb.ExplorerController do
   end
 
   def event(%{method: "GET"} = conn, _params) do
+    recent = Scoreboard.list_recent_runs(10)
+
     assigns =
       get_assigns(
         active_tab: "Event",
         course_maps: CourseMaps.list(),
         radio_frequency: Scoreboard.config(:radio_frequency),
-        recent_runs: Scoreboard.list_recent_runs(10)
+        recent_runs: recent.completed ++ recent.running ++ recent.staged
       )
 
     render(conn, :event, assigns)

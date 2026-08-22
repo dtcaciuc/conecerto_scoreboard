@@ -44,11 +44,11 @@ defmodule Conecerto.ScoreboardWeb.Announce do
   end
 
   defp load_data() do
-    {recent, rest} =
-      Scoreboard.list_recent_runs(10) |> Enum.split_while(&(&1.status == "completed"))
+    %{staged: staged, running: running, completed: completed} =
+      Scoreboard.list_recent_runs(10)
 
     data =
-      case recent |> Enum.reverse() do
+      case completed |> Enum.reverse() do
         [last | rest] ->
           recent =
             [Map.put(last, :selected, true) | Enum.map(rest, &Map.put(&1, :selected, false))]
@@ -83,12 +83,9 @@ defmodule Conecerto.ScoreboardWeb.Announce do
           empty_data()
       end
 
-    {running, queued} =
-      rest |> Enum.split_while(&(&1.status == "running"))
-
     data
     |> Map.put(:running, running)
-    |> Map.put(:queued, queued)
+    |> Map.put(:staged, staged)
   end
 
   defp empty_data() do

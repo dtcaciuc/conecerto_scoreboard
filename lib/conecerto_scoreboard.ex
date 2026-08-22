@@ -178,7 +178,7 @@ defmodule Conecerto.Scoreboard do
   end
 
   def list_recent_runs(num_runs \\ 10) do
-    {not_started, started} =
+    {queued, running} =
       from(
         r in PendingRun,
         join: d in Driver,
@@ -200,21 +200,23 @@ defmodule Conecerto.Scoreboard do
       |> Repo.all()
       |> Enum.split_while(&(&1.status == "queued"))
 
-    not_started =
-      not_started |> Enum.take(1)
+    staged = queued |> Enum.reverse() |> Enum.take(1)
+    max_completed = max(0, num_runs - Enum.count(staged) - Enum.count(running))
 
     completed =
       from(
         r in runs_with_driver_info(),
         order_by: [{:desc, r.id}],
-        limit: ^num_runs
+        limit: ^max_completed
       )
       |> Repo.all()
       |> Enum.map(&Map.put(&1, :status, "completed"))
 
-    (not_started ++ started ++ completed)
-    |> Enum.take(num_runs)
-    |> Enum.reverse()
+    %{
+      staged: staged |> Enum.reverse(),
+      running: running |> Enum.reverse(),
+      completed: completed |> Enum.reverse()
+    }
   end
 
   def announce_run(scores, car_no) do

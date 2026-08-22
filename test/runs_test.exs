@@ -6,76 +6,175 @@ defmodule Conecerto.Scoreboard.RunsTest do
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Scoreboard.Repo)
-    seed_test_data()
+  end
+
+  test "list_recent_runs with no runs" do
+    assert %{completed: [], running: [], staged: []} = Scoreboard.list_recent_runs(5)
+  end
+
+  test "list_recent_runs with only staged run" do
+    seed_test_data(
+      load_completed?: false,
+      extra_runs: [
+        %{car_no: 31, run_no: 7, penalty: "", run_time: nil}
+      ]
+    )
+
+    assert %{
+             completed: [],
+             running: [],
+             staged: [
+               %{
+                 car_class: "ES",
+                 car_model: "'02 Mazda Miata",
+                 car_no: 31,
+                 counted_run_no: 7,
+                 driver_name: "Michelle, Gary",
+                 penalty: "",
+                 run_time: nil,
+                 status: "queued"
+               }
+             ]
+           } = Scoreboard.list_recent_runs(5)
+  end
+
+  test "list_recent_runs with staged and in progress run" do
+    seed_test_data(
+      load_completed?: false,
+      extra_runs: [
+        %{car_no: 16, run_no: 7, penalty: "1", run_time: -1.0},
+        %{car_no: 31, run_no: 7, penalty: "", run_time: nil}
+      ]
+    )
+
+    assert %{
+             completed: [],
+             running: [
+               %{
+                 car_class: "SS",
+                 car_model: "'12 Nissan GT-R",
+                 car_no: 16,
+                 counted_run_no: 7,
+                 driver_name: "Leclair, Billy",
+                 penalty: "1",
+                 run_time: nil,
+                 status: "running"
+               }
+             ],
+             staged: [
+               %{
+                 car_class: "ES",
+                 car_model: "'02 Mazda Miata",
+                 car_no: 31,
+                 counted_run_no: 7,
+                 driver_name: "Michelle, Gary",
+                 penalty: "",
+                 run_time: nil,
+                 status: "queued"
+               }
+             ]
+           } = Scoreboard.list_recent_runs(5)
+  end
+
+  test "list_recent_runs with in progress run" do
+    seed_test_data(
+      load_completed?: false,
+      extra_runs: [
+        %{car_no: 16, run_no: 7, penalty: "1", run_time: -1.0}
+      ]
+    )
+
+    assert %{
+             completed: [],
+             running: [
+               %{
+                 car_class: "SS",
+                 car_model: "'12 Nissan GT-R",
+                 car_no: 16,
+                 counted_run_no: 7,
+                 driver_name: "Leclair, Billy",
+                 penalty: "1",
+                 run_time: nil,
+                 status: "running"
+               }
+             ],
+             staged: []
+           } = Scoreboard.list_recent_runs(5)
   end
 
   test "list_recent_runs" do
-    seed_test_data([
-      %{car_no: 9, run_no: 6, penalty: "", run_time: -1.0},
-      %{car_no: 16, run_no: 7, penalty: "1", run_time: -1.0},
-      %{car_no: 31, run_no: 7, penalty: "", run_time: nil}
-    ])
+    seed_test_data(
+      extra_runs: [
+        %{car_no: 9, run_no: 6, penalty: "", run_time: -1.0},
+        %{car_no: 16, run_no: 7, penalty: "1", run_time: -1.0},
+        %{car_no: 31, run_no: 7, penalty: "", run_time: nil},
+        %{car_no: 22, run_no: 7, penalty: "", run_time: nil}
+      ]
+    )
 
-    assert [
-             %{
-               car_class: "HS",
-               car_model: "'92 Acura Integra GS",
-               car_no: 10,
-               counted_run_no: 6,
-               driver_name: "Johnson, William",
-               id: 691,
-               penalty: "5",
-               run_time: 50.652,
-               status: "completed"
-             },
-             %{
-               car_class: "STU",
-               car_model: "'17 Volkswagen golf r",
-               car_no: 32,
-               counted_run_no: 6,
-               driver_name: "Jackson, Miguel",
-               id: 692,
-               penalty: "",
-               run_time: 47.164,
-               status: "completed"
-             },
-             %{
-               car_class: "STS",
-               car_model: "'05 Lexus Is300",
-               car_no: 9,
-               counted_run_no: 6,
-               driver_name: "Milewski, Dan",
-               id: 1,
-               penalty: "",
-               run_time: nil,
-               status: "running"
-             },
-             %{
-               car_class: "SS",
-               car_model: "'12 Nissan GT-R",
-               car_no: 16,
-               counted_run_no: 7,
-               driver_name: "Leclair, Billy",
-               id: 2,
-               penalty: "1",
-               run_time: nil,
-               status: "running"
-             },
-             %{
-               car_class: "ES",
-               car_model: "'02 Mazda Miata",
-               car_no: 31,
-               counted_run_no: 7,
-               driver_name: "Michelle, Gary",
-               id: 3,
-               penalty: "",
-               run_time: nil,
-               status: "queued"
-             }
-           ] = Scoreboard.list_recent_runs(5)
+    assert %{
+             completed: [
+               %{
+                 car_class: "HS",
+                 car_model: "'92 Acura Integra GS",
+                 car_no: 10,
+                 counted_run_no: 6,
+                 driver_name: "Johnson, William",
+                 penalty: "5",
+                 run_time: 50.652,
+                 status: "completed"
+               },
+               %{
+                 car_class: "STU",
+                 car_model: "'17 Volkswagen golf r",
+                 car_no: 32,
+                 counted_run_no: 6,
+                 driver_name: "Jackson, Miguel",
+                 penalty: "",
+                 run_time: 47.164,
+                 status: "completed"
+               }
+             ],
+             running: [
+               %{
+                 car_class: "STS",
+                 car_model: "'05 Lexus Is300",
+                 car_no: 9,
+                 counted_run_no: 6,
+                 driver_name: "Milewski, Dan",
+                 penalty: "",
+                 run_time: nil,
+                 status: "running"
+               },
+               %{
+                 car_class: "SS",
+                 car_model: "'12 Nissan GT-R",
+                 car_no: 16,
+                 counted_run_no: 7,
+                 driver_name: "Leclair, Billy",
+                 penalty: "1",
+                 run_time: nil,
+                 status: "running"
+               }
+             ],
+             staged: [
+               %{
+                 car_class: "ES",
+                 car_model: "'02 Mazda Miata",
+                 car_no: 31,
+                 counted_run_no: 7,
+                 driver_name: "Michelle, Gary",
+                 penalty: "",
+                 run_time: nil,
+                 status: "queued"
+               }
+             ]
+           } = Scoreboard.list_recent_runs(5)
   end
 
   test "list_drivers_and_runs" do
+    seed_test_data()
+
     assert drivers = Scoreboard.list_drivers_and_runs()
     assert 56 == Enum.count(drivers)
 
@@ -110,6 +209,8 @@ defmodule Conecerto.Scoreboard.RunsTest do
   end
 
   test "list_drivers_and_runs - Reruns are excluded" do
+    seed_test_data()
+
     assert drivers = Scoreboard.list_drivers_and_runs()
 
     # Rerun is the fastest time but its excluded
@@ -123,6 +224,8 @@ defmodule Conecerto.Scoreboard.RunsTest do
   end
 
   test "list_drivers_and_runs - Zero run times are intepreted as max time" do
+    seed_test_data()
+
     assert drivers = Scoreboard.list_drivers_and_runs()
 
     assert {d, 17} =
@@ -143,7 +246,10 @@ defmodule Conecerto.Scoreboard.RunsTest do
            ] = runs
   end
 
-  def seed_test_data(extra_runs \\ []) do
+  def seed_test_data(opts \\ []) do
+    extra_runs = Keyword.get(opts, :extra_runs, [])
+    load_completed? = Keyword.get(opts, :load_completed?, true)
+
     mj_root = Path.join([__DIR__, "data", "mj_2"])
 
     classes =
@@ -155,8 +261,12 @@ defmodule Conecerto.Scoreboard.RunsTest do
       |> MJ.Drivers.read()
 
     runs =
-      Path.join([mj_root, "eventdata", "2023_07_16_timingData.csv"])
-      |> MJ.Runs.read_last_day()
+      if load_completed? do
+        Path.join([mj_root, "eventdata", "2023_07_16_timingData.csv"])
+        |> MJ.Runs.read_last_day()
+      else
+        []
+      end
 
     Scoreboard.load_data(classes, drivers, runs ++ extra_runs)
 
